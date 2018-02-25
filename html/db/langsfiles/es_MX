@@ -1,0 +1,186 @@
+[index]
+Home = Inicio
+Yaomiqui_Login = Ingreso a Yaomiqui
+Log_In = Ingresar
+Username = Nombre de Usuario
+Password = Contraseña
+Logged_in_as = Accede como
+Logout = Salir
+User_Accounts = Cuentas de usuario
+Settings = Configuración
+About = Acerca de
+Log_off = Salir
+Are_you_sure_you_want_to_log_off = Are you sure you want to log off
+Overview = Vista General
+Accounts = Cuentas
+My_Account = Mi cuenta
+Ticket_Form = Formulario para Ticket
+AutoBot_Design = Diseño AutoBot
+
+
+[overview]
+Overview = Vista General
+Search_Ticket = Buscar Ticket
+Type_a_ticket_Number = Intrduzca un número de ticket
+Search = Buscar
+
+
+[design]
+Autobots_Design = Diseño Autobots
+Create_new_Autobot = Crear nuevo Autobot
+Create_New = Create Nuevo
+Type_a_new_NAME = Intruduzca un nuevo NOMBRE
+AutoBot_Name = Nombre de AutoBot
+Name = Nombre
+Deployed_Date = Fecha de liberación
+Description = Descripción
+Active = Activo
+UnActive = InActive
+Update_Data = Actualizar Datos
+Get_XML = Adquirir XML
+XML_Edition = Edición de XML
+quotes_greaterthan_lessthan_semicolon = ( [quote] [quotes] [gt] [lt] [semi] [comm] ) en lugar de ( ' " > < ; `) ... el caracter TAB está prohibido
+Update_AutoBot = Actualizar AutoBot
+Alert = Alerta
+Updating_AutoBot = Actualizando AutoBot
+Please_wait_a_while_and_dont_close_this_window = Por favor, espere un momento y no cierre esta vantana
+Please_confirm = Confirme por favor
+Are_you_sure_you_want_to_update_this_AutoBot = Está seguro de querer actualizar este AutoBot
+Yes = Sí
+Cancel = Cancelar
+You_are_viewing_a_historic_data_Please_be_careful_with_your_actions = <b>NOTA</b>: Estás viendo datos históricos. Por favor tenga cuidado con sus acciones
+Restore_This_AutoBot = Recuperar este AutoBot
+Autobot_History = Historia de éste Autobot
+Back_to_current_deploy = Actual Deploy
+Deployed_by = Liberado por
+on = en
+Restore_This_XML = Restaurar este XML
+Load_Restore_XML = Cargar/Restaurar XML
+Enter_XML_code = Introduzca el código XML
+Insert_AutoBot_Name = Inserete el nombre del AutoBot
+
+
+[tickets]
+Ticket_Number = Numero de Ticket
+Insert_Date = Fecha de inserción
+Final_Date = Fecha Final
+Final_State = Estado Final
+Catched = Capturado
+Subject = Asunto
+No = No
+Yes = Sí
+Showing = Mostrando
+records_page_Total = registros/página. Total
+records_in = registros en
+pages = páginas
+
+
+[logs]
+Logs = Logs
+Ticket = Ticket
+Subject = Asunto
+AutoBot_Name = Nombre de AutoBot
+Initial_Date = Fecha Inicial
+
+
+[ticket_form]
+Ticket_Form_for_manual_capture = Formulario de Ticket para captura manual
+Insert_New_Ticket = Insertar Nuevo Ticket
+All_changes_you_make_here = Todos los cambios que hagas serán guardados como template. Úselo solo para probar su AutoBot
+Alert = Alerta
+Sending_form = Enviando formulario
+Please_wait_a_while_and_dont_close_this_window = Por favor, espere un momento y no cierre esta ventana
+
+
+[about]
+About_Yaomiqui = Acerca de Yaomiqui
+Developed_by = Desarrollado por
+See_documentation_for = Ver documentación para
+See = Ver
+on_GitHub = en GitHub
+Version = Versión
+
+
+
+[settings]
+Settings_for_some_things = Configuración de algunas cosas
+Edit_my_record = Editar mi registro
+Password = Contraseña
+Password_again = Contraseña de nuevo
+Name = Nombre
+Last_Name = Apellido paterno
+Mothers_Last_Name = Apellido Materno
+Email = Email
+Secondary_Email = Email Secondario
+Phone = Teléfono
+Secondary_Phone = Teléfono Secondario
+Theme = Tema
+Language = Lenguaje
+Save = Guardar
+Alert = Alerta
+Please_wait_a_while_and_dont_close_this_window = Espere por favor un momento y no cierre esta ventana
+Sending_form = Enviando formulario
+
+
+[accounts]
+User_Accounts = Cuentas de Usuario
+Passwords_does_not_match = Las contraseñas no coinciden
+Passwords_are_mandatory = La contraseña es obligatoria
+Username_alredy_exists = El nombre de usuario ya existe
+User_Name_and_Passwords_are_mandatory = El nombre de usuario y la contraseña son obligatorias
+List_of_Accounts = Lista de cuentas
+User_Name = Nombre de usuario
+Name = Nombre
+Last_Name = Apellido Paterno
+Mothers_Last_Name = Apellido Materno
+Email = Email
+Active = Activo
+New_user = Nuevo usuario
+
+
+[accounts_edit]
+User_Accounts_Edition = Edición de cuentas de usuario
+Editing = Editando
+Password = Contraseña
+Password_again = Contraseña de nuevo
+Name = Nombre
+Last_Name = Apellido Paterno
+Mothers_Last_Name = Apellido Materno
+ID_Employee = ID de Empleado
+Email = Email
+Secondary_Email = Email Secondario
+Phone = Teléfono
+Secondary_Phone = Teléfono Secundario
+Cost_Center_ID = Cost Center ID
+Group_ID = Group ID
+Secondary_Group_ID = Group ID Secundario
+Theme = Tema
+Language = Lenguaje
+Active = Activo
+PERMISIONS = PERMISOS
+Design = Diseño
+Accounts = Cuentas
+Accounts_Edition = Edición de cuentas
+Tickets = Tickets
+Tickets_Form = Formulario de Tickets
+Logs = Logs
+Charts = Gráficas
+Reports = Reportes
+Save = Guardar
+Alert = Alerta
+Saving_changes_for_user = Guardando cambios para el usuario
+Please_wait_a_while_and_dont_close_this_window = Espere por favor un momento y no cierre esta ventana...
+Are_you_sure_you_want_to_continue_deleting_the_user = Está seguro de querer borra esta cuenta?
+Delete = Borrar
+Create_new_user = Crear nuevo usuario
+Username = Nombre de usuario
+
+
+[overview]
+Overview = Overview
+Warning = Warning
+
+
+[end]
+
+

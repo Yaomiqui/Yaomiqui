@@ -1,0 +1,21 @@
+{
+	"ticket": {
+		"number": "",
+		"sys_id": "",
+		"subject": "MY SUBJECT TO BE FILTERED BY AUTOBOT",
+		"state": "assigned"
+	},
+	"data": {
+		"task": "",
+		"remoteHost": "",
+		"remoteUser": "",
+		"remoteCommand": "",
+		"remotePasswd": "",
+		"remoteDomain": "",
+		"user": "",
+		"name": "",
+		"lastname": "",
+		"middlename": "",
+		"email": ""
+	}
+}

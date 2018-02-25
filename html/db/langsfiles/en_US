@@ -1,0 +1,186 @@
+[index]
+Home = Home
+Yaomiqui_Login = Yaomiqui Login
+Log_In = Log In
+Username = Username
+Password = Password
+Logged_in_as = Logged in as
+Logout = Logout
+User_Accounts = User Accounts
+Settings = Settings
+About = About
+Log_off = Log off
+Are_you_sure_you_want_to_log_off = Are you sure you want to log off
+Overview = Overview
+Accounts = Accounts
+My_Account = My Account
+Ticket_Form = Ticket Form
+AutoBot_Design = AutoBot Design
+
+
+[overview]
+Overview = Overview
+Search_Ticket = Search Ticket
+Type_a_ticket_Number = Type a ticket Number
+Search = Search
+
+
+[design]
+Autobots_Design = Autobots Design
+Create_new_Autobot = Create new Autobot
+Create_New = Create New
+Type_a_new_NAME = Type a new NAME
+AutoBot_Name = AutoBot Name
+Name = Name
+Deployed_Date = Deployed Date
+Description = Description
+Active = Active
+UnActive = UnActive
+Update_Data = Update Data
+Get_XML = Get XML
+XML_Edition = XML Edition
+quotes_greaterthan_lessthan_semicolon = ( [quote] [quotes] [gt] [lt] [semi] [comm] ) instead ( ' " > < ; `) ... TAB character is prohibited
+Update_AutoBot = Update AutoBot
+Alert = Alert
+Updating_AutoBot = Updating AutoBot
+Please_wait_a_while_and_dont_close_this_window = Please wait a while and dont close this window
+Please_confirm = Please confirm
+Are_you_sure_you_want_to_update_this_AutoBot = Are you sure you want to update this AutoBot
+Yes = Yes
+Cancel = Cancel
+You_are_viewing_a_historic_data_Please_be_careful_with_your_actions = <b>NOTE</b>: You are viewing a historic data. Please be careful with your actions
+Restore_This_AutoBot = Restore This AutoBot
+Autobot_History = Autobot History
+Back_to_current_deploy = Back to Current Deploy
+Deployed_by = Deployed by
+on = on
+Restore_This_XML = Restore This XML
+Load_Restore_XML = Load/Restore XML
+Enter_XML_code = Enter XML code
+Insert_AutoBot_Name = Insert AutoBot Name
+
+
+[tickets]
+Ticket_Number = Ticket Number
+Insert_Date = Insert Date
+Final_Date = Final Date
+Final_State = Final State
+Catched = Catched
+Subject = Subject
+No = No
+Yes = Yes
+Showing = Showing
+records_page_Total = records/page. Total
+records_in = records in
+pages = pages
+
+
+[logs]
+Logs = Logs
+Ticket = Ticket
+Subject = Subject
+AutoBot_Name = AutoBot Name
+Initial_Date = Initial Date
+
+
+[ticket_form]
+Ticket_Form_for_manual_capture = Ticket Form for manual capture
+Insert_New_Ticket = Insert New Ticket
+All_changes_you_make_here = All changes you make here would be saved in the template file. Use this only for test your AutoBot
+Alert = Alert
+Sending_form = Sending form
+Please_wait_a_while_and_dont_close_this_window = Please wait a while and dont close this window
+
+
+[about]
+About_Yaomiqui = About Yaomiqui
+Developed_by = Developed by
+See_documentation_for = See documentation for
+See = See
+on_GitHub = on GitHub
+Version = Version
+
+
+
+[settings]
+Settings_for_some_things = Settings for some things
+Edit_my_record = Edit my record
+Password = password
+Password_again = Password again
+Name = Name
+Last_Name = Last Name
+Mothers_Last_Name = Mother's Last Name
+Email = Email
+Secondary_Email = Secondary Email
+Phone = Phone
+Secondary_Phone = Secondary Phone
+Theme = Theme
+Language = Language
+Save = Save
+Alert = Alert
+Please_wait_a_while_and_dont_close_this_window = Please wait a while and dont close this window
+Sending_form = Sending form
+
+
+[accounts]
+User_Accounts = User Accounts
+Passwords_does_not_match = Passwords does not match
+Passwords_are_mandatory = Passwords are mandatory
+Username_alredy_exists = Username alredy exists
+User_Name_and_Passwords_are_mandatory = User Name and Passwords are mandatory
+List_of_Accounts = List of Accounts
+User_Name = User Name
+Name = Name
+Last_Name = Last Name
+Mothers_Last_Name = Mother's Last Name
+Email = Email
+Active = Active
+New_user = New user
+
+
+[accounts_edit]
+User_Accounts_Edition = User Accounts Edition
+Editing = Editing
+Password = Password
+Password_again = Password again
+Name = Name
+Last_Name = Last Name
+Mothers_Last_Name = Mother's Last Name
+ID_Employee = ID Employee
+Email = Email
+Secondary_Email = Secondary Email
+Phone = Phone
+Secondary_Phone = Secondary Phone
+Cost_Center_ID = Cost Center ID
+Group_ID = Group ID
+Secondary_Group_ID = Secondary Group ID
+Theme = Theme
+Language = Language
+Active = Active
+PERMISIONS = PERMISIONS
+Design = Design
+Accounts = Accounts
+Accounts_Edition = Accounts Edition
+Tickets = Tickets
+Tickets_Form = Tickets Form
+Logs = Logs
+Charts = Charts
+Reports = Reports
+Save = Save
+Alert = Alert
+Saving_changes_for_user = Saving changes for user
+Please_wait_a_while_and_dont_close_this_window = Please wait a while and don't close this window...
+Are_you_sure_you_want_to_continue_deleting_the_user = Are you sure you want to continue deleting the user
+Delete = Delete
+Create_new_user = Create new user
+Username = Username
+
+
+[overview]
+Overview = Overview
+Warning = Warning
+
+
+[end]
+
+
