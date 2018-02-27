@@ -31,7 +31,7 @@ our(%input, %VAR, %MSG, %PRM, $username, $html, $header, $footer, $module, $modu
 my $VERSION = 0.1;
 require 'common.pl';
 %VAR = get_vars();
-$VAR{Version} = '0.8.2';
+$VAR{Version} = '0.8.4';
 $encKey = getEncKey();
 $username = get_session();
 $theme = get_theme();
