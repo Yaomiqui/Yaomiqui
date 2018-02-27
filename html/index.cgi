@@ -28,7 +28,6 @@ use Tie::File;
 use Log::Man;
 
 our(%input, %VAR, %MSG, %PRM, $username, $html, $header, $footer, $module, $module_file, $theme, $dbh, $encKey);
-my $VERSION = 0.1;
 require 'common.pl';
 %VAR = get_vars();
 $VAR{Version} = '0.8.4';
