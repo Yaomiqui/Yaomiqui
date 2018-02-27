@@ -21,21 +21,31 @@ source ./keys_auto.conf
 
 yum install -y wget vim net-tools httpd perl perl-core perl-CGI perl-DBI mod_ssl perl-JSON perl-XML-Simple
 
-wget -c http://repo.mysql.com/mysql-community-release-el6-7.noarch.rpm
+wget -c http://repo.mysql.com/mysql-community-release-el7-5.noarch.rpm
 
-rpm -ivh mysql-community-release-el6-7.noarch.rpm
+rpm -ivh mysql-community-release-el7-5.noarch.rpm
 
-yum install -y mysql-server perl-DBD-MySQL epel-release
+yum install -y mysql-server perl-DBD-MySQL
 
-yum --enablerepo=epel install -y sshpass perl-Parallel-ForkManager
+rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+
+yum --enablerepo=epel install -y sshpass perl-Parallel-ForkManager samba4-libs gnutls-devel
+
+### Install winexe. You can comment the next two lines to enhance performance. Then you can run it later.
+yum remove libbsd-devel
+
+rpm -Uvh winexe-1.1-b787d2.el7.x86_64.rpm
+###### 
+
+chown apache:apache /usr/share/httpd
 
 # service NetworkManager stop
 
 # chkconfig NetworkManager off
 
-service iptables stop
+service firewalld stop
 
-chkconfig iptables off
+chkconfig firewalld off
 
 service httpd start
 
@@ -44,8 +54,6 @@ service mysqld start
 chkconfig httpd on
 
 chkconfig mysqld on
-
-chkconfig sshd on
 
 perl -pi -e 's/SELINUX=enforcing/SELINUX=disabled/' /etc/selinux/config
 
@@ -64,8 +72,6 @@ mkdir /var/www/yaomiqui/certs
 mkdir /var/www/yaomiqui/logs
 
 perl -pi -e "s/SERVER_NAME/${COMMON_NAME}/g" yaomiqui_apache.conf
-
-perl -pi -e "s/\#LoadModule/LoadModule/" yaomiqui_apache.conf
 
 cat ./yaomiqui_apache.conf > /etc/httpd/conf.d/yaomiqui.conf
 
