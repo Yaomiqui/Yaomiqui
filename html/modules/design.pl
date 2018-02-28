@@ -225,7 +225,7 @@ if ( $input{submod} eq 'edit_autobot' ) {
 	$MSG{AutoBot_Name}: &nbsp; <input type="text" name="autoBotName" value="$ABOT[1]" maxlength="100" placeholder="$MSG{Insert_AutoBot_Name}" required> &nbsp; &nbsp; 
 	$MSG{Description}: &nbsp; <input type="text" name="description" value="$ABOT[2]" maxlength="255" style="width: 400px;"> <br>
 	$MSG{Active}: &nbsp; <input type="radio" name="active" value="1" $chkActive> <br>
-	$MSG{UnActive}: &nbsp; <input type="radio" name="active" value="0" $chkUnActive> &nbsp; &nbsp; &nbsp; 
+	$MSG{InActive}: &nbsp; <input type="radio" name="active" value="0" $chkUnActive> &nbsp; &nbsp; &nbsp; 
 	<input class="blueLightButton" type="submit" value="$MSG{Update_Data}">
 	</form>
 	<br>
