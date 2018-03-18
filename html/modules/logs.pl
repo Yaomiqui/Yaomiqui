@@ -30,9 +30,10 @@ if ( $input{submod} eq 'showLogs' ) {
 	$sth->finish;
 	$dbh->disconnect if ($dbh);
 	
-	$html .= qq~
+	$html .= qq~<p width="100%" align="right" style="padding-right: 80px"><a href="javascript:document.location.reload(true)"><img src="images/refresh-32x35.png" style="width: 20px"></a></p>
+	
 	<table cellpadding="0" cellspacing="0" border="0" class="gridTable" style="height: 120px">
-		<tr><td class="gridTitle">$MSG{Ticket}</td><td class="gridContent">$TT[0]</td></tr>
+		<tr><td class="gridTitle">$MSG{Ticket}</td><td class="gridContent"><b>$TT[0]</b></td></tr>
 		<tr><td class="gridTitle">$MSG{Subject}</td><td class="gridContent">$TT[1]</td></tr>
 		<tr><td class="gridTitle">$MSG{AutoBot_Name}</td><td class="gridContent"><a href="index.cgi?mod=design&submod=edit_autobot&autoBotId=$TT[4]" target="_blank">$TT[2]</a></td></tr>
 		<tr><td class="gridTitle">$MSG{Initial_Date}</td><td class="gridContent">$TT[3]</td></tr>

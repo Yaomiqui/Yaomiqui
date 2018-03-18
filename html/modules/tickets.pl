@@ -5,6 +5,159 @@ $html .= qq~<div class="contentTitle">$MSG{Overview}</div>~ unless $input{'shtl'
 
 my $queryLimit;
 
+
+
+unless ( $input{submod} ) {
+	$html .= qq~<script>setTimeout('document.location.reload()',$VAR{REFRESH_RATE});</script>~;
+	
+	$html .= paginator();
+	
+	$html .= qq~
+	<table cellpadding="0" cellspacing="0" border="0" width="100%" class="gridTable" style="padding-top: 30px">
+		<tr>
+			<td class="gridTitle" style="max-width:100px;">$MSG{Ticket_Number}</td>
+			<td class="gridTitle" style="max-width:100px;">$MSG{Subject}</td>
+			<td class="gridTitle" style="max-width:100px;">$MSG{Insert_Date}</td>
+			<td class="gridTitle" style="max-width:100px;">$MSG{Final_Date}</td>
+			<td class="gridTitle" style="max-width:50px;">$MSG{Final_State}</td>
+			<td class="gridTitle" style="max-width:100%">$MSG{Catched}</td>
+		</tr>
+	~;
+	
+	connected();
+	my $sth = $dbh->prepare("SELECT numberTicket, Subject, idAutoBotCatched, initialDate, finalDate, finalState FROM ticket ORDER BY initialDate DESC LIMIT $queryLimit");
+	$sth->execute();
+	my $TT = $sth->fetchall_arrayref;
+	$sth->finish;
+	$dbh->disconnect if ($dbh);
+	
+	for my $i ( 0 .. $#{$TT} ) {
+		
+		my $catched = qq~ <a href="launcher.cgi?mod=logs&submod=showJson&numberTicket=$TT->[$i][0]&shtl=1" target="logs">
+			<img src="images/json20.png" style="border: 0; width: 18px; height: 14px;">
+			</a> &nbsp; &nbsp; $MSG{No} ~;
+		if ( $TT->[$i][2] ) {
+			# $catched = qq~<a href="launcher.cgi?mod=logs&submod=showLogs&numberTicket=$TT->[$i][0]&shtl=1" target="logs"><font color="#471F6E"><b>$MSG{Yes}</b></font></a>~;
+			$catched = qq~
+			<a href="launcher.cgi?mod=logs&submod=showJson&numberTicket=$TT->[$i][0]&shtl=1" target="logs">
+			<img src="images/json20.png" style="border: 0; width: 18px; height: 14px;">
+			</a>
+			&nbsp; &nbsp; ~;
+			
+			if ( $VAR{SHOW_LOGS_IN_FRAME} ) {
+				$catched .= qq~<a href="launcher.cgi?mod=logs&submod=showLogs&numberTicket=$TT->[$i][0]&shtl=1" target="logs">~;
+			} else {
+				$catched .= qq~<a href="index.cgi?mod=logs&submod=showLogs&numberTicket=$TT->[$i][0]" target="_parent">~;
+			}
+			
+			$catched .= qq~<img src="images/log20.png" style="border: 0; width: 18px; height: 14px;">
+			</a>
+			~;
+		}
+		
+		my $ST;
+		if ( $TT->[$i][5] eq 'Resolved' ) {
+			$ST = '#0000FF';
+		} elsif ( $TT->[$i][5] eq 'Rejected' ) {
+			$ST = '#BB0000';
+		} elsif ( $TT->[$i][5] eq 'Pending' ) {
+			$ST = '#9C7411';
+		} elsif ( $TT->[$i][5] eq 'Failed' ) {
+			$ST = '#FF0000';
+		}
+		
+		$html .= qq~
+		<tr class="gridRowContent">
+			<td class="gridContent" style="max-width:100px; color: #2121A1;"><b>$TT->[$i][0]</b></td>
+			<td class="gridContent" style="max-width:100px; color: $ST;" title="$TT->[$i][1]">$TT->[$i][1]</td>
+			<td class="gridContent" style="max-width:100px; color: $ST;">$TT->[$i][3]</td>
+			<td class="gridContent" style="max-width:100px; color: $ST;">$TT->[$i][4]</td>
+			<td class="gridContent" style="max-width:50px; color: $ST;">$TT->[$i][5]</td>
+			<td class="gridContent" style="max-width:100%;">$catched</td>
+		</tr>
+		~;
+	}
+	
+	$html .= qq~
+	</table>
+	~;
+}
+
+
+
+if ( $input{submod} eq 'findTicket' ) {
+	$html .= qq~
+	<table cellpadding="0" cellspacing="2" border="0" width="100%" class="gridTable">
+		<tr>
+			<td class="gridTitle" style="max-width:100px;">$MSG{Ticket_Number}</td>
+			<td class="gridTitle" style="max-width:100px;">$MSG{Subject}</td>
+			<td class="gridTitle" style="max-width:100px;">$MSG{Insert_Date}</td>
+			<td class="gridTitle" style="max-width:100px;">$MSG{Final_Date}</td>
+			<td class="gridTitle" style="max-width:50px;">$MSG{Final_State}</td>
+			<td class="gridTitle" style="max-width:100%">$MSG{Catched}</td>
+		</tr>
+	~;
+	
+	connected();
+	my $sth = $dbh->prepare("SELECT numberTicket, Subject, idAutoBotCatched, initialDate, finalDate, finalState FROM ticket WHERE numberTicket LIKE '%$input{ftt}%' ORDER BY initialDate DESC");
+	$sth->execute();
+	my $TT = $sth->fetchall_arrayref;
+	$sth->finish;
+	$dbh->disconnect if ($dbh);
+	
+	for my $i ( 0 .. $#{$TT} ) {
+		
+		my $catched = qq~ <a href="launcher.cgi?mod=logs&submod=showJson&numberTicket=$TT->[$i][0]&shtl=1" target="logs">
+			<img src="images/json20.png" style="border: 0; width: 18px; height: 14px;">
+			</a> &nbsp; &nbsp; $MSG{No} ~;
+		if ( $TT->[$i][2] ) {
+			# $catched = qq~<a href="launcher.cgi?mod=logs&submod=showLogs&numberTicket=$TT->[$i][0]&shtl=1" target="logs"><font color="#471F6E"><b>$MSG{Yes}</b></font></a>~;
+			$catched = qq~
+			<a href="launcher.cgi?mod=logs&submod=showJson&numberTicket=$TT->[$i][0]&shtl=1" target="logs">
+			<img src="images/json20.png" style="border: 0; width: 18px; height: 14px;">
+			</a>
+			&nbsp; &nbsp; ~;
+			
+			if ( $VAR{SHOW_LOGS_IN_FRAME} ) {
+				$catched .= qq~<a href="launcher.cgi?mod=logs&submod=showLogs&numberTicket=$TT->[$i][0]&shtl=1" target="logs">~;
+			} else {
+				$catched .= qq~<a href="index.cgi?mod=logs&submod=showLogs&numberTicket=$TT->[$i][0]" target="_parent">~;
+			}
+			
+			$catched .= qq~<img src="images/log20.png" style="border: 0; width: 18px; height: 14px;">
+			</a>
+			~;
+		}
+		
+		my $ST;
+		if ( $TT->[$i][5] eq 'Resolved' ) {
+			$ST = '#0000FF';
+		} elsif ( $TT->[$i][5] eq 'Rejected' ) {
+			$ST = '#BB0000';
+		} elsif ( $TT->[$i][5] eq 'Pending' ) {
+			$ST = '#9C7411';
+		} elsif ( $TT->[$i][5] eq 'Failed' ) {
+			$ST = '#FF0000';
+		}
+		
+		$html .= qq~
+		<tr>
+			<td class="gridContent" style="max-width:100px; color: #2121A1;"><b>$TT->[$i][0]</b></td>
+			<td class="gridContent" style="max-width:100px; color: $ST;">$TT->[$i][1]</td>
+			<td class="gridContent" style="max-width:100px; color: $ST;">$TT->[$i][3]</td>
+			<td class="gridContent" style="max-width:100px; color: $ST;">$TT->[$i][4]</td>
+			<td class="gridContent" style="max-width:50px; color: $ST;">$TT->[$i][5]</td>
+			<td class="gridContent" style="max-width:100%;">$catched</td>
+		</tr>
+		~;
+	}
+	
+	$html .= qq~
+	</table>
+	~;
+}
+
+
 sub paginator {
 	connected();
 	my $sth = $dbh->prepare("SELECT COUNT(idTicket) FROM ticket");
@@ -101,129 +254,6 @@ sub paginator {
 	
 	# SELECT name, cost FROM test LIMIT 100, 20
 	# This will display records 101-120
-}
-
-unless ( $input{submod} ) {
-	$html .= qq~<script>setTimeout('document.location.reload()',$VAR{REFRESH_RATE});</script>~;
-	
-	$html .= paginator();
-	
-	$html .= qq~
-	<table cellpadding="0" cellspacing="2" border="0" width="100%" class="gridTable" style="padding-top: 30px">
-		<tr>
-			<td class="gridTitle">$MSG{Ticket_Number}</td>
-			<td class="gridTitle">$MSG{Subject}</td>
-			<td class="gridTitle">$MSG{Insert_Date}</td>
-			<td class="gridTitle">$MSG{Final_Date}</td>
-			<td class="gridTitle">$MSG{Final_State}</td>
-			<td class="gridTitle">$MSG{Catched}</td>
-		</tr>
-	~;
-	
-	connected();
-	my $sth = $dbh->prepare("SELECT numberTicket, Subject, idAutoBotCatched, initialDate, finalDate, finalState FROM ticket ORDER BY initialDate DESC LIMIT $queryLimit");
-	$sth->execute();
-	my $TT = $sth->fetchall_arrayref;
-	$sth->finish;
-	$dbh->disconnect if ($dbh);
-	
-	for my $i ( 0 .. $#{$TT} ) {
-		
-		my $catched = qq~ - <b>$MSG{No}</b> - ~;
-		if ( $TT->[$i][2] ) {
-			# $catched = qq~<a href="launcher.cgi?mod=logs&submod=showLogs&numberTicket=$TT->[$i][0]&shtl=1" target="logs"><font color="#471F6E"><b>$MSG{Yes}</b></font></a>~;
-			$catched = qq~
-			<a href="launcher.cgi?mod=logs&submod=showJson&numberTicket=$TT->[$i][0]&shtl=1" target="logs">
-			<img src="images/json20.png" style="border: 0; width: 18px; height: 14px;">
-			</a>
-			&nbsp; &nbsp; 
-			<a href="launcher.cgi?mod=logs&submod=showLogs&numberTicket=$TT->[$i][0]&shtl=1" target="logs">
-			<img src="images/log20.png" style="border: 0; width: 18px; height: 14px;">
-			</a>
-			~;
-		}
-		
-		my $ST;
-		if ( $TT->[$i][5] eq 'Resolved' ) {
-			$ST = '#0000FF';
-		} elsif ( $TT->[$i][5] eq 'Rejected' ) {
-			$ST = '#BB0000';
-		} elsif ( $TT->[$i][5] eq 'Pending' ) {
-			$ST = '#9C7411';
-		} elsif ( $TT->[$i][5] eq 'Failed' ) {
-			$ST = '#FF0000';
-		}
-		
-		$html .= qq~
-		<tr>
-			<td class="gridContent" style="color: #14145E"><b>$TT->[$i][0]</b></td>
-			<td class="gridContent" style="color: $ST; overflow: hidden; text-overflow: ellipsis">$TT->[$i][1]</td>
-			<td class="gridContent" style="color: $ST;">$TT->[$i][3]</td>
-			<td class="gridContent" style="color: $ST;">$TT->[$i][4]</td>
-			<td class="gridContent" style="color: $ST;">$TT->[$i][5]</td>
-			<td class="gridContent">$catched</td>
-		</tr>
-		~;
-	}
-	
-	$html .= qq~
-	</table>
-	~;
-}
-
-
-
-if ( $input{submod} eq 'findTicket' ) {
-	$html .= qq~
-	<table cellpadding="0" cellspacing="2" border="0" width="100%" class="gridTable">
-		<tr>
-			<td class="gridTitle">$MSG{Ticket_Number}</td>
-			<td class="gridTitle">$MSG{Subject}</td>
-			<td class="gridTitle">$MSG{Insert_Date}</td>
-			<td class="gridTitle">$MSG{Final_Date}</td>
-			<td class="gridTitle">$MSG{Final_State}</td>
-			<td class="gridTitle">$MSG{Catched}</td>
-		</tr>
-	~;
-	
-	connected();
-	my $sth = $dbh->prepare("SELECT numberTicket, Subject, idAutoBotCatched, initialDate, finalDate, finalState FROM ticket WHERE numberTicket LIKE '%$input{ftt}%' ORDER BY initialDate DESC");
-	$sth->execute();
-	my $TT = $sth->fetchall_arrayref;
-	$sth->finish;
-	$dbh->disconnect if ($dbh);
-	
-	for my $i ( 0 .. $#{$TT} ) {
-		
-		my $catched = qq~<font color="#FF0000"><b>$MSG{No}</b></font>~;
-		if ( $TT->[$i][2] ) {
-			$catched = qq~<a href="launcher.cgi?mod=logs&submod=showLogs&numberTicket=$TT->[$i][0]&shtl=1" target="logs"><font color="#471F6E"><b>$MSG{Yes}</b></font></a>~;
-		}
-		
-		my $ST;
-		if ( $TT->[$i][5] eq 'Resolved' ) {
-			$ST = '#008000';
-		} elsif ( $TT->[$i][5] eq 'Rejected' ) {
-			$ST = '#A52A2A';
-		} elsif ( $TT->[$i][5] eq 'Pending' ) {
-			$ST = '#9C7411';
-		}
-		
-		$html .= qq~
-		<tr>
-			<td class="gridContent"><a href="launcher.cgi?mod=logs&submod=showJson&numberTicket=$TT->[$i][0]&shtl=1" target="logs">$TT->[$i][0]</a></td>
-			<td class="gridContent" style="overflow:hidden; text-overflow:ellipsis;">$TT->[$i][1]</td>
-			<td class="gridContent" style="overflow:hidden; text-overflow:ellipsis;">$TT->[$i][3]</td>
-			<td class="gridContent" style="overflow:hidden; text-overflow:ellipsis;">$TT->[$i][4]</td>
-			<td class="gridContent"><font color="$ST">$TT->[$i][5]</font></td>
-			<td class="gridContent">$catched</td>
-		</tr>
-		~;
-	}
-	
-	$html .= qq~
-	</table>
-	~;
 }
 
 

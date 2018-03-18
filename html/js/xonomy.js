@@ -1,4 +1,10 @@
-﻿var Xonomy={
+
+String.prototype.replaceAll1 = function (find, replace) {
+    var str = this;
+    return str.replace(new RegExp(find.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'g'), replace);
+};
+
+var Xonomy={
 	lang: "", //"en"|"de"|fr"| ...
 	mode: "nerd", //"nerd"|"laic"
 };
@@ -41,7 +47,15 @@ Xonomy.namespaces={}; //eg. "xmlns:mbm": "http://lexonista.com"
 
 Xonomy.xml2js=function(xml, jsParent) {
 	if(typeof(xml)=="string") xml=$.parseXML(xml);
+        
+        
+        
 	if(xml.documentElement) xml=xml.documentElement;
+        
+        
+        //console.log(xml);
+        
+        
 	var js=new Xonomy.surrogate(jsParent);
 	js.type="element";
 	js.name=xml.nodeName;
@@ -60,12 +74,22 @@ Xonomy.xml2js=function(xml, jsParent) {
 	js.children=[];
 	for(var i=0; i<xml.childNodes.length; i++) {
 		var child=xml.childNodes[i];
+                //console.log(child.nodeValue);
+                if ( "characters with markup" == child.nodeValue){
+                  // alert(child.nodeType); 
+                }
 		if(child.nodeType==1) { //element node
 			js["children"].push(Xonomy.xml2js(child, js));
 		}
 		if(child.nodeType==3) { //text node
 			js["children"].push({type: "text", value: child.nodeValue, htmlID: "", parent: function(){return js}, });
 		}
+                
+                if (child.nodeType==4){
+                    var cdata = '<![CDATA[' + child.nodeValue + ']]>';
+                    //var cdata = '<cdata>ddd' + child.nodeValue + '</cdata>';
+                    js["children"].push({type: "text", cdata: "1", value: cdata , htmlID: "", parent: function(){return js}, });
+                }
 	}
 	js=Xonomy.enrichElement(js);
 	return js;
@@ -359,7 +383,10 @@ Xonomy.harvest=function() { //harvests the contents of an editor
 			parent: js
 		});
 	}
-	return Xonomy.js2xml(js);
+        var data = Xonomy.js2xml(js);
+        // data = data.replaceAll1("<cdata xml:space='preserve'>", "<![CDATA[");
+       // data = data.replaceAll1("</cdata>", "]]>");
+	return data;
 }
 Xonomy.harvestElement=function(htmlElement, jsParent) {
 	var js=new Xonomy.surrogate(jsParent);
@@ -423,7 +450,9 @@ Xonomy.render=function(data, editor, docSpec) { //renders the contents of an edi
 	//The data can be a Xonomy-compliant XML document, a Xonomy-compliant xml-as-string,
 	//or a Xonomy-compliant JavaScript object.
 	//The editor can be an HTML element, or the string ID of one.
-	Xonomy.docSpec=docSpec;
+	//data = data.replaceAll1("<![CDATA[", "<cdata>");
+        //data = data.replaceAll1("]]>", "</cdata>");
+        Xonomy.docSpec=docSpec;
 	Xonomy.verifyDocSpec();
 
 	//Clear namespace cache:
@@ -431,8 +460,16 @@ Xonomy.render=function(data, editor, docSpec) { //renders the contents of an edi
 
 	//Convert doc to a JavaScript object, if it isn't a JavaScript object already:
 	if(typeof(data)=="string") data=$.parseXML(data);
+        
+       
+        
 	if(data.documentElement) data=Xonomy.xml2js(data);
-
+        
+        
+       
+        
+        
+        
 	//Make sure editor refers to an HTML element, if it doesn't already:
 	if(typeof(editor)=="string") editor=document.getElementById(editor);
 	if(!$(editor).hasClass("xonomy")) $(editor).addClass("xonomy"); //make sure it has class "xonomy"
@@ -454,6 +491,7 @@ Xonomy.render=function(data, editor, docSpec) { //renders the contents of an edi
 	Xonomy.validate();
 };
 Xonomy.renderElement=function(element) {
+        
 	var htmlID=Xonomy.nextID();
 	Xonomy.verifyDocSpecElement(element.name);
 	var spec=Xonomy.docSpec.elements[element.name];
@@ -476,12 +514,15 @@ Xonomy.renderElement=function(element) {
 	var title="";
 	if(spec.title) title=Xonomy.textByLang(spec.title(element));
 	var html="";
-	html+='<div data-name="'+element.name+'" id="'+htmlID+'" class="'+classNames+'">';
+        if (typeof spec.backgroundColour === "undefined") {
+            spec.backgroundColour = '#fff';
+        }
+	html+='<div style="background-color: '+spec.backgroundColour+';" data-name="'+element.name+'" id="'+htmlID+'" class="'+classNames+'">';
 		html+='<span class="connector">';
 			html+='<span class="plusminus" onclick="Xonomy.plusminus(\''+htmlID+'\')"></span>';
 			html+='<span class="draghandle" draggable="true" ondragstart="Xonomy.drag(event)"></span>';
 		html+='</span>';
-		html+='<span class="tag opening" style="background-color: '+spec.backgroundColour+';">';
+		html+='<span class="tag opening" >';
 			html+='<span class="punc">&lt;</span>';
 			html+='<span class="warner"><span class="inside" onclick="Xonomy.click(\''+htmlID+'\', \'warner\')"></span></span>';
 			html+='<span class="name" title="'+title+'" onclick="Xonomy.click(\''+htmlID+'\', \'openingTagName\')">'+displayName+'</span>';
@@ -575,10 +616,19 @@ Xonomy.renderText=function(text) {
 	if($.trim(text.value)=="") classNames+=" whitespace";
 	if(text.value=="") classNames+=" empty";
 	var html="";
+        var myRegexp = /<!\[CDATA\[(.*)]]>/;
+        var match = myRegexp.exec(text.value);
+        //if (match != null){
+            //alert(match[1]);
+        //}
 	html+='<div id="'+htmlID+'" data-value="'+Xonomy.xmlEscape(text.value)+'" class="'+classNames+'">';
 		html+='<span class="connector"></span>';
 		var txt=Xonomy.chewText(text.value);
-		html+='<span class="value" onclick="Xonomy.click(\''+htmlID+'\', \'text\')"><span class="insertionPoint"><span class="inside"></span></span><span class="dots"></span>'+txt+'</span>';
+		html+='<span ';
+                if (match != null){
+                    html+=  ' data-cdata="1" ';
+                }
+                html+='class="value" onclick="Xonomy.click(\''+htmlID+'\', \'text\')"><span class="insertionPoint"><span class="inside"></span></span><span class="dots"></span>'+txt+'</span>';
 	html+='</div>';
 	text.htmlID = htmlID;
 	return html;
@@ -779,22 +829,41 @@ Xonomy.click=function(htmlID, what) {
 			var value=$("#"+htmlID).attr("data-value"); //obtain current value
 			var elName=$("#"+htmlID).closest(".element").attr("data-name");
 			var spec=Xonomy.docSpec.elements[elName];
+                        
 			if (typeof(spec.asker) != "function") {
 				var content=Xonomy.askLongString(value, null, Xonomy.harvestElement($("#"+htmlID).closest(".element").toArray()[0])); //compose bubble content
 			} else {
 				var content=spec.asker(value, spec.askerParameter, Xonomy.harvestElement($("#"+htmlID).closest(".element").toArray()[0])); //use specified asker
 			}
+                        
 			if(content!="") {
+
 				document.body.appendChild(Xonomy.makeBubble(content)); //create bubble
 				Xonomy.showBubble($("#"+htmlID+" > .value")); //anchor bubble to value
+                                 
 				Xonomy.answer=function(val) {
+                                        /*var myRegexp = /<!\[CDATA\[(.*)]]>/;
+                                        var match = myRegexp.exec(val);
+                                        var cdata = '';
+                                        if (match[1]){
+                                            cdata = '1';
+                                        }*/
+                                    
+                                        if ($('#btn-cdata').data('cdata') == '1'){
+                                            val = '<![CDATA[' + val + ']]>';
+                                        }
+                                        cdata = '1';
 					var obj=document.getElementById(htmlID);
-					var jsText = {type: "text", value: val};
+                                        
+					var jsText = {type: "text", value: val, cdata: cdata};
 					var html=Xonomy.renderText(jsText);
+                                        //console.log(jsText);
 					$(obj).replaceWith(html);
+                                        
 					Xonomy.clickoff();
 					Xonomy.changed(Xonomy.harvestText(document.getElementById(jsText.htmlID)));
 				};
+                                
 			}
 		}
 		if(what=="warner") {
@@ -856,6 +925,7 @@ Xonomy.makeBubble=function(content) {
 Xonomy.showBubble=function($anchor) {
 	var $bubble=$("#xonomyBubble");
 	var offset=$anchor.offset();
+        
 	var screenWidth = $("body").width();
 	var screenHeight = $(document).height();
 	var bubbleHeight = $bubble.outerHeight();
@@ -901,10 +971,27 @@ Xonomy.askString=function(defaultString, askerParameter, jsMe) {
 	return html;
 };
 Xonomy.askLongString=function(defaultString, askerParameter, jsMe) {
+        console.log(defaultString)
 	var html="";
+        var cdata = "";
+        var extra = defaultString.replace(/\n/g, "");
+        var myRegexp = /<!\[CDATA\[(.*)]]>/;
+        var match = myRegexp.exec(extra);
+        console.log(match);
+        if (match != null && typeof match[1] !== 'undefined'  ){
+           
+           var c = defaultString.replace("<![CDATA[", "");
+           c = c.replace("]]>", "");
+            defaultString = c;
+            cdata = 'data-cdata="1"';
+        } else if (defaultString == '<!\[CDATA\[]]>' || defaultString.trim() == '<!\[CDATA\[]]>'){
+            defaultString = '';
+            cdata = 'data-cdata="1"';
+        }
+      
 	html+="<form onsubmit='Xonomy.answer(this.val.value); return false'>";
 		html+="<textarea name='val' class='textbox focusme' spellcheck='false'>"+Xonomy.xmlEscape(defaultString)+"</textarea>";
-		html+="<div class='submitline'><input type='submit' value='OK'></div>";
+		html+="<div class='submitline'><input id='btn-cdata' " + cdata + " type='submit' value='OK'></div>";
 	html+="</form>";
 	return html;
 };

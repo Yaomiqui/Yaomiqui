@@ -7,12 +7,13 @@
 			// },
 			elements: {
 				"AUTO":{
+					// backgroundColour: '#EBEBEB',
 					menu: [
 						{
 							caption: "Append a <IF>",
 							action: Xonomy.newElementChild,
 							// actionParameter: "<IF/>"
-							actionParameter: "<IF><VAR name='' compare=''/></IF>"
+							actionParameter: "<IF><VAR name='' compare=''><DO/></VAR></IF>"
 						},
 						{
 							caption: "Append a <DO>",
@@ -22,6 +23,7 @@
 					]
 				},
 				"ON": {
+					backgroundColour: '#CEEBCE',
 					menu: [
 						{
 							caption: "Append a <VAR>",
@@ -29,15 +31,36 @@
 							actionParameter: "<VAR name='' compare=''/>"
 						}
 					],
-					canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand"],
+					//canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand"],
 				},
 				"IF": {
+					backgroundColour: '#E3FAE3',
 					menu: [
 						{
 							caption: "Append a <VAR>",
 							action: Xonomy.newElementChild,
-							actionParameter: "<VAR name='' compare=''/>"
+							actionParameter: "<VAR name='' compare=''><DO/></VAR>"
 						},
+						// {
+							// caption: "Append a <LOGING>",
+							// action: Xonomy.newElementChild,
+							// actionParameter: "<LOGING comment=\"\"/>",
+						// },
+						// {
+							// caption: "Append a <END>",
+							// action: Xonomy.newElementChild,
+							// actionParameter: "<END value=\"Resolved\" />",
+						// },
+						// {
+							// caption: "Append a <RETURN>",
+							// action: Xonomy.newElementChild,
+							// actionParameter: "<RETURN value=\"\"/>"
+						// },
+						// {
+							// caption: "Append a <DO>",
+							// action: Xonomy.newElementChild,
+							// actionParameter: "<DO/>"
+						// },
 						// Deletes IF
 						{
 							caption: "Delete this <IF>",
@@ -57,30 +80,29 @@
 					canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand"],
 				},
 				"VAR": {
+					backgroundColour: '#F3F3F3',
 					menu: [
 						// CHILDS
-						{
-							caption: "Append a <DO>",
-							action: Xonomy.newElementChild,
-							actionParameter: "<DO/>"
-						},
-						{
-							caption: "Append a <LOGING>",
-							action: Xonomy.newElementChild,
-							// actionParameter: "<END>Resolve</END>",
-							actionParameter: "<LOGING comment=\"\"/>",
-						},
-						{
-							caption: "Append a <END>",
-							action: Xonomy.newElementChild,
-							// actionParameter: "<END>Resolve</END>",
-							actionParameter: "<END value=\"Resolved\" />",
-						},
-						{
-							caption: "Append a <RETURN>",
-							action: Xonomy.newElementChild,
-							actionParameter: "<RETURN value=\"\"/>"
-						},
+						// {
+							// caption: "Append a <LOGING>",
+							// action: Xonomy.newElementChild,
+							// actionParameter: "<LOGING comment=\"\"/>",
+						// },
+						// {
+							// caption: "Append a <END>",
+							// action: Xonomy.newElementChild,
+							// actionParameter: "<END value=\"Resolved\" />",
+						// },
+						// {
+							// caption: "Append a <RETURN>",
+							// action: Xonomy.newElementChild,
+							// actionParameter: "<RETURN value=\"\"/>"
+						// },
+						// {
+							// caption: "Append a <DO>",
+							// action: Xonomy.newElementChild,
+							// actionParameter: "<DO/>"
+						// },
 						// Add Attributes
 						{
 							caption: "Add @name=\"\"",
@@ -108,22 +130,22 @@
 						{
 							caption: "New <VAR> before this",
 							action: Xonomy.newElementBefore,
-							actionParameter: "<VAR name='' compare=''/>"
+							actionParameter: "<VAR name='' compare=''><DO/></VAR>"
 						},
 						{
 							caption: "New <VAR> after this",
 							action: Xonomy.newElementAfter,
-							actionParameter: "<VAR name='' compare=''/>"
+							actionParameter: "<VAR name='' compare=''><DO/></VAR>"
 						}
 					],
 					canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand"],
 					attributes: {
 						"name": {
 							asker: Xonomy.askString,
-							menu: [{
-								caption: "Delete this @name",
-								action: Xonomy.deleteAttribute
-							}]
+							// menu: [{
+								// caption: "Delete this @name",
+								// action: Xonomy.deleteAttribute
+							// }]
 						},
 						"compare": {
 							asker: Xonomy.askPicklist,
@@ -133,15 +155,17 @@
 								{value: "contains", caption: "Contains"},
 								{value: "notcontain", caption: "Does not Contain"},
 								{value: "startsw", caption: "Starts with"},
+								{value: "notstartsw", caption: "Does not Start with"},
 								{value: "endsw", caption: "Ends with"},
+								{value: "notendsw", caption: "Does not End with"},
 								{value: "eq", caption: "Equal to"},
 								{value: "ne", caption: "Not Equal to"},
 								{value: "isempty", caption: "Is Empty"},
 							],
-							menu: [{
-								caption: "Delete this @compare",
-								action: Xonomy.deleteAttribute
-							}]
+							// menu: [{
+								// caption: "Delete this @compare",
+								// action: Xonomy.deleteAttribute
+							// }]
 						},
 						"value": {
 							asker: Xonomy.askString,
@@ -155,6 +179,7 @@
 				
 				"DO": {
 					// CHILDS
+					backgroundColour: '#D2E6EB',
 					menu: [
 						// {
 							// caption: "Add @id=\"\"",
@@ -165,53 +190,59 @@
 						{
 							caption: "Append a <execLinuxCommand>",
 							action: Xonomy.newElementChild,
-							actionParameter: "<execLinuxCommand catchVarName=\"\" command=\"\"/>"
+							// actionParameter: "<execLinuxCommand catchVarName=\"\" command=\"\"/>"
+							// actionParameter: "<execLinuxCommand catchVarName=\"\"><command>&lt;![CDATA[]]&gt;</command></execLinuxCommand>"
+							actionParameter: "<execLinuxCommand catchVarName=\"\"><command><![CDATA[]]></command></execLinuxCommand>"
+						},
+						{
+							caption: "Append a <execRemoteLinuxCommand>",
+							action: Xonomy.newElementChild,
+							// actionParameter: "<execRemoteLinuxCommand catchVarName=\"\" remoteHost=\"\" remoteUser=\"\" passwd=\"\" publicKey=\"\" command=\"\"/>"
+							actionParameter: "<execRemoteLinuxCommand catchVarName=\"\" remoteHost=\"\" remoteUser=\"\" passwd=\"\" publicKey=\"\"><command><![CDATA[]]></command></execRemoteLinuxCommand>"
+						},
+						{
+							caption: "Append a <execRemoteWindowsCommand>",
+							action: Xonomy.newElementChild,
+							// actionParameter: "<execRemoteWindowsCommand catchVarName=\"\" remoteHost=\"\" domain=\"\" remoteUser=\"\" passwd=\"\" command=\"\"  useKerberos=\"yes\" />"
+							actionParameter: "<execRemoteWindowsCommand catchVarName=\"\" remoteHost=\"\" domain=\"\" remoteUser=\"\" passwd=\"\" useKerberos=\"yes\"><command><![CDATA[]]></command></execRemoteWindowsCommand>"
 						},
 						{
 							caption: "Append a <SetVar>",
 							action: Xonomy.newElementChild,
-							actionParameter: "<SetVar name=\"\" value=\"\"/>"
+							actionParameter: "<SetVar name=\"\"><value><![CDATA[]]></value></SetVar>"
 						},
-						{
-							caption: "Append a <SplitFile>",
-							action: Xonomy.newElementChild,
-							actionParameter: "<SplitFile arrayName=\"\" separator=\"\" inputFileName=\"\"/>"
-						},
+						// {
+							// caption: "Append a <SplitFile>",
+							// action: Xonomy.newElementChild,
+							// actionParameter: "<SplitFile arrayName=\"\" separator=\"\" inputFileName=\"\"/>"
+						// },
 						{
 							caption: "Append a <SplitVar>",
 							action: Xonomy.newElementChild,
 							actionParameter: "<SplitVar arrayName=\"\" separator=\"\" inputVarName=\"\"/>"
 						},
-						{
-							caption: "Append a <execRemoteLinuxCommand>",
-							action: Xonomy.newElementChild,
-							actionParameter: "<execRemoteLinuxCommand catchVarName=\"\" remoteHost=\"\" remoteUser=\"\" passwd=\"\" publicKey=\"\" command=\"\"/>"
-						},
-						{
-							caption: "Append a <execRemoteWindowsCommand>",
-							action: Xonomy.newElementChild,
-							actionParameter: "<execRemoteWindowsCommand catchVarName=\"\" remoteHost=\"\" domain=\"\" remoteUser=\"\" passwd=\"\" command=\"\"  useKerberos=\"yes\" />"
-						},
+			
 						{
 							caption: "Append a <JSONtoVar>",
 							action: Xonomy.newElementChild,
-							actionParameter: "<JSONtoVar catchVarName=\"\" JsonSource=\"\"/>"
+							// actionParameter: "<JSONtoVar catchVarName=\"\" JsonSource=\"\"/>"
+							actionParameter: "<JSONtoVar catchVarName=\"\"><JsonSource><![CDATA[]]></JsonSource></JSONtoVar>"
 						},
 						{
 							caption: "Append a <IF>",
 							action: Xonomy.newElementChild,
 							// actionParameter: "<IF/>"
-							actionParameter: "<IF><VAR name='' compare=''/></IF>"
+							actionParameter: "<IF><VAR name='' compare=''><DO/></VAR></IF>"
 						},
 						{
 							caption: "Append a <FOREACH>",
 							action: Xonomy.newElementChild,
-							actionParameter: "<FOREACH element=\"i\" arrayName=\"\"/>"
+							actionParameter: "<FOREACH element=\"i\" arrayName=\"\"><DO/></FOREACH>"
 						},
 						{
 							caption: "Append a <AUTOBOT>",
 							action: Xonomy.newElementChild,
-							actionParameter: "<AUTOBOT idAutoBot=\"\" catchVarName=\"\" JsonVars=\"\"/>"
+							actionParameter: "<AUTOBOT idAutoBot=\"\" catchVarName=\"\"><JsonVars><![CDATA[]]></JsonVars></AUTOBOT>"
 						},
 						{
 							caption: "Append a <RETURN>",
@@ -228,16 +259,16 @@
 							action: Xonomy.newElementChild,
 							actionParameter: "<END value=\"Resolved\"/>"
 						},
-						{
-							caption: "New <DO> before this",
-							action: Xonomy.newElementBefore,
-							actionParameter: "<DO/>"
-						},
-						{
-							caption: "New <DO> after this",
-							action: Xonomy.newElementAfter,
-							actionParameter: "<DO/>"
-						},
+						// {
+							// caption: "New <DO> before this",
+							// action: Xonomy.newElementBefore,
+							// actionParameter: "<DO/>"
+						// },
+						// {
+							// caption: "New <DO> after this",
+							// action: Xonomy.newElementAfter,
+							// actionParameter: "<DO/>"
+						// },
 						// Deletes DO
 						{
 							caption: "Delete this <DO>",
@@ -287,16 +318,16 @@
 							caption: "Delete this <LOGING>",
 							action: Xonomy.deleteElement
 						},
-						{
-							caption: "New <execLinuxCommand> before this",
-							action: Xonomy.newElementBefore,
-							actionParameter: "<LOGING comment=\"\"/>"
-						},
-						{
-							caption: "New <execLinuxCommand> after this",
-							action: Xonomy.newElementAfter,
-							actionParameter: "<LOGING comment=\"\"/>"
-						}
+						// {
+							// caption: "New <LOGING> before this",
+							// action: Xonomy.newElementBefore,
+							// actionParameter: "<LOGING comment=\"\"/>"
+						// },
+						// {
+							// caption: "New <LOGING> after this",
+							// action: Xonomy.newElementAfter,
+							// actionParameter: "<LOGING comment=\"\"/>"
+						// }
 					],
 					canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand"],
 					attributes: {
@@ -308,6 +339,7 @@
 				
 				
 				"execLinuxCommand": {
+					backgroundColour: '#E3FAE3',
 					menu: [
 						// Deletes execLinuxCommand
 						{
@@ -350,7 +382,7 @@
 							actionParameter: "<JSONtoVar catchVarName=\"\" JsonSource=\"\"/>"
 						},
 						{
-							caption: "New <execLinuxCommand> after this",
+							caption: "New <JSONtoVar> after this",
 							action: Xonomy.newElementAfter,
 							actionParameter: "<JSONtoVar catchVarName=\"\" JsonSource=\"\"/>"
 						}
@@ -368,6 +400,7 @@
 				
 				
 				"execRemoteLinuxCommand": {
+					backgroundColour: '#E3FAE3',
 					menu: [
 						// Deletes execRemoteLinuxCommand
 						{
@@ -410,6 +443,7 @@
 				
 				
 				"execRemoteWindowsCommand": {
+					backgroundColour: '#E3FAE3',
 					menu: [
 						// Deletes execRemoteWindowsCommand
 						{
@@ -468,12 +502,12 @@
 						{
 							caption: "New <SetVar> before this",
 							action: Xonomy.newElementBefore,
-							actionParameter: "<SetVar name=\"\" value=\"\" />"
+							actionParameter: "<SetVar name=\"\"><value><![CDATA[]]></value></SetVar>"
 						},
 						{
 							caption: "New <SetVar> after this",
 							action: Xonomy.newElementAfter,
-							actionParameter: "<SetVar name=\"\" value=\"\" />"
+							actionParameter: "<SetVar name=\"\"><value><![CDATA[]]></value></SetVar>"
 						}
 					],
 					canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand"],
@@ -585,16 +619,16 @@
 							caption: "Delete this <FOREACH>",
 							action: Xonomy.deleteElement
 						},
-						{
-							caption: "New <FOREACH> before this",
-							action: Xonomy.newElementBefore,
-							actionParameter: "<FOREACH element=\"i\" arrayName=\"\"/>"
-						},
-						{
-							caption: "New <FOREACH> after this",
-							action: Xonomy.newElementAfter,
-							actionParameter: "<FOREACH element=\"i\" arrayName=\"\"/>"
-						}
+						// {
+							// caption: "New <FOREACH> before this",
+							// action: Xonomy.newElementBefore,
+							// actionParameter: "<FOREACH element=\"i\" arrayName=\"\"/>"
+						// },
+						// {
+							// caption: "New <FOREACH> after this",
+							// action: Xonomy.newElementAfter,
+							// actionParameter: "<FOREACH element=\"i\" arrayName=\"\"/>"
+						// }
 					],
 					canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand"],
 					attributes: {
@@ -615,16 +649,16 @@
 							caption: "Delete this <AUTOBOT>",
 							action: Xonomy.deleteElement
 						},
-						{
-							caption: "New <AUTOBOT> before this",
-							action: Xonomy.newElementBefore,
-							actionParameter: "<AUTOBOT idAutoBot=\"\" catchVarName=\"\" JsonVars=\"\"/>"
-						},
-						{
-							caption: "New <AUTOBOT> after this",
-							action: Xonomy.newElementAfter,
-							actionParameter: "<AUTOBOT idAutoBot=\"\" catchVarName=\"\" JsonVars=\"\"/>"
-						}
+						// {
+							// caption: "New <AUTOBOT> before this",
+							// action: Xonomy.newElementBefore,
+							// actionParameter: "<AUTOBOT idAutoBot=\"\" catchVarName=\"\" JsonVars=\"\"/>"
+						// },
+						// {
+							// caption: "New <AUTOBOT> after this",
+							// action: Xonomy.newElementAfter,
+							// actionParameter: "<AUTOBOT idAutoBot=\"\" catchVarName=\"\" JsonVars=\"\"/>"
+						// }
 					],
 					canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand"],
 					attributes: {
@@ -648,16 +682,16 @@
 							caption: "Delete this <RETURN>",
 							action: Xonomy.deleteElement
 						},
-						{
-							caption: "New <RETURN> before this",
-							action: Xonomy.newElementBefore,
-							actionParameter: "<RETURN value=\"\"/>"
-						},
-						{
-							caption: "New <RETURN> after this",
-							action: Xonomy.newElementAfter,
-							actionParameter: "<RETURN value=\"\"/>"
-						}
+						// {
+							// caption: "New <RETURN> before this",
+							// action: Xonomy.newElementBefore,
+							// actionParameter: "<RETURN value=\"\"/>"
+						// },
+						// {
+							// caption: "New <RETURN> after this",
+							// action: Xonomy.newElementAfter,
+							// actionParameter: "<RETURN value=\"\"/>"
+						// }
 					],
 					canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand"],
 					attributes: {

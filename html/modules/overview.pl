@@ -27,7 +27,7 @@ $html .= qq~
 
 <table cellpadding="0" cellspacing="2" border="0" width="100%" style="height: calc(100% - 60px);">
 	<tr>
-		<td width="60%" valign="top" style="60px">
+		<td width="60%" valign="top" style="height: calc(100% - 60px);">
 			<form method="post" action="launcher.cgi" target="ticket">
 			<input type="hidden" name="shtl" value="1">
 			<input type="hidden" name="mod" value="tickets">

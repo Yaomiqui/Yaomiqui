@@ -20,10 +20,12 @@ use IO::Socket;
 use strict;
 use JSON;
 use FindBin qw($RealBin);
+use Data::Dumper;
 
 my %VAR = get_vars();
 our $dbh;
 
+$SIG{CHLD} = 'IGNORE';
 $|=1;
 my $main =IO::Socket::INET->new(
 	LocalHost => '127.0.0.1',
@@ -60,7 +62,10 @@ while (1) {
 		$data = $1;
 		
 		# my $json = decode_json $data;
-		my $json = JSON->new->utf8->decode($data);
+		# my $json = JSON->new->utf8->decode($data);
+		my $json = eval { JSON->new->utf8->decode($data) };
+		
+		# print Dumper($json) . "\n";
 		
 		if ( $json->{ticket}->{number} ) {
 			my $sysdate = sysdate();

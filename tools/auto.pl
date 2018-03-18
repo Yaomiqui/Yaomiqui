@@ -9,8 +9,9 @@ our %VENV = get_vars();
 our $MAX_PROCESSES = $VENV{'PROC_MAX_PARALLEL'};
 
 unless ( getPid() ) {
+	# print "Reading tickets...\n";
 	connected();
-	my $sth = $dbh->prepare("SELECT numberTicket FROM ticket WHERE idAutoBotCatched IS NULL");
+	my $sth = $dbh->prepare("SELECT numberTicket FROM ticket WHERE idAutoBotCatched IS NULL OR finalState IS NULL");
 	$sth->execute();
 	my $AB = $sth->fetchall_arrayref;
 	$sth->finish;
@@ -23,7 +24,7 @@ unless ( getPid() ) {
 			
 			# ## debug
 			# print "$RealBin/yaomiqui.pl $AB->[$i][0]\n";
-			system ("$RealBin/yaomiqui.pl $AB->[$i][0]");
+			eval { system ("$RealBin/yaomiqui.pl $AB->[$i][0]") };
 			
 			$pm->finish;
 		}
@@ -37,8 +38,10 @@ sub getPid {
 	$pid =~ s/\n//g;
 	
 	if ( $pid ) {
+		# print "There is process running: $pid\n";
 		return 1;
 	} else {
+		# print "There is no process running...\n";
 		return 0;
 	}
 }

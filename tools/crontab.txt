@@ -4,8 +4,8 @@
 # It reads database looking for new tickets
 * * * * * /var/www/yaomiqui/auto.pl 2&1>/dev/null
 
-# Cleaning insertTicket.pl <defuncts>. You can comment to run manually
-0 0 * * * /var/www/yaomiqui/insertTicket restart 2&1>/dev/null
+# Cleaning insertTicket.pl <defuncts>. You can run manually
+#0 0 * * * /var/www/yaomiqui/insertTicket restart 2&1>/dev/null
 
 # It runs only Connector-AutoBots getting remote tickets.
 # You must design some AutoBot to query your ITSM, monitoring tool or another event source.

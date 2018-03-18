@@ -30,7 +30,7 @@ unless ( $input{submod} ) {
 	$dbh->disconnect if ($dbh);
 	
 	$html .= qq~
-	<table cellpadding="0" cellspacing="0" class="gridTable">
+	<table cellpadding="0" cellspacing="0" class="gridTable" style="background-color: #FFFFFF;">
 	<tr>
 	<td class="gridTitle">$MSG{Name}</td>
 	<td class="gridTitle">$MSG{Description}</td>
@@ -119,6 +119,12 @@ if ( $input{submod} eq 'save_autobot_xml' ) {
 		$input{xml} =~ s/\%3C/\</g;
 		$input{xml} =~ s/\%3E/\>/g;
 		
+		$input{xml} =~ s/\&gt\;/\>/g;
+		$input{xml} =~ s/\&lt\;/\</g;
+		$input{xml} =~ s/\&amp;/\&/g;
+		$input{xml} =~ s/\&quot;/\"/g;
+		$input{xml} =~ s/\&apos\;/\'/g;
+		
 		my $sysdate = sysdate();
 		# $input{xml} = s/\r\n//g;		# If someone is using windows
 		
@@ -175,6 +181,28 @@ if ( $input{submod} eq 'save_autobot_data' ) {
 
 
 
+if ( $input{submod} eq 'downloadXML' ) {
+	connected();
+	my $sth = $dbh->prepare("select autoBotXML from autoBot where idAutoBot = '$input{idAutoBot}'");
+	$sth->execute();
+	my ($myXML) = $sth->fetchrow_array;
+	$sth->finish;
+	
+	my $q = CGI->new;
+	print $q->header(
+		-type            => 'application/x-download',
+		-attachment      => "$input{idAutoBot}.xml",
+		-Content_length  => length $myXML
+	);
+	
+	print $myXML;
+	exit;
+}
+
+
+
+
+
 
 
 
@@ -205,7 +233,15 @@ if ( $input{submod} eq 'edit_autobot' ) {
 	$sth->finish;
 	$dbh->disconnect if ($dbh);
 	
-	$ABOT[6] =~ s/\'/\"/g;
+	$ABOT[6] =~ s/\'/\\'/g;
+	$ABOT[6] =~ s/\"/\\"/g;
+	$ABOT[6] =~ s/\n/\\n/g;
+	
+	$ABOT[6] =~ s/\&gt\;/\>/g;
+	$ABOT[6] =~ s/\&lt\;/\</g;
+	$ABOT[6] =~ s/\&amp\;/\&/g;
+	$ABOT[6] =~ s/\&quot\;/\"/g;
+	$ABOT[6] =~ s/\&apos\;/\'/g;
 	
 	my $chkActive;
 	my $chkUnActive;
@@ -247,12 +283,24 @@ if ( $input{submod} eq 'edit_autobot' ) {
 	<hr style="border-bottom: 1px solid #0000FF" noshade>
 	<br>
 	
-	$MSG{XML_Edition}: &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp; &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp; 
-	<font color="#EE0000"><b>**</b></font> &nbsp; $MSG{quotes_greaterthan_lessthan_semicolon} &nbsp; <font color="#EE0000"><b>**</b></font>
-	<br><br>
-	~;
+	$MSG{XML_Edition}:~;
+	# $html .= qq~ &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp; &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp; 
+	# <font color="#EE0000"><b>**</b></font> &nbsp; $MSG{quotes_greaterthan_lessthan_semicolon} &nbsp; <font color="#EE0000"><b>**</b></font>
+	# ~;
 	
-	$html .= qq~
+	unless ( $VAR{DESIGNER_SET_MODE} =~ /^laic|nerd$/ ) {
+		$VAR{DESIGNER_SET_MODE} = 'nerd';
+	}
+	my $setmode = 'Xonomy.setMode("' . $VAR{DESIGNER_SET_MODE} . '");';
+	
+	my $nerdChecked, $laicChecked;
+	if ( $VAR{DESIGNER_SET_MODE} eq 'nerd' ) {
+		$nerdChecked = 'checked="checked"';
+	} elsif ( $VAR{DESIGNER_SET_MODE} eq 'laic' ) {
+		$laicChecked = 'checked="checked"';
+	}
+	
+	$html .= qq~<br><br>
 	<table cellpadding="0" cellspacing="0" border="0" width="100%">
 	<tr><td style="width: calc(100% - 150px);" valign="top">
 	~;
@@ -262,6 +310,7 @@ if ( $input{submod} eq 'edit_autobot' ) {
 		function start() {
 			
 			var docSpec=specifications;
+			$setmode
 			
 			var xml='$ABOT[6]';
 			var editor=document.getElementById("editor");
@@ -270,12 +319,11 @@ if ( $input{submod} eq 'edit_autobot' ) {
 		
 		function submit() {
 			var xml=Xonomy.harvest(); //XML
-			// alert(Xonomy.harvest());
 			//var url="index.cgi?mod=design&submod=save_autobot_xml&autoBotId=$ABOT[0]&xml=" + Xonomy.harvest();
-			var url="index.cgi?mod=design&submod=save_autobot_xml&autoBotId=$ABOT[0]&xml=" + xml;
+			var url="index.cgi?mod=design&submod=save_autobot_xml&autoBotId=$ABOT[0]&xml=" + encodeURIComponent(xml);
 			//window.location = url
 			location.href = url
-			
+			//alert(url);
 		}
 		
 		function setMode() {
@@ -286,13 +334,14 @@ if ( $input{submod} eq 'edit_autobot' ) {
 	</head>
 	<body onload="start()">
 		<span class="radios">
-			<label onclick="setMode()"><input type="radio" name="mode" value="nerd" id="chkModeNerd" checked="checked"/>nerd mode</label> &nbsp; &nbsp; 
-			<label onclick="setMode()"><input type="radio" name="mode" value="laic" id="chkModeLaic"/>laic mode</label>
+			<label onclick="setMode()"><input type="radio" name="mode" value="nerd" id="chkModeNerd" $nerdChecked/>nerd mode</label> &nbsp; &nbsp; 
+			<label onclick="setMode()"><input type="radio" name="mode" value="laic" id="chkModeLaic" $laicChecked/>laic mode</label>
 		</span>
 	<br><br>
 		<div id="editor" class="editor"></div>
 	<br>
-	<button class="blueLightButton" onclick="alert(Xonomy.harvest())"> $MSG{Get_XML} </button>
+	
+	<form style="display:inline;"><input class="blueLightButton" type="button" value=" $MSG{Get_XML} " onclick="window.location.href='launcher.cgi?mod=design&submod=downloadXML&idAutoBot=$ABOT[0]'" /></form>
 	&nbsp; &nbsp; &nbsp; 
 	
 	
@@ -335,7 +384,7 @@ if ( $input{submod} eq 'edit_autobot' ) {
 	$html .= $input{HistoricView} ? $MSG{Restore_This_AutoBot} : $MSG{Update_AutoBot} ;
 	
 	$html .= qq~</button>
-	<br><br>
+	<br /><p style="padding-bottom: 200px;" /><br />
 	~;
 	
 	
@@ -379,6 +428,7 @@ if ( $input{submod} eq 'edit_autobot' ) {
 	</td></tr></table>
 	~;
 }
+#<button class="blueLightButton" onclick="alert(Xonomy.harvest())"> $MSG{Get_XML} </button>
 
 return $html;
 
