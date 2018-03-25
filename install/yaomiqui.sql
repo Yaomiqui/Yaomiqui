@@ -97,6 +97,7 @@ CREATE TABLE IF NOT EXISTS ticket (
 	numberTicket varchar(255) NOT NULL UNIQUE,
 	sysidTicket varchar(255) NOT NULL,
 	subject varchar(255) NOT NULL,
+	typeTicket varchar(40) NOT NULL,
 	idAutoBotCatched varchar(40) NULL,
 	initialDate datetime NOT NULL,
 	initialState varchar(50) NOT NULL,

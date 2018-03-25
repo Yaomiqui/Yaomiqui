@@ -181,23 +181,14 @@
 					// CHILDS
 					backgroundColour: '#D2E6EB',
 					menu: [
-						// {
-							// caption: "Add @id=\"\"",
-							// action: Xonomy.newAttribute,
-							// actionParameter: { name: "id", value: "" },
-							// hideIf: function(jsElement){ return jsElement.hasAttribute("id"); }
-						// },
 						{
 							caption: "Append a <execLinuxCommand>",
 							action: Xonomy.newElementChild,
-							// actionParameter: "<execLinuxCommand catchVarName=\"\" command=\"\"/>"
-							// actionParameter: "<execLinuxCommand catchVarName=\"\"><command>&lt;![CDATA[]]&gt;</command></execLinuxCommand>"
 							actionParameter: "<execLinuxCommand catchVarName=\"\"><command><![CDATA[]]></command></execLinuxCommand>"
 						},
 						{
 							caption: "Append a <execRemoteLinuxCommand>",
 							action: Xonomy.newElementChild,
-							// actionParameter: "<execRemoteLinuxCommand catchVarName=\"\" remoteHost=\"\" remoteUser=\"\" passwd=\"\" publicKey=\"\" command=\"\"/>"
 							actionParameter: "<execRemoteLinuxCommand catchVarName=\"\" remoteHost=\"\" remoteUser=\"\" passwd=\"\" publicKey=\"\"><command><![CDATA[]]></command></execRemoteLinuxCommand>"
 						},
 						{
@@ -287,57 +278,6 @@
 					// }
 				},
 				
-				"END": {
-					// oneliner: true,
-					menu: [
-						// Deletes END
-						{
-							caption: "Delete this <END>",
-							action: Xonomy.deleteElement
-						},
-					],
-					canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand"],
-					attributes: {
-						"value": {
-							asker: Xonomy.askPicklist,
-							askerParameter: [
-								{value: "Resolved", caption: "Resolved"},
-								{value: "Failed", caption: "Failed"},
-								{value: "Rejected", caption: "Rejected"},
-								{value: "Pending", caption: "Pending"},
-							]
-						},
-					},
-				},
-				
-				
-				"LOGING": {
-					menu: [
-						// Deletes LOGING
-						{
-							caption: "Delete this <LOGING>",
-							action: Xonomy.deleteElement
-						},
-						// {
-							// caption: "New <LOGING> before this",
-							// action: Xonomy.newElementBefore,
-							// actionParameter: "<LOGING comment=\"\"/>"
-						// },
-						// {
-							// caption: "New <LOGING> after this",
-							// action: Xonomy.newElementAfter,
-							// actionParameter: "<LOGING comment=\"\"/>"
-						// }
-					],
-					canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand"],
-					attributes: {
-						"comment": {
-							asker: Xonomy.askString,
-						},
-					}
-				},
-				
-				
 				"execLinuxCommand": {
 					backgroundColour: '#E3FAE3',
 					menu: [
@@ -346,45 +286,15 @@
 							caption: "Delete this <execLinuxCommand>",
 							action: Xonomy.deleteElement
 						},
-						// {
-							// caption: "New <execLinuxCommand> before this",
-							// action: Xonomy.newElementBefore,
-							// actionParameter: "<execLinuxCommand catchVarName=\"\" command=\"\"/>"
-						// },
-						// {
-							// caption: "New <execLinuxCommand> after this",
-							// action: Xonomy.newElementAfter,
-							// actionParameter: "<execLinuxCommand catchVarName=\"\" command=\"\" />"
-						// }
-					],
-					canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand"],
-					attributes: {
-						"catchVarName": {
-							asker: Xonomy.askString,
-						},
-						"command": {
-							asker: Xonomy.askString,
-						},
-					}
-				},
-				
-				
-				"JSONtoVar": {
-					menu: [
-						// Deletes JSONtoVar
 						{
-							caption: "Delete this <JSONtoVar>",
-							action: Xonomy.deleteElement
-						},
-						{
-							caption: "New <JSONtoVar> before this",
+							caption: "New <execLinuxCommand> before this",
 							action: Xonomy.newElementBefore,
-							actionParameter: "<JSONtoVar catchVarName=\"\" JsonSource=\"\"/>"
+							actionParameter: "<execLinuxCommand catchVarName=\"\"><command><![CDATA[]]></command></execLinuxCommand>"
 						},
 						{
-							caption: "New <JSONtoVar> after this",
+							caption: "New <execLinuxCommand> after this",
 							action: Xonomy.newElementAfter,
-							actionParameter: "<JSONtoVar catchVarName=\"\" JsonSource=\"\"/>"
+							actionParameter: "<execLinuxCommand catchVarName=\"\"><command><![CDATA[]]></command></execLinuxCommand>"
 						}
 					],
 					canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand"],
@@ -392,7 +302,7 @@
 						"catchVarName": {
 							asker: Xonomy.askString,
 						},
-						"JsonSource": {
+						"command": {
 							asker: Xonomy.askString,
 						},
 					}
@@ -407,16 +317,16 @@
 							caption: "Delete this <execRemoteLinuxCommand>",
 							action: Xonomy.deleteElement
 						},
-						// {
-							// caption: "New <execRemoteLinuxCommand> before this",
-							// action: Xonomy.newElementBefore,
-							// actionParameter: "<execRemoteLinuxCommand catchVarName=\"\" remoteHost=\"\" remoteUser=\"\" passwd=\"\" publicKey=\"\" command=\"\"/>"
-						// },
-						// {
-							// caption: "New <execRemoteLinuxCommand> after this",
-							// action: Xonomy.newElementAfter,
-							// actionParameter: "<execRemoteLinuxCommand catchVarName=\"\" remoteHost=\"\" remoteUser=\"\" passwd=\"\" publicKey=\"\" command=\"\"/>"
-						// }
+						{
+							caption: "New <execRemoteLinuxCommand> before this",
+							action: Xonomy.newElementBefore,
+							actionParameter: "<execRemoteLinuxCommand catchVarName=\"\" remoteHost=\"\" remoteUser=\"\" passwd=\"\" publicKey=\"\"><command><![CDATA[]]></command></execRemoteLinuxCommand>"
+						},
+						{
+							caption: "New <execRemoteLinuxCommand> after this",
+							action: Xonomy.newElementAfter,
+							actionParameter: "<execRemoteLinuxCommand catchVarName=\"\" remoteHost=\"\" remoteUser=\"\" passwd=\"\" publicKey=\"\"><command><![CDATA[]]></command></execRemoteLinuxCommand>"
+						}
 					],
 					canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand"],
 					attributes: {
@@ -450,16 +360,16 @@
 							caption: "Delete this <execRemoteWindowsCommand>",
 							action: Xonomy.deleteElement
 						},
-						// {
-							// caption: "New <execRemoteWindowsCommand> before this",
-							// action: Xonomy.newElementBefore,
-							// actionParameter: "<execRemoteWindowsCommand catchVarName=\"\" remoteHost=\"\"  domain=\"\" remoteUser=\"\" passwd=\"\"command=\"\" useKerberos=\"yes\" />"
-						// },
-						// {
-							// caption: "New <execRemoteWindowsCommand> after this",
-							// action: Xonomy.newElementAfter,
-							// actionParameter: "<execRemoteWindowsCommand catchVarName=\"\" remoteHost=\"\" domain=\"\" remoteUser=\"\" passwd=\"\" command=\"\" useKerberos=\"yes\" />"
-						// }
+						{
+							caption: "New <execRemoteWindowsCommand> before this",
+							action: Xonomy.newElementBefore,
+							actionParameter: "<execRemoteWindowsCommand catchVarName=\"\" remoteHost=\"\" domain=\"\" remoteUser=\"\" passwd=\"\" useKerberos=\"yes\"><command><![CDATA[]]></command></execRemoteWindowsCommand>"
+						},
+						{
+							caption: "New <execRemoteWindowsCommand> after this",
+							action: Xonomy.newElementAfter,
+							actionParameter: "<execRemoteWindowsCommand catchVarName=\"\" remoteHost=\"\" domain=\"\" remoteUser=\"\" passwd=\"\" useKerberos=\"yes\"><command><![CDATA[]]></command></execRemoteWindowsCommand>"
+						}
 					],
 					canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand"],
 					attributes: {
@@ -487,6 +397,36 @@
 								{value: "yes", caption: "Yes"},
 								{value: "no", caption: "No"},
 							]
+						},
+					}
+				},
+				
+				
+				"JSONtoVar": {
+					menu: [
+						// Deletes JSONtoVar
+						{
+							caption: "Delete this <JSONtoVar>",
+							action: Xonomy.deleteElement
+						},
+						{
+							caption: "New <JSONtoVar> before this",
+							action: Xonomy.newElementBefore,
+							actionParameter: "<JSONtoVar catchVarName=\"\"><JsonSource><![CDATA[]]></JsonSource></JSONtoVar>"
+						},
+						{
+							caption: "New <JSONtoVar> after this",
+							action: Xonomy.newElementAfter,
+							actionParameter: "<JSONtoVar catchVarName=\"\"><JsonSource><![CDATA[]]></JsonSource></JSONtoVar>"
+						}
+					],
+					canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand"],
+					attributes: {
+						"catchVarName": {
+							asker: Xonomy.askString,
+						},
+						"JsonSource": {
+							asker: Xonomy.askString,
 						},
 					}
 				},
@@ -529,16 +469,16 @@
 							caption: "Delete this <SplitVar>",
 							action: Xonomy.deleteElement
 						},
-						{
-							caption: "New <SplitVar> before this",
-							action: Xonomy.newElementBefore,
-							actionParameter: "<SplitVar arrayName=\"\" separator=\"\" inputVarName=\"\"/>"
-						},
-						{
-							caption: "New <SplitVar> after this",
-							action: Xonomy.newElementAfter,
-							actionParameter: "<SplitVar arrayName=\"\" separator=\"\" inputVarName=\"\"/>"
-						}
+						// {
+							// caption: "New <SplitVar> before this",
+							// action: Xonomy.newElementBefore,
+							// actionParameter: "<SplitVar arrayName=\"\" separator=\"\" inputVarName=\"\"/>"
+						// },
+						// {
+							// caption: "New <SplitVar> after this",
+							// action: Xonomy.newElementAfter,
+							// actionParameter: "<SplitVar arrayName=\"\" separator=\"\" inputVarName=\"\"/>"
+						// }
 					],
 					canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand"],
 					attributes: {
@@ -568,42 +508,42 @@
 				},
 				
 				
-				"SplitFile": {
-					menu: [
-						// Deletes SplitFile
-						{
-							caption: "Delete this <SplitFile>",
-							action: Xonomy.deleteElement
-						},
-						{
-							caption: "New <SplitFile> before this",
-							action: Xonomy.newElementBefore,
-							actionParameter: "<SplitFile arrayName=\"\" separator=\"\" inputFileName=\"\"/>"
-						},
-						{
-							caption: "New <SplitFile> after this",
-							action: Xonomy.newElementAfter,
-							actionParameter: "<SplitFile arrayName=\"\" separator=\"\" inputFileName=\"\"/>"
-						}
-					],
-					canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand"],
-					attributes: {
-						"arrayName": {
-							asker: Xonomy.askString,
-						},
-						"separator": {
-							asker: Xonomy.askPicklist,
-							askerParameter: [
-								{value: "newline", caption: "New Line"},
-								{value: "comma", caption: "Comma separated"},
-								{value: "semicolon", caption: "Semicolon separated"},
-							]
-						},
-						"inputFileName": {
-							asker: Xonomy.askString,
-						},
-					}
-				},
+				// "SplitFile": {
+					// menu: [
+						// // Deletes SplitFile
+						// {
+							// caption: "Delete this <SplitFile>",
+							// action: Xonomy.deleteElement
+						// },
+						// {
+							// caption: "New <SplitFile> before this",
+							// action: Xonomy.newElementBefore,
+							// actionParameter: "<SplitFile arrayName=\"\" separator=\"\" inputFileName=\"\"/>"
+						// },
+						// {
+							// caption: "New <SplitFile> after this",
+							// action: Xonomy.newElementAfter,
+							// actionParameter: "<SplitFile arrayName=\"\" separator=\"\" inputFileName=\"\"/>"
+						// }
+					// ],
+					// canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand"],
+					// attributes: {
+						// "arrayName": {
+							// asker: Xonomy.askString,
+						// },
+						// "separator": {
+							// asker: Xonomy.askPicklist,
+							// askerParameter: [
+								// {value: "newline", caption: "New Line"},
+								// {value: "comma", caption: "Comma separated"},
+								// {value: "semicolon", caption: "Semicolon separated"},
+							// ]
+						// },
+						// "inputFileName": {
+							// asker: Xonomy.askString,
+						// },
+					// }
+				// },
 				
 				
 				"FOREACH": {
@@ -644,21 +584,21 @@
 				
 				"AUTOBOT": {
 					menu: [
-						// Deletes FOREACH
+						// Deletes AUTOBOT
 						{
 							caption: "Delete this <AUTOBOT>",
 							action: Xonomy.deleteElement
 						},
-						// {
-							// caption: "New <AUTOBOT> before this",
-							// action: Xonomy.newElementBefore,
-							// actionParameter: "<AUTOBOT idAutoBot=\"\" catchVarName=\"\" JsonVars=\"\"/>"
-						// },
-						// {
-							// caption: "New <AUTOBOT> after this",
-							// action: Xonomy.newElementAfter,
-							// actionParameter: "<AUTOBOT idAutoBot=\"\" catchVarName=\"\" JsonVars=\"\"/>"
-						// }
+						{
+							caption: "New <AUTOBOT> before this",
+							action: Xonomy.newElementBefore,
+							actionParameter: "<AUTOBOT idAutoBot=\"\" catchVarName=\"\"><JsonVars><![CDATA[]]></JsonVars></AUTOBOT>"
+						},
+						{
+							caption: "New <AUTOBOT> after this",
+							action: Xonomy.newElementAfter,
+							actionParameter: "<AUTOBOT idAutoBot=\"\" catchVarName=\"\"><JsonVars><![CDATA[]]></JsonVars></AUTOBOT>"
+						}
 					],
 					canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand"],
 					attributes: {
@@ -675,23 +615,40 @@
 				},
 				
 				
+				"LOGING": {
+					menu: [
+						// Deletes LOGING
+						{
+							caption: "Delete this <LOGING>",
+							action: Xonomy.deleteElement
+						},
+						// {
+							// caption: "New <LOGING> before this",
+							// action: Xonomy.newElementBefore,
+							// actionParameter: "<LOGING comment=\"\"/>"
+						// },
+						// {
+							// caption: "New <LOGING> after this",
+							// action: Xonomy.newElementAfter,
+							// actionParameter: "<LOGING comment=\"\"/>"
+						// }
+					],
+					canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand"],
+					attributes: {
+						"comment": {
+							asker: Xonomy.askString,
+						},
+					}
+				},
+				
+				
 				"RETURN": {
 					menu: [
-						// Deletes FOREACH
+						// Deletes RETURN
 						{
 							caption: "Delete this <RETURN>",
 							action: Xonomy.deleteElement
 						},
-						// {
-							// caption: "New <RETURN> before this",
-							// action: Xonomy.newElementBefore,
-							// actionParameter: "<RETURN value=\"\"/>"
-						// },
-						// {
-							// caption: "New <RETURN> after this",
-							// action: Xonomy.newElementAfter,
-							// actionParameter: "<RETURN value=\"\"/>"
-						// }
 					],
 					canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand"],
 					attributes: {
@@ -700,6 +657,31 @@
 						},
 					}
 				},
+				
+				
+				"END": {
+					// oneliner: true,
+					menu: [
+						// Deletes END
+						{
+							caption: "Delete this <END>",
+							action: Xonomy.deleteElement
+						},
+					],
+					canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand"],
+					attributes: {
+						"value": {
+							asker: Xonomy.askPicklist,
+							askerParameter: [
+								{value: "Resolved", caption: "Resolved"},
+								{value: "Failed", caption: "Failed"},
+								{value: "Rejected", caption: "Rejected"},
+								{value: "Pending", caption: "Pending"},
+							]
+						},
+					},
+				},
+				
 				
 				
 				

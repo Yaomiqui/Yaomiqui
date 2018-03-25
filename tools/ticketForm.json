@@ -3,7 +3,8 @@
 		"number": "",
 		"sys_id": "",
 		"subject": "MY SUBJECT TO BE FILTERED BY AUTOBOT",
-		"state": "assigned"
+		"state": "new",
+		"type": "INCIDENT"
 	},
 	"data": {
 		"task": "",

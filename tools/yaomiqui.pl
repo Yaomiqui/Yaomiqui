@@ -51,7 +51,7 @@ my @TTS = $sth->fetchrow_array;
 $sth->finish;
 $dbh->disconnect if ($dbh);
 
-my $jsonCode = $ARGV[2] ? $ARGV[2] : $TTS[9];
+my $jsonCode = $ARGV[2] ? $ARGV[2] : $TTS[10];
 $jsonCode =~ s/\\/\\\\/g;
 
 # ## debug
@@ -80,23 +80,29 @@ if ( $json ) {
 		
 	####	CHECK FOR EACH AUTOBOT
 	AUTOBOT: for my $i ( 0 .. $#{$AB} ) {
+		
 		$AB->[$i][6] =~ s/ xml\:space\=\'preserve\'//g;
 		
+		$AB->[$i][6] = forceDOarray($AB->[$i][6]);
+		
+		# ## debug
+		# print "XML:\n" . qq~$AB->[$i][6]~ . "\n\n";
+		
 		my $xml = XML::Simple->new;
+		
 		my $aBot = $xml->XMLin($AB->[$i][6],
-		# KeyAttr => {item => 'name'},
-		# ForceArray => [ 'item' ],
-		KeyAttr => [ 'VAR' ],
-		ForceArray => [ 'VAR' ],
-		ContentKey => '-content' )  or next;
+		KeyAttr => { NoEscape => 1 },
+		ForceArray => [ 'VAR', 'DO' ],
+		ContentKey => '-content' ) or next;
 		
 			# ## debug
 			# print "JSON START:\n";
 			# print Dumper($aBot) . "\n";
 			# print "JSON END:\n";
+			# print Dumper($aBot->{ON}->{VAR}->[0], $aBot->{ON}->{VAR}->[1], $aBot->{ON}->{VAR}->[2]) . "\n";
 		
-		# print Dumper($aBot->{ON}->{VAR}->[0], $aBot->{ON}->{VAR}->[1], $aBot->{ON}->{VAR}->[2]) . "\n";
 		my $catch = 0;
+		
 		foreach my $i ( 0 .. $#{$aBot->{ON}->{VAR}} ) {
 			
 			## debug
@@ -226,8 +232,6 @@ sub replaceSpecChar {
 	# $line =~ s!\$\{([^\$\}]+)\}!$VAR{$1}!g;
 	$line =~ s!\$\{([a-zA-Z\_]+)\}!$VAR{$1}!g;
 	
-	# $line = replaceSpecChar($line) if $line =~ /\$\{/;
-	
 	$line = replaceHash($line) if $line =~ /\$\[\[/;
 	
 	return $line;
@@ -259,179 +263,185 @@ sub replaceHash {
 }
 
 sub runDO {
-	my ($DO, $TT) = @_;
+	my ($DOarray, $TT) = @_;
 	my @output;
 	
-	if ( $DO->{execLinuxCommand} ) {
-		my $linuxCommand = replaceSpecChar($DO->{execLinuxCommand}->{command});
-		
-		# ## debug
-		# print "LINUX COMMAND:\n" . $linuxCommand . "\n\n";
-		
-		$VAR{ $DO->{execLinuxCommand}->{catchVarName} } = `$linuxCommand 2>&1`;
-		$VAR{ $DO->{execLinuxCommand}->{catchVarName} } =~ s/\n$//g;
-		
-		## debug
-		# print "RESULTS:\n" . $VAR{ $DO->{execLinuxCommand}->{catchVarName} } . "\n\n";
-		
-		mlog($TT, qq~Local Linux Command [$linuxCommand] Executed. Results: [$VAR{ $DO->{execLinuxCommand}->{catchVarName} }]~);
-	}
+	foreach my $DO ( @{$DOarray} ) {
 	
-	elsif ( $DO->{execRemoteLinuxCommand} ) {
-		my $remoteLinuxCommand;
-		if ( $DO->{execRemoteLinuxCommand}->{publicKey} ) {
-			$remoteLinuxCommand = replaceSpecChar($DO->{execRemoteLinuxCommand}->{command});
-			$remoteLinuxCommand =~ s/'/'\\''/g;
-			$DO->{execRemoteLinuxCommand}->{remoteUser} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{remoteUser});
-			$DO->{execRemoteLinuxCommand}->{remoteHost} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{remoteHost});
-			$DO->{execRemoteLinuxCommand}->{publicKey} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{publicKey});
-			
-			$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } = `/usr/bin/ssh -o StrictHostKeyChecking=no -i $DO->{execRemoteLinuxCommand}->{publicKey} $DO->{execRemoteLinuxCommand}->{remoteUser}\@$DO->{execRemoteLinuxCommand}->{remoteHost} -t '$remoteLinuxCommand 2>&1'`;
+		if ( $DO->{execLinuxCommand} ) {
+			my $linuxCommand = replaceSpecChar($DO->{execLinuxCommand}->{command});
 			
 			# ## debug
-			# print qq~/usr/bin/sshpass -p "$DO->{execRemoteLinuxCommand}->{passwd}" /usr/bin/ssh -o StrictHostKeyChecking=no $DO->{execRemoteLinuxCommand}->{remoteUser}\@$DO->{execRemoteLinuxCommand}->{remoteHost} -t '$remoteLinuxCommand' 2>&1~;
+			# print "LINUX COMMAND:\n" . $linuxCommand . "\n\n";
 			
-			$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } =~ s/\n*$//g;
+			$VAR{ $DO->{execLinuxCommand}->{catchVarName} } = `$linuxCommand 2>&1`;
+			$VAR{ $DO->{execLinuxCommand}->{catchVarName} } =~ s/\n$//g;
 			
 			## debug
 			# print "RESULTS:\n" . $VAR{ $DO->{execLinuxCommand}->{catchVarName} } . "\n\n";
-		}
-		else {
-			$remoteLinuxCommand = replaceSpecChar($DO->{execRemoteLinuxCommand}->{command});
-			$remoteLinuxCommand =~ s/'/'\\''/g;
-			$DO->{execRemoteLinuxCommand}->{remoteUser} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{remoteUser});
-			$DO->{execRemoteLinuxCommand}->{remoteHost} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{remoteHost});
-			$DO->{execRemoteLinuxCommand}->{passwd} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{passwd});
 			
-			$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } = `/usr/bin/sshpass -p "$DO->{execRemoteLinuxCommand}->{passwd}" /usr/bin/ssh -o StrictHostKeyChecking=no $DO->{execRemoteLinuxCommand}->{remoteUser}\@$DO->{execRemoteLinuxCommand}->{remoteHost} -t '$remoteLinuxCommand 2>&1'`;
-			
-			# ## debug
-			# print qq~/usr/bin/sshpass -p "$DO->{execRemoteLinuxCommand}->{passwd}" /usr/bin/ssh -o StrictHostKeyChecking=no $DO->{execRemoteLinuxCommand}->{remoteUser}\@$DO->{execRemoteLinuxCommand}->{remoteHost} -t '$remoteLinuxCommand' 2>&1\n\n~;
-			
-			$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } =~ s/\n*$//g;
-			
-			# ## debug
-			# print "RESULTS:\n" . $VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } . "\n\n";
+			mlog($TT, qq~Local Linux Command [$linuxCommand] Executed. Results: [$VAR{ $DO->{execLinuxCommand}->{catchVarName} }]~);
 		}
 		
-		mlog($TT, qq~Remote Linux Command [$remoteLinuxCommand] Executed on Remote Server [$DO->{execRemoteLinuxCommand}->{remoteHost}]. Results: [$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} }]~);
-	}
-	
-	elsif ( $DO->{execRemoteWindowsCommand} ) {
-		my $remoteWindowsCommand = replaceSpecChar($DO->{execRemoteWindowsCommand}->{command});
-		$remoteWindowsCommand =~ s/\'/\\\'/g;
-		
-		$DO->{execRemoteWindowsCommand}->{remoteUser} = replaceSpecChar($DO->{execRemoteWindowsCommand}->{remoteUser});
-		$DO->{execRemoteWindowsCommand}->{remoteHost} = replaceSpecChar($DO->{execRemoteWindowsCommand}->{remoteHost});
-		$DO->{execRemoteWindowsCommand}->{remotePasswd} = replaceSpecChar($DO->{execRemoteWindowsCommand}->{passwd});
-		$DO->{execRemoteWindowsCommand}->{remoteDomain} = replaceSpecChar($DO->{execRemoteWindowsCommand}->{domain});
-		
-		$DO->{execRemoteWindowsCommand}->{remoteDomain} = $DO->{execRemoteWindowsCommand}->{remoteDomain} . '/' if $DO->{execRemoteWindowsCommand}->{remoteDomain};
-		
-		$VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} } = `winexe -k $DO->{execRemoteWindowsCommand}->{useKerberos} -U '$DO->{execRemoteWindowsCommand}->{remoteDomain}$DO->{execRemoteWindowsCommand}->{remoteUser}\%$DO->{execRemoteWindowsCommand}->{remotePasswd}' //$DO->{execRemoteWindowsCommand}->{remoteHost} '$remoteWindowsCommand'`;
-		
-		## debug
-		print qq~COMMAND LINE:winexe -U '$DO->{execRemoteWindowsCommand}->{remoteDomain}$DO->{execRemoteWindowsCommand}->{remoteUser}\%$DO->{execRemoteWindowsCommand}->{remotePasswd}' //$DO->{execRemoteWindowsCommand}->{remoteHost} '$remoteWindowsCommand'\n~;
-		
-		$VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} } =~ s/\n*$//g;
-		
-		mlog($TT, qq~Remote Windows Command [$remoteWindowsCommand] Executed on Remote Server [$DO->{execRemoteWindowsCommand}->{remoteHost}]. Results: [$VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} }]~);
-	}
-	
-	
-	if ( $DO->{JSONtoVar} ) {
-		my $catchVarName = $DO->{JSONtoVar}->{catchVarName};
-		# my $JsonSource = replaceSpecChar($DO->{JSONtoVar}->{JsonSource});
-		my $JsonSource = $DO->{JSONtoVar}->{JsonSource};
-		
-		unless ( $DO->{JSONtoVar}->{JsonSource} =~ /^\$/ ) {
-			my $json = eval { decode_json $JsonSource };
-			if ( $json ) {
-				%{$VAR{$catchVarName}} = %{$json};
+		elsif ( $DO->{execRemoteLinuxCommand} ) {
+			my $remoteLinuxCommand;
+			if ( $DO->{execRemoteLinuxCommand}->{publicKey} ) {
+				$remoteLinuxCommand = replaceSpecChar($DO->{execRemoteLinuxCommand}->{command});
+				$remoteLinuxCommand =~ s/'/'\\''/g;
+				$DO->{execRemoteLinuxCommand}->{remoteUser} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{remoteUser});
+				$DO->{execRemoteLinuxCommand}->{remoteHost} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{remoteHost});
+				$DO->{execRemoteLinuxCommand}->{publicKey} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{publicKey});
+				
+				$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } = `/usr/bin/ssh -o StrictHostKeyChecking=no -i $DO->{execRemoteLinuxCommand}->{publicKey} $DO->{execRemoteLinuxCommand}->{remoteUser}\@$DO->{execRemoteLinuxCommand}->{remoteHost} -t -t '$remoteLinuxCommand 2>&1' 2>&1`;
+				
+				# ## debug
+				# print qq~/usr/bin/sshpass -p "$DO->{execRemoteLinuxCommand}->{passwd}" /usr/bin/ssh -o StrictHostKeyChecking=no $DO->{execRemoteLinuxCommand}->{remoteUser}\@$DO->{execRemoteLinuxCommand}->{remoteHost} -t '$remoteLinuxCommand' 2>&1~;
+				
+				$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } =~ s/\n*$//g;
 				
 				## debug
-				# print "VAR:\n" . Dumper($VAR{$catchVarName}) . "\n";
+				# print "RESULTS:\n" . $VAR{ $DO->{execLinuxCommand}->{catchVarName} } . "\n\n";
+			}
+			else {
+				$remoteLinuxCommand = replaceSpecChar($DO->{execRemoteLinuxCommand}->{command});
+				$remoteLinuxCommand =~ s/'/'\\''/g;
+				$DO->{execRemoteLinuxCommand}->{remoteUser} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{remoteUser});
+				$DO->{execRemoteLinuxCommand}->{remoteHost} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{remoteHost});
+				$DO->{execRemoteLinuxCommand}->{passwd} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{passwd});
 				
-				mlog($TT, qq~JSONtoVar [$catchVarName] Mapped. Results: [Ok]~);
-			} else {
+				$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } = `/usr/bin/sshpass -p "$DO->{execRemoteLinuxCommand}->{passwd}" /usr/bin/ssh -o StrictHostKeyChecking=no $DO->{execRemoteLinuxCommand}->{remoteUser}\@$DO->{execRemoteLinuxCommand}->{remoteHost} -t -t '$remoteLinuxCommand 2>&1' 2>&1`;
+				
 				# ## debug
-				# print "Error: NOT VALID JSON\n";
-				mlog($TT, qq~JSONtoVar [$catchVarName] Not Mapped. Results: [Error: JSON NOT VALID]~);
+				# print qq~/usr/bin/sshpass -p "$DO->{execRemoteLinuxCommand}->{passwd}" /usr/bin/ssh -o StrictHostKeyChecking=no $DO->{execRemoteLinuxCommand}->{remoteUser}\@$DO->{execRemoteLinuxCommand}->{remoteHost} -t '$remoteLinuxCommand' 2>&1\n\n~;
+				
+				$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } =~ s/\n*$//g;
+				
+				# ## debug
+				# print "RESULTS:\n" . $VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } . "\n\n";
+			}
+			
+			mlog($TT, qq~Remote Linux Command [$remoteLinuxCommand] Executed on Remote Server [$DO->{execRemoteLinuxCommand}->{remoteHost}]. Results: [$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} }]~);
+		}
+		
+		elsif ( $DO->{execRemoteWindowsCommand} ) {
+			my $remoteWindowsCommand = replaceSpecChar($DO->{execRemoteWindowsCommand}->{command});
+			$remoteWindowsCommand =~ s/\'/\\\'/g;
+			
+			$DO->{execRemoteWindowsCommand}->{remoteUser} = replaceSpecChar($DO->{execRemoteWindowsCommand}->{remoteUser});
+			$DO->{execRemoteWindowsCommand}->{remoteHost} = replaceSpecChar($DO->{execRemoteWindowsCommand}->{remoteHost});
+			$DO->{execRemoteWindowsCommand}->{remotePasswd} = replaceSpecChar($DO->{execRemoteWindowsCommand}->{passwd});
+			$DO->{execRemoteWindowsCommand}->{remoteDomain} = replaceSpecChar($DO->{execRemoteWindowsCommand}->{domain});
+			
+			$DO->{execRemoteWindowsCommand}->{remoteDomain} = $DO->{execRemoteWindowsCommand}->{remoteDomain} . '/' if $DO->{execRemoteWindowsCommand}->{remoteDomain};
+			
+			$VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} } = `winexe -k $DO->{execRemoteWindowsCommand}->{useKerberos} -U '$DO->{execRemoteWindowsCommand}->{remoteDomain}$DO->{execRemoteWindowsCommand}->{remoteUser}\%$DO->{execRemoteWindowsCommand}->{remotePasswd}' //$DO->{execRemoteWindowsCommand}->{remoteHost} '$remoteWindowsCommand'`;
+			
+			## debug
+			# print qq~COMMAND LINE:winexe -U '$DO->{execRemoteWindowsCommand}->{remoteDomain}$DO->{execRemoteWindowsCommand}->{remoteUser}\%$DO->{execRemoteWindowsCommand}->{remotePasswd}' //$DO->{execRemoteWindowsCommand}->{remoteHost} '$remoteWindowsCommand'\n~;
+			
+			$VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} } =~ s/\n*$//g;
+			
+			mlog($TT, qq~Remote Windows Command [$remoteWindowsCommand] Executed on Remote Server [$DO->{execRemoteWindowsCommand}->{remoteHost}]. Results: [$VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} }]~);
+		}
+		
+		
+		if ( $DO->{JSONtoVar} ) {
+			my $catchVarName = $DO->{JSONtoVar}->{catchVarName};
+			# my $JsonSource = replaceSpecChar($DO->{JSONtoVar}->{JsonSource});
+			my $JsonSource = $DO->{JSONtoVar}->{JsonSource};
+			
+			unless ( $DO->{JSONtoVar}->{JsonSource} =~ /^\$/ ) {
+				my $json = eval { decode_json $JsonSource };
+				if ( $json ) {
+					%{$VAR{$catchVarName}} = %{$json};
+					
+					## debug
+					# print "VAR:\n" . Dumper($VAR{$catchVarName}) . "\n";
+					
+					mlog($TT, qq~JSONtoVar [$catchVarName] Mapped. Results: [Ok]~);
+				} else {
+					# ## debug
+					# print "Error: NOT VALID JSON\n";
+					mlog($TT, qq~JSONtoVar [$catchVarName] Not Mapped. Results: [Error: JSON NOT VALID]~);
+				}
 			}
 		}
-	}
-	
-	
-	if ( $DO->{SetVar} ) {
-		$DO->{SetVar}->{value} = replaceSpecChar($DO->{SetVar}->{value});
-		$VAR{ $DO->{SetVar}->{name} } = $DO->{SetVar}->{value};
 		
-		## debug
-		# print "NAME:" . $DO->{SetVar}->{name} . "\n";
-		# print "VALUE: " . $DO->{SetVar}->{value} . "\n";
-		# print "VALUE: " . $VAR{ $DO->{SetVar}->{name} } . "\n";
 		
-		mlog($TT, qq~Setting value [$DO->{SetVar}->{value}] to var [$DO->{SetVar}->{name}]. Results: [Ok]~);
-	}
-	
-	
-	if ( $DO->{SplitVar} ) {
-		my $separator = $DO->{SplitVar}->{separator};
-		$separator =~ s/comma/\,/;
-		$separator =~ s/semicolon/\;/;
-		$separator =~ s/pipe/\\|/;
-		$separator =~ s/nl/\n/;
-		
-		@{ $VAR{ $DO->{SplitVar}->{arrayName} } } = split(/$separator/, replaceSpecChar($DO->{SplitVar}->{inputVarName}));
-		
-		# ## debug
-		# print "Split Dumper: \n" . Dumper($VAR{ $DO->{SplitVar}->{arrayName} }) . "\n";
-		
-		mlog($TT, qq~Splitting variable [$DO->{SplitVar}->{inputVarName}] to Array Variable [$DO->{SplitVar}->{arrayName}]. Results: [Ok]~);
-	}
-	
-	
-	# if ( $DO->{SplitFile} ) {
-		# 
-	# }
-	
-	
-	if ( $DO->{FOREACH} ) {
-		foreach my $i ( @{ $VAR{ $DO->{FOREACH}->{arrayName} } } ) {
-			$VAR{i} = $i;
+		if ( $DO->{SetVar} ) {
+			$DO->{SetVar}->{value} = replaceSpecChar($DO->{SetVar}->{value});
+			$VAR{ $DO->{SetVar}->{name} } = $DO->{SetVar}->{value};
 			
-			# ## debug
-			# print $VAR{i}, "\n";
+			## debug
+			# print "NAME:" . $DO->{SetVar}->{name} . "\n";
+			# print "VALUE: " . $DO->{SetVar}->{value} . "\n";
+			# print "VALUE: " . $VAR{ $DO->{SetVar}->{name} } . "\n";
 			
-			runDO($DO->{FOREACH}->{DO}, $TT);
+			mlog($TT, qq~Setting value [$DO->{SetVar}->{value}] to var [$DO->{SetVar}->{name}]. Results: [Ok]~);
 		}
 		
-		mlog($TT, qq~FOREACH executed. Results: [Ok]~);
-	}
-	
-	
-	if ( $DO->{AUTOBOT} ) {
-		my $JsonVars = replaceSpecChar($DO->{AUTOBOT}->{JsonVars});
-		$VAR{ $DO->{AUTOBOT}->{catchVarName} } = `$RealBin/yaomiqui.pl '$TT' '$DO->{AUTOBOT}->{idAutoBot}' '$JsonVars' 2>&1`;
-		$VAR{ $DO->{AUTOBOT}->{catchVarName} } =~ s/\n//g;
 		
-		mlog($TT, qq~AutoBot [$DO->{AUTOBOT}->{idAutoBot}] Executed. Results: [$VAR{ $DO->{AUTOBOT}->{catchVarName} }]~);
-	}
-	
-	
-	if ( $DO->{LOGING} ) {
-		runLOGING($DO->{LOGING}->{comment}, $TT);
-	}
-	
-	
-	if ( $DO->{END} ) {
-		runEND($DO->{END}->{value}, $TT);
-	}
-	elsif ( $DO->{RETURN} ) {
-		runRETURN($DO->{RETURN}->{value}, $TT);
-	}
-	
-	
+		if ( $DO->{SplitVar} ) {
+			my $separator = $DO->{SplitVar}->{separator};
+			$separator =~ s/comma/\,/;
+			$separator =~ s/semicolon/\;/;
+			$separator =~ s/pipe/\\|/;
+			$separator =~ s/nl/\n/;
+			
+			@{ $VAR{ $DO->{SplitVar}->{arrayName} } } = split(/$separator/, replaceSpecChar($DO->{SplitVar}->{inputVarName}));
+			
+			# ## debug
+			# print "Split Dumper: \n" . Dumper($VAR{ $DO->{SplitVar}->{arrayName} }) . "\n";
+			
+			mlog($TT, qq~Splitting variable [$DO->{SplitVar}->{inputVarName}] to Array Variable [$DO->{SplitVar}->{arrayName}]. Results: [Ok]~);
+		}
+		
+		
+		# if ( $DO->{SplitFile} ) {
+			# 
+		# }
+		
+		
+		if ( $DO->{FOREACH} ) {
+			foreach my $i ( @{ $VAR{ $DO->{FOREACH}->{arrayName} } } ) {
+				$VAR{i} = $i;
+				
+				# ## debug
+				# print $VAR{i}, "\n";
+				
+				runDO($DO->{FOREACH}->{DO}, $TT);
+			}
+			
+			mlog($TT, qq~FOREACH executed. Results: [Ok]~);
+		}
+		
+		
+		if ( $DO->{AUTOBOT} ) {
+			my $JsonVars = replaceSpecChar($DO->{AUTOBOT}->{JsonVars});
+			$VAR{ $DO->{AUTOBOT}->{catchVarName} } = `$RealBin/yaomiqui.pl '$TT' '$DO->{AUTOBOT}->{idAutoBot}' '$JsonVars' 2>&1`;
+			$VAR{ $DO->{AUTOBOT}->{catchVarName} } =~ s/\n//g;
+			
+			mlog($TT, qq~AutoBot [$DO->{AUTOBOT}->{idAutoBot}] Executed. Results: [$VAR{ $DO->{AUTOBOT}->{catchVarName} }]~);
+		}
+		
+		
+		if ( $DO->{LOGING} ) {
+			
+			# ## debug
+			# print "LOGIN:\n" . Dumper($DO->{LOGING}) . "\n";
+			
+			runLOGING($DO->{LOGING}->{comment}, $TT);
+		}
+		
+		
+		if ( $DO->{END} ) {
+			runEND($DO->{END}->{value}, $TT);
+		}
+		elsif ( $DO->{RETURN} ) {
+			runRETURN($DO->{RETURN}->{value}, $TT);
+		}
+		
+		
 			####	waterfall depth
 			if ( exists $DO->{IF} ) {
 				foreach my $i ( 0 .. $#{$DO->{IF}->{VAR}} ) {
@@ -463,7 +473,7 @@ sub runDO {
 						}
 						else {
 							
-							## debug
+							# ## debug
 							# print "IF:\n" . Dumper($DO->{IF}) . "\n";
 							
 							if ( $DO->{IF}->{DO}->{LOGING} ) {
@@ -486,6 +496,8 @@ sub runDO {
 			elsif ( exists $DO->{DO} ) {
 				runDO($DO->{DO}, $TT);
 			}
+	
+	}
 }
 
 
@@ -666,21 +678,67 @@ sub compareVAR {
 }
 
 
+sub forceDOarray {
+	my $string = shift;
+	
+	$string =~ /<AUTO>(<ON>.+<\/ON>)(.+)<\/AUTO>/;
+	my $on = $1;
+	$string = $2;
+	
+	$string =~ s/<DO>//g;
+	$string =~ s/<\/DO>//g;
+	
+	$string =~ s/<IF>/<DO><IF>/g;
+	$string =~ s/<\/IF>/<\/IF><\/DO>/g;
+	
+	$string =~ s/<execLinuxCommand/<DO><execLinuxCommand/g;
+	$string =~ s/<\/execLinuxCommand>/<\/execLinuxCommand><\/DO>/g;
+	
+	$string =~ s/<execRemoteLinuxCommand/<DO><execRemoteLinuxCommand/g;
+	$string =~ s/<\/execRemoteLinuxCommand>/<\/execRemoteLinuxCommand><\/DO>/g;
+	
+	$string =~ s/<execRemoteWindowsCommand/<DO><execRemoteWindowsCommand/g;
+	$string =~ s/<\/execRemoteWindowsCommand>/<\/execRemoteWindowsCommand><\/DO>/g;
+	
+	$string =~ s/<JSONtoVar/<DO><JSONtoVar/g;
+	$string =~ s/<\/JSONtoVar>/<\/JSONtoVar><\/DO>/g;
+	
+	$string =~ s/<SetVar/<DO><SetVar/g;
+	$string =~ s/<\/SetVar>/<\/SetVar><\/DO>/g;
+	
+	$string =~ s/<SplitVar /<DO><SplitVar /g;
+	
+	$string =~ s/<FOREACH/<DO><FOREACH/g;
+	$string =~ s/<\/FOREACH>/<\/FOREACH><\/DO>/g;
+	
+	$string =~ s/<AUTOBOT/<DO><AUTOBOT/g;
+	$string =~ s/<\/AUTOBOT>/<\/AUTOBOT><\/DO>/g;
+	
+	$string =~ s/<LOGING /<DO><LOGING /g;
+	
+	$string =~ s/<RETURN /<DO><RETURN /g;
+	
+	$string =~ s/<END /<DO><END /g;
+	
+	$string =~ s!/>!/></DO>!g;
 
+	return '<AUTO>' . $on . $string . '</AUTO>';
+}
 
 
 sub mlog {
 	my ($ticketNumber, $log) = @_;
-	$log =~ s/\'/\"/g;
+	# $log =~ s/\'/\"/g;
 	my $sysdate = sysdate();
 	
 	print "$sysdate : $ticketNumber : $log\n" if  $ticketNumber eq '00000000';
 	
 	 if ( $ticketNumber ne '00000000' ) {
 		 connected();
-		my $insert_string = "INSERT INTO log (numberTicket, insertDate, log) VALUES ('$ticketNumber', '$sysdate', '$log')";
+		# my $insert_string = "INSERT INTO log (numberTicket, insertDate, log) VALUES ('$ticketNumber', '$sysdate', '$log')";
+		my $insert_string = "INSERT INTO log (numberTicket, insertDate, log) VALUES ('$ticketNumber', '$sysdate', ?)";
 		my $sth = $dbh->prepare("$insert_string");
-		$sth->execute();
+		$sth->execute($log);
 		$sth->finish;
 		$dbh->disconnect if ($dbh);
 	 }
