@@ -77,8 +77,8 @@ while (1) {
 			$sth->finish;
 			
 			unless ( $TT ) {
-				my $insert_string = "INSERT INTO ticket (numberTicket, sysidTicket, subject, initialDate, initialState, json) 
-				VALUES ('$json->{ticket}->{number}', '$json->{ticket}->{sys_id}', '$json->{ticket}->{subject}', '$sysdate', '$json->{ticket}->{state}', '$data')";
+				my $insert_string = "INSERT INTO ticket (numberTicket, sysidTicket, subject, initialDate, initialState, typeTicket, json) 
+				VALUES ('$json->{ticket}->{number}', '$json->{ticket}->{sys_id}', '$json->{ticket}->{subject}', '$sysdate', '$json->{ticket}->{state}', '$json->{ticket}->{type}', '$data')";
 				my $sth = $dbh->prepare("$insert_string");
 				$sth->execute();
 				$sth->finish;
