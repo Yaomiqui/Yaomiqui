@@ -61,6 +61,7 @@ CREATE TABLE IF NOT EXISTS permissions (
 
 INSERT INTO permissions (idUser, init, overview, design, accounts, accounts_edit, settings, tickets, tickets_form, logs, charts, reports, about) VALUES ('1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1');
 INSERT INTO permissions (idUser, init, overview, settings) VALUES ('2', '0', '0', '0');
+INSERT INTO permissions (idUser, init, overview, design, accounts, accounts_edit, settings, tickets, tickets_form, logs, charts, reports, about) VALUES ('3', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1');
 
 
 DROP TABLE IF EXISTS autoBot;
@@ -117,6 +118,18 @@ CREATE TABLE IF NOT EXISTS log (
 ) ENGINE=InnoDB;
 
 
+DROP TABLE IF EXISTS report;
+
+CREATE TABLE IF NOT EXISTS report (
+	idReport int(40) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+	typeTicket varchar(255) NOT NULL,
+	averageAttTime varchar(3) NOT NULL,
+	costPerHour varchar(3) NOT NULL,
+	costPerTicket varchar(3) NOT NULL
+) ENGINE=InnoDB;
+
+INSERT INTO report (typeTicket, averageAttTime, costPerHour, costPerTicket) VALUES ('INCIDENT', '2', '9', '1');
+INSERT INTO report (typeTicket, averageAttTime, costPerHour, costPerTicket) VALUES ('TASK', '3', '8', '1');
 
 
 

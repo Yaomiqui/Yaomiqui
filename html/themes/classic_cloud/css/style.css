@@ -109,26 +109,47 @@ iframe.content {
 }
 
 
-
+/*
+iframe {
+	resize: both;
+	overflow: auto;
+}
+*/
 
 
 
 table.gridTable {
 	border-top: 1px solid #AFAFAF;
+	overflow: auto;
 }
 
 td.gridTitle {
-	border-bottom: 1px solid #AFAFAF;
-	padding: 4px 6px 4px 6px;
+	margin: 0px;
+	font-family: verdana, sans, sans-serif, helvetica;
 	font-weight: bold;
+	font-size: 105%;
+	color: #4D4D4D;
+	border-bottom: 1px solid #AFAFAF;
+	padding: 10px 20px 10px 20px;
+	height: 25px;
 }
 
 td.gridContent {
+	margin: 0px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	font-family: verdana, sans, sans-serif, helvetica;
+	color: #292929;
+	white-space: nowrap;
 	border-bottom: 1px solid #AFAFAF;
-	padding: 4px 6px 4px 6px;
+	padding: 10px 20px 10px 20px;
+	height: 22px;
 }
 
-
+tr.gridRowContent:hover {
+	background-color: #efefef;
+}
 
 
 

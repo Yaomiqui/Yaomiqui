@@ -16,6 +16,8 @@ Accounts = Accounts
 My_Account = My Account
 Ticket_Form = Ticket Form
 AutoBot_Design = AutoBot Design
+Charts = Charts
+Reports = Reports
 
 
 [overview]
@@ -181,6 +183,57 @@ Overview = Overview
 Warning = Warning
 
 
-[end]
+[charts]
+Report_Charts = Report Charts
+Ticket_Type = Ticket Type
+January = January
+February = February
+March = March
+April = April
+May = May
+June = June
+July = July
+August = August
+September = September
+October = October
+November = November
+December = December
+Date = Date
 
+
+[reports]
+Saving_Reports = Saving Reports
+Ticket_Type = Ticket Type
+January = January
+February = February
+March = March
+April = April
+May = May
+June = June
+July = July
+August = August
+September = September
+October = October
+November = November
+December = December
+Date = Date
+Information_List_of_Ticket_Types_found = Information. List of ticket Types found
+List_of_Managed_Ticket_Types = List of Managed Ticket Types
+Ticket_Type = Ticket Type
+Average_attention_Time = Average attention Time
+Cost_per_Hour = Cost per Hour
+Cost_per_Ticket = Cost per Ticket
+hour = hour
+Type_a_new_Ticket_type = Type a new Ticket type
+Delete = Delete
+Ticket_Type = Ticket Type
+Old_Cost = Old Cost
+Current_Cost = Current Cost
+Saving = Saving
+Company_Saving = Company Saving
+Old_Expenses_Current_costs_and_Saving = Old Expenses, Current costs and Saving
+Are_you_sure_to_delete_this = Are you sure to delete this
+
+
+[end]
 

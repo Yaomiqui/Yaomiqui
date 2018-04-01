@@ -16,6 +16,8 @@ Accounts = Cuentas
 My_Account = Mi cuenta
 Ticket_Form = Formulario para Ticket
 AutoBot_Design = Diseño AutoBot
+Charts = Gráficas
+Reports = Reportes
 
 
 [overview]
@@ -181,6 +183,57 @@ Overview = Overview
 Warning = Warning
 
 
-[end]
+[charts]
+Report_Charts = Gráficas de informes
+Ticket_Type = Tipo de Ticket
+January = Enero
+February = Febrero
+March = Marzo
+April = Abril
+May = Mayo
+June = Junio
+July = Julio
+August = Agosto
+September = Septiembre
+October = Octubre
+November = Noviembre
+December = Diciembre
+Date = Fecha
 
+
+[reports]
+Saving_Reports = Reportes de Ahorro
+Ticket_Type = Tipo de Ticket
+January = Enero
+February = Febrero
+March = Marzo
+April = Abril
+May = Mayo
+June = Junio
+July = Julio
+August = Agosto
+September = Septiembre
+October = Octubre
+November = Noviembre
+December = Diciembre
+Date = Fecha
+Information_List_of_Ticket_Types_found = Información. Lista de tipos de Ticket encontrados
+List_of_Managed_Ticket_Types = Lista de tipos de tickets gestionados
+Ticket_Type = Tipo de Ticket
+Average_attention_Time = Tiempo promedio de Atención
+Cost_per_Hour = Costo por Hora
+Cost_per_Ticket = Costo por Ticket
+hour = hora
+Type_a_new_Ticket_type = Escriba un nuevo tipo de Ticket
+Delete = Eliminar
+Type_Ticket = Tipo de Ticket
+Old_Cost = Costo Anterior
+Current_Cost = Costo Actual
+Saving = Ahorro
+Company_Saving = Ahorro de la Empresa
+Old_Expenses_Current_costs_and_Saving = Gasto Antiguo, Costo Actual y Ahorro
+Are_you_sure_to_delete_this = Está seguro de eliminar esto
+
+
+[end]
 

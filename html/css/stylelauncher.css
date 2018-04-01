@@ -118,6 +118,14 @@ iframe.edition_frame {
 }
 
 
+/*
+iframe {
+	resize: both;
+	overflow: auto;
+}
+*/
+
+
 select {
 	min-width: 100px;
 	background-color: #FFFFFF;
