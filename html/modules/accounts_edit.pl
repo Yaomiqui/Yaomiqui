@@ -232,8 +232,8 @@ if ( $input{idUser} ) {
 		<tr><td align="right" width="30%">$MSG{Tickets}: </td><td width="70%"><input type="checkbox" name="tickets" style="margin: 6px 4px;" value="1" checked></td></tr>
 		<tr><td align="right" width="30%">$MSG{Tickets_Form}: </td><td width="70%"><input type="checkbox" name="tickets_form" style="margin: 6px 4px;" value="1" checked></td></tr>
 		<tr><td align="right" width="30%">$MSG{Logs}: </td><td width="70%"><input type="checkbox" name="logs" style="margin: 6px 4px;" value="1" checked></td></tr>
-		<!--<tr><td align="right" width="30%">$MSG{Charts}: </td><td width="70%"><input type="checkbox" name="charts" style="margin: 6px 4px;" value="1"></td></tr>
-		<tr><td align="right" width="30%">$MSG{Reports}: </td><td width="70%"><input type="checkbox" name="reports" style="margin: 6px 4px;" value="1"></td></tr>-->
+		<tr><td align="right" width="30%">$MSG{Charts}: </td><td width="70%"><input type="checkbox" name="charts" style="margin: 6px 4px;" value="1"></td></tr>
+		<tr><td align="right" width="30%">$MSG{Reports}: </td><td width="70%"><input type="checkbox" name="reports" style="margin: 6px 4px;" value="1"></td></tr>
 		
 		</table>
 		

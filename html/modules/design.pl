@@ -79,7 +79,7 @@ if ( $input{submod} eq 'new_autoBot' ) {
 	unless ( $IDexists ) {
 		my $sysdate = sysdate();
 		connected();
-		my $xml = '<AUTO><ON><VAR name="number" compare="exists"/><VAR name="sys_id" compare="exists"/><VAR name="subject" compare="eq" value=""/><VAR name="state" compare="exists"/></ON></AUTO>';
+		my $xml = '<AUTO><ON><VAR name="number" compare="exists"/><VAR name="sys_id" compare="exists"/><VAR name="subject" compare="eq" value=""/><VAR name="state" compare="exists"/><VAR name="type" compare="exists"/></ON></AUTO>';
 		my $insert_string = "INSERT INTO autoBot (idAutoBot, autoBotName, deployedDate, idUserDeploy, active, autoBotXML) VALUES ('$newID', '$input{NewAutoBotName}', '$sysdate', '$myIDuser', '0', '$xml')";
 		$sth = $dbh->prepare("$insert_string");
 		$sth->execute();

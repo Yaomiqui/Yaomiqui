@@ -30,7 +30,7 @@ use Log::Man;
 our(%input, %VAR, %MSG, %PRM, $username, $html, $header, $footer, $module, $module_file, $theme, $dbh, $encKey);
 require 'common.pl';
 %VAR = get_vars();
-$VAR{Version} = '0.9.4';
+$VAR{Version} = '0.9.5';
 $encKey = getEncKey();
 $username = get_session();
 $theme = get_theme();

@@ -7,8 +7,9 @@ use Parallel::ForkManager;
 our $dbh;
 our %VENV = get_vars();
 our $MAX_PROCESSES = $VENV{'PROC_MAX_PARALLEL'};
+$VENV{'CRITICAL_PROC'} ++;
 
-unless ( getPid() ) {
+if ( getPid() < $VENV{'CRITICAL_PROC'} ) {
 	# print "Reading tickets...\n";
 	connected();
 	my $sth = $dbh->prepare("SELECT numberTicket FROM ticket WHERE idAutoBotCatched IS NULL OR finalState IS NULL");
@@ -34,16 +35,10 @@ unless ( getPid() ) {
 exit;
 
 sub getPid {
-	my $pid = `ps -eo pid,command | grep 'auto.pl' | grep -v grep | grep -v $$`;
+	my $pid = `ps -eo pid,command | grep 'auto.pl' | grep -v grep | grep -v $$ | wc -l`;
 	$pid =~ s/\n//g;
 	
-	if ( $pid ) {
-		# print "There is process running: $pid\n";
-		return 1;
-	} else {
-		# print "There is no process running...\n";
-		return 0;
-	}
+	return $pid;
 }
 
 sub connected {
