@@ -11,7 +11,7 @@ $html .= qq~
 <br/>
 Automation Tool for repetitive tasks
 <br/>
-$MSG{Version}: $VAR{Version}
+$MSG{Version}: <a href="https://github.com/Yaomiqui/Yaomiqui/releases/latest" target="_blank">$VAR{Version}</a>
 <br/>
 <br/>
 <br/>
@@ -20,7 +20,7 @@ $MSG{Developed_by} Hugo Maza Moreno
 <br/><br/>
 $MSG{See} <a href="https://github.com/HugoMaza" target="_blank">Hugo Maza</a> $MSG{on_GitHub}
 <br/><br/>
-$MSG{See} <a href="https://github.com/Yaomiqui" target="_blank">Yaomiqui on</a> $MSG{on_GitHub}
+$MSG{See} <a href="https://github.com/Yaomiqui" target="_blank">Yaomiqui</a> $MSG{on_GitHub}
 <br/><br/>
 <font style="font-size: 140%">$MSG{See_documentation_for} <a href="https://yaomiqui.org" target="_blank">Yaomiqui</a></font>
 <br/><br/>

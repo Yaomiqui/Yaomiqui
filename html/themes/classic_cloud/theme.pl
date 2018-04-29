@@ -3,11 +3,10 @@ sub header {
 	
 	unless ( $shtl ) {
 		$header .= qq~
-		<link href="css/stylelauncher.css" rel="stylesheet" type="text/css" />
-		
-		<script type="text/javascript" src="js/miquiloniToolTip.js"></script>
-		<script type="text/javascript" src="js/jquery-1.10.2.min.js"></script>
-		
+	<link href="css/stylelauncher.css" rel="stylesheet" type="text/css" />
+	<script type="text/javascript">if (top != self) top.location.href = location.href;</script>
+	<script type="text/javascript" src="js/miquiloniToolTip.js"></script>
+	<script type="text/javascript" src="js/jquery-1.10.2.min.js"></script>
 	</head>
 <body>
 	~;

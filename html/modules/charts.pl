@@ -55,7 +55,7 @@ $sth->finish;
 for my $i ( 0 .. $#{$TypeTT} ) {
 	# $html .= qq~<b>$MSG{Ticket_Type}: $TypeTT->[$i][0]</b><br>~;
 	
-	my $sth = $dbh->prepare("SELECT finalState, count(finalState) FROM ticket WHERE typeTicket='$TypeTT->[$i][0]' AND finalDate between date('$year-$month-01') and date('$year-$month-31') GROUP BY finalState ORDER BY finalState DESC");
+	my $sth = $dbh->prepare("SELECT finalState, count(finalState) FROM ticket WHERE typeTicket='$TypeTT->[$i][0]' AND finalDate between '$year-$month-01 00:00:00' and '$year-$month-31 23:59:59' GROUP BY finalState ORDER BY finalState DESC");
 	$sth->execute();
 	my $typeTicket = $sth->fetchall_arrayref;
 	$sth->finish;
@@ -67,7 +67,7 @@ for my $i ( 0 .. $#{$TypeTT} ) {
 	}
 	
 	# No state:
-	my $sth = $dbh->prepare("SELECT COUNT(idTicket) FROM ticket WHERE typeTicket='$TypeTT->[$i][0]' AND initialDate between date('$year-$month-01') and date('$year-$month-31') AND finalState IS NULL");
+	my $sth = $dbh->prepare("SELECT COUNT(idTicket) FROM ticket WHERE typeTicket='$TypeTT->[$i][0]' AND initialDate between '$year-$month-01 00:00:00' and '$year-$month-31 23:59:59' AND finalState IS NULL");
 	$sth->execute();
 	my ($cnt) = $sth->fetchrow_array;
 	$sth->finish;
@@ -78,7 +78,7 @@ for my $i ( 0 .. $#{$TypeTT} ) {
 	####
 	my $sth = $dbh->prepare(qq~SELECT DATE_FORMAT(finalDate, "%M-%d"), finalState, count(finalState) 
 	FROM ticket WHERE typeTicket='$TypeTT->[$i][0]' 
-	AND finalDate between date('$year-$month-01') AND date('$year-$month-31') 
+	AND finalDate between '$year-$month-01 00:00:00' AND '$year-$month-31 23:59:59' 
 	GROUP BY finalState, DATE_FORMAT(finalDate, "%M/%d") 
 	ORDER BY DATE_FORMAT(finalDate, "%M-%d") ASC, finalState;~);
 	$sth->execute();

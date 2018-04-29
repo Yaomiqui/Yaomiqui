@@ -221,6 +221,7 @@ sub runEND {
 sub runRETURN {
 	my ($value, $TT) = @_;
 	$value = replaceSpecChar($value);
+	print $value;
 	
 	mlog($TT, qq~Returned value: [$value]~);
 	exit;
@@ -297,7 +298,7 @@ sub runDO {
 				# ## debug
 				# print qq~/usr/bin/sshpass -p "$DO->{execRemoteLinuxCommand}->{passwd}" /usr/bin/ssh -o StrictHostKeyChecking=no $DO->{execRemoteLinuxCommand}->{remoteUser}\@$DO->{execRemoteLinuxCommand}->{remoteHost} -t '$remoteLinuxCommand' 2>&1~;
 				
-				$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } =~ s/\n*$//g;
+				$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } =~ s/\n$//g;
 				
 				## debug
 				# print "RESULTS:\n" . $VAR{ $DO->{execLinuxCommand}->{catchVarName} } . "\n\n";
@@ -314,7 +315,7 @@ sub runDO {
 				# ## debug
 				# print qq~/usr/bin/sshpass -p "$DO->{execRemoteLinuxCommand}->{passwd}" /usr/bin/ssh -o StrictHostKeyChecking=no $DO->{execRemoteLinuxCommand}->{remoteUser}\@$DO->{execRemoteLinuxCommand}->{remoteHost} -t '$remoteLinuxCommand' 2>&1\n\n~;
 				
-				$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } =~ s/\n*$//g;
+				$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } =~ s/\n$//g;
 				
 				# ## debug
 				# print "RESULTS:\n" . $VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } . "\n\n";
@@ -334,12 +335,12 @@ sub runDO {
 			
 			$DO->{execRemoteWindowsCommand}->{remoteDomain} = $DO->{execRemoteWindowsCommand}->{remoteDomain} . '/' if $DO->{execRemoteWindowsCommand}->{remoteDomain};
 			
-			$VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} } = `winexe -k $DO->{execRemoteWindowsCommand}->{useKerberos} -U '$DO->{execRemoteWindowsCommand}->{remoteDomain}$DO->{execRemoteWindowsCommand}->{remoteUser}\%$DO->{execRemoteWindowsCommand}->{remotePasswd}' //$DO->{execRemoteWindowsCommand}->{remoteHost} '$remoteWindowsCommand'`;
+			$VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} } = `winexe -k $DO->{execRemoteWindowsCommand}->{useKerberos} -U '$DO->{execRemoteWindowsCommand}->{remoteDomain}$DO->{execRemoteWindowsCommand}->{remoteUser}\%$DO->{execRemoteWindowsCommand}->{remotePasswd}' //$DO->{execRemoteWindowsCommand}->{remoteHost} '$remoteWindowsCommand' 2>/dev/null`;
 			
 			## debug
 			# print qq~COMMAND LINE:winexe -U '$DO->{execRemoteWindowsCommand}->{remoteDomain}$DO->{execRemoteWindowsCommand}->{remoteUser}\%$DO->{execRemoteWindowsCommand}->{remotePasswd}' //$DO->{execRemoteWindowsCommand}->{remoteHost} '$remoteWindowsCommand'\n~;
 			
-			$VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} } =~ s/\n*$//g;
+			$VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} } =~ s/\n$//g;
 			
 			mlog($TT, qq~Remote Windows Command [$remoteWindowsCommand] Executed on Remote Server [$DO->{execRemoteWindowsCommand}->{remoteHost}]. Results: [$VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} }]~);
 		}
@@ -667,7 +668,8 @@ sub compareVAR {
 		}
 	}
 	elsif ( $comparator eq 'isempty' ) {
-		if ( length $name == 0 ) {
+		#~ if ( length $name == 0 ) {
+		if ( $name eq '' ) {
 			mlog($TT, qq~Comparison: IF [$name] $comparator (RETURN = true)~) unless $no_log;
 			return 1;
 		} else {
@@ -680,48 +682,32 @@ sub compareVAR {
 
 sub forceDOarray {
 	my $string = shift;
-	
 	$string =~ /<AUTO>(<ON>.+<\/ON>)(.+)<\/AUTO>/;
 	my $on = $1;
 	$string = $2;
-	
 	$string =~ s/<DO>//g;
 	$string =~ s/<\/DO>//g;
-	
 	$string =~ s/<IF>/<DO><IF>/g;
 	$string =~ s/<\/IF>/<\/IF><\/DO>/g;
-	
 	$string =~ s/<execLinuxCommand/<DO><execLinuxCommand/g;
 	$string =~ s/<\/execLinuxCommand>/<\/execLinuxCommand><\/DO>/g;
-	
 	$string =~ s/<execRemoteLinuxCommand/<DO><execRemoteLinuxCommand/g;
 	$string =~ s/<\/execRemoteLinuxCommand>/<\/execRemoteLinuxCommand><\/DO>/g;
-	
 	$string =~ s/<execRemoteWindowsCommand/<DO><execRemoteWindowsCommand/g;
 	$string =~ s/<\/execRemoteWindowsCommand>/<\/execRemoteWindowsCommand><\/DO>/g;
-	
 	$string =~ s/<JSONtoVar/<DO><JSONtoVar/g;
 	$string =~ s/<\/JSONtoVar>/<\/JSONtoVar><\/DO>/g;
-	
 	$string =~ s/<SetVar/<DO><SetVar/g;
 	$string =~ s/<\/SetVar>/<\/SetVar><\/DO>/g;
-	
 	$string =~ s/<SplitVar /<DO><SplitVar /g;
-	
 	$string =~ s/<FOREACH/<DO><FOREACH/g;
 	$string =~ s/<\/FOREACH>/<\/FOREACH><\/DO>/g;
-	
 	$string =~ s/<AUTOBOT/<DO><AUTOBOT/g;
 	$string =~ s/<\/AUTOBOT>/<\/AUTOBOT><\/DO>/g;
-	
 	$string =~ s/<LOGING /<DO><LOGING /g;
-	
 	$string =~ s/<RETURN /<DO><RETURN /g;
-	
 	$string =~ s/<END /<DO><END /g;
-	
 	$string =~ s!/>!/></DO>!g;
-
 	return '<AUTO>' . $on . $string . '</AUTO>';
 }
 

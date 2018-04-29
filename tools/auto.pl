@@ -12,7 +12,8 @@ $VENV{'CRITICAL_PROC'} ++;
 if ( getPid() < $VENV{'CRITICAL_PROC'} ) {
 	# print "Reading tickets...\n";
 	connected();
-	my $sth = $dbh->prepare("SELECT numberTicket FROM ticket WHERE idAutoBotCatched IS NULL OR finalState IS NULL");
+	# my $sth = $dbh->prepare("SELECT numberTicket FROM ticket WHERE idAutoBotCatched IS NULL OR finalState IS NULL");
+	my $sth = $dbh->prepare("SELECT numberTicket FROM ticket WHERE idAutoBotCatched IS NULL");
 	$sth->execute();
 	my $AB = $sth->fetchall_arrayref;
 	$sth->finish;

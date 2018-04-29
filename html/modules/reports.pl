@@ -185,7 +185,7 @@ unless ( $input{submod} ) {
 	my $grid;
 	
 	for my $i ( 0 .. $#{$TypeTT} )  {
-		my $sth = $dbh->prepare("SELECT COUNT(*) FROM ticket WHERE typeTicket = '$TypeTT->[$i][0]' AND initialDate BETWEEN date('$year-$month-01') and date('$year-$month-31')");
+		my $sth = $dbh->prepare("SELECT COUNT(*) FROM ticket WHERE typeTicket = '$TypeTT->[$i][0]' AND initialDate BETWEEN '$year-$month-01 00:00:00' and '$year-$month-31 23:59:59'");
 		$sth->execute();
 		my ($cnt) = $sth->fetchrow_array;
 		$sth->finish;
