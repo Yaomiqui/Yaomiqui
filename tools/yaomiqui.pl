@@ -299,6 +299,9 @@ sub runDO {
 				# print qq~/usr/bin/sshpass -p "$DO->{execRemoteLinuxCommand}->{passwd}" /usr/bin/ssh -o StrictHostKeyChecking=no $DO->{execRemoteLinuxCommand}->{remoteUser}\@$DO->{execRemoteLinuxCommand}->{remoteHost} -t '$remoteLinuxCommand' 2>&1~;
 				
 				$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } =~ s/\n$//g;
+				$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } =~ s/Connection to .+ closed\.//;
+				$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } =~ s/\n$//g;
+				$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } =~ s/\s$//g;
 				
 				## debug
 				# print "RESULTS:\n" . $VAR{ $DO->{execLinuxCommand}->{catchVarName} } . "\n\n";
@@ -316,6 +319,9 @@ sub runDO {
 				# print qq~/usr/bin/sshpass -p "$DO->{execRemoteLinuxCommand}->{passwd}" /usr/bin/ssh -o StrictHostKeyChecking=no $DO->{execRemoteLinuxCommand}->{remoteUser}\@$DO->{execRemoteLinuxCommand}->{remoteHost} -t '$remoteLinuxCommand' 2>&1\n\n~;
 				
 				$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } =~ s/\n$//g;
+				$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } =~ s/Connection to .+ closed\.//;
+				$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } =~ s/\n$//g;
+				$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } =~ s/\s$//g;
 				
 				# ## debug
 				# print "RESULTS:\n" . $VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } . "\n\n";
