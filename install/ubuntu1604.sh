@@ -21,6 +21,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ########################################################################
 
+export LC_CTYPE=en_US.UTF-8
+
+export LC_ALL=en_US.UTF-8
+
 source ./keys_auto.conf
 
 apt-get update

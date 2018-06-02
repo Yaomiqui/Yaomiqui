@@ -17,6 +17,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ########################################################################
 
+export LC_CTYPE=en_US.UTF-8
+
+export LC_ALL=en_US.UTF-8
+
 source ./keys_auto.conf
 
 yum install -y wget vim net-tools httpd perl perl-core perl-CGI perl-DBI mod_ssl perl-JSON perl-XML-Simple
