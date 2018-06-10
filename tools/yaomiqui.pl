@@ -123,7 +123,7 @@ if ( $json ) {
 			## debug
 			# print "GOTCHA!! I have ticket '$TTS[1]' to this Autobot\n\n";
 			
-			mlog($TTS[1], qq~Ticket was catched by Autobot ID: <a href="index.cgi?mod=design&submod=edit_autobot&autoBotId=$AB->[$i][0]" target="_blank">[$AB->[$i][0]]</a>~) if $ticketNumber ne '00000000';
+			mlog($TTS[1], qq~Ticket was caught by Autobot ID: <a href="index.cgi?mod=design&submod=edit_autobot&autoBotId=$AB->[$i][0]" target="_blank">[$AB->[$i][0]]</a>~) if $ticketNumber ne '00000000';
 			
 			unless ( $ARGV[1] ) {
 				connected();
@@ -221,6 +221,7 @@ sub runEND {
 sub runRETURN {
 	my ($value, $TT) = @_;
 	$value = replaceSpecChar($value);
+	
 	print $value;
 	
 	mlog($TT, qq~Returned value: [$value]~);
@@ -272,19 +273,18 @@ sub runDO {
 		if ( $DO->{execLinuxCommand} ) {
 			my $linuxCommand = replaceSpecChar($DO->{execLinuxCommand}->{command});
 			
-			# ## debug
-			# print "LINUX COMMAND:\n" . $linuxCommand . "\n\n";
-			
 			$VAR{ $DO->{execLinuxCommand}->{catchVarName} } = `$linuxCommand 2>&1`;
+			$VAR{ $DO->{execLinuxCommand}->{catchVarName} } =~ s/^\n//g;
 			$VAR{ $DO->{execLinuxCommand}->{catchVarName} } =~ s/\n$//g;
 			
 			## debug
 			# print "RESULTS:\n" . $VAR{ $DO->{execLinuxCommand}->{catchVarName} } . "\n\n";
 			
-			mlog($TT, qq~Local Linux Command [$linuxCommand] Executed. Results: [$VAR{ $DO->{execLinuxCommand}->{catchVarName} }]~);
+			mlog($TT, qq~Linux Command [$linuxCommand] Executed on Local Server [localhost]. Results: []~);
 		}
 		
-		elsif ( $DO->{execRemoteLinuxCommand} ) {
+		
+		if ( $DO->{execRemoteLinuxCommand} ) {
 			my $remoteLinuxCommand;
 			if ( $DO->{execRemoteLinuxCommand}->{publicKey} ) {
 				$remoteLinuxCommand = replaceSpecChar($DO->{execRemoteLinuxCommand}->{command});
@@ -293,18 +293,11 @@ sub runDO {
 				$DO->{execRemoteLinuxCommand}->{remoteHost} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{remoteHost});
 				$DO->{execRemoteLinuxCommand}->{publicKey} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{publicKey});
 				
-				$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } = `/usr/bin/ssh -o StrictHostKeyChecking=no -i $DO->{execRemoteLinuxCommand}->{publicKey} $DO->{execRemoteLinuxCommand}->{remoteUser}\@$DO->{execRemoteLinuxCommand}->{remoteHost} -t -t '$remoteLinuxCommand 2>&1' 2>&1`;
-				
-				# ## debug
-				# print qq~/usr/bin/sshpass -p "$DO->{execRemoteLinuxCommand}->{passwd}" /usr/bin/ssh -o StrictHostKeyChecking=no $DO->{execRemoteLinuxCommand}->{remoteUser}\@$DO->{execRemoteLinuxCommand}->{remoteHost} -t '$remoteLinuxCommand' 2>&1~;
-				
+				$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } = `/usr/bin/ssh -o StrictHostKeyChecking=no -o LogLevel=QUIET -i $DO->{execRemoteLinuxCommand}->{publicKey} $DO->{execRemoteLinuxCommand}->{remoteUser}\@$DO->{execRemoteLinuxCommand}->{remoteHost} -t -t '$remoteLinuxCommand 2>&1'`;
+				$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } =~ s/^\n//g;
 				$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } =~ s/\n$//g;
-				$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } =~ s/Connection to .+ closed\.//;
-				$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } =~ s/\n$//g;
-				$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } =~ s/\s$//g;
 				
-				## debug
-				# print "RESULTS:\n" . $VAR{ $DO->{execLinuxCommand}->{catchVarName} } . "\n\n";
+				mlog($TT, qq~Remote Linux Command [$remoteLinuxCommand] Executed on Remote Server [$DO->{execRemoteLinuxCommand}->{remoteHost}]. Results: []~);
 			}
 			else {
 				$remoteLinuxCommand = replaceSpecChar($DO->{execRemoteLinuxCommand}->{command});
@@ -313,26 +306,22 @@ sub runDO {
 				$DO->{execRemoteLinuxCommand}->{remoteHost} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{remoteHost});
 				$DO->{execRemoteLinuxCommand}->{passwd} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{passwd});
 				
-				$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } = `/usr/bin/sshpass -p "$DO->{execRemoteLinuxCommand}->{passwd}" /usr/bin/ssh -o StrictHostKeyChecking=no $DO->{execRemoteLinuxCommand}->{remoteUser}\@$DO->{execRemoteLinuxCommand}->{remoteHost} -t -t '$remoteLinuxCommand 2>&1' 2>&1`;
-				
-				# ## debug
-				# print qq~/usr/bin/sshpass -p "$DO->{execRemoteLinuxCommand}->{passwd}" /usr/bin/ssh -o StrictHostKeyChecking=no $DO->{execRemoteLinuxCommand}->{remoteUser}\@$DO->{execRemoteLinuxCommand}->{remoteHost} -t '$remoteLinuxCommand' 2>&1\n\n~;
-				
+				$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } = `/usr/bin/sshpass -p "$DO->{execRemoteLinuxCommand}->{passwd}" /usr/bin/ssh -o StrictHostKeyChecking=no -o LogLevel=QUIET $DO->{execRemoteLinuxCommand}->{remoteUser}\@$DO->{execRemoteLinuxCommand}->{remoteHost} -t -t '$remoteLinuxCommand 2>&1'`;
+				$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } =~ s/^\n//g;
 				$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } =~ s/\n$//g;
-				$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } =~ s/Connection to .+ closed\.//;
-				$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } =~ s/\n$//g;
-				$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } =~ s/\s$//g;
 				
 				# ## debug
 				# print "RESULTS:\n" . $VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } . "\n\n";
+				
+				mlog($TT, qq~Remote Linux Command [$remoteLinuxCommand] Executed on Remote Server [$DO->{execRemoteLinuxCommand}->{remoteHost}]. Results: []~);
 			}
-			
-			mlog($TT, qq~Remote Linux Command [$remoteLinuxCommand] Executed on Remote Server [$DO->{execRemoteLinuxCommand}->{remoteHost}]. Results: [$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} }]~);
 		}
 		
-		elsif ( $DO->{execRemoteWindowsCommand} ) {
+		
+		if ( $DO->{execRemoteWindowsCommand} ) {
 			my $remoteWindowsCommand = replaceSpecChar($DO->{execRemoteWindowsCommand}->{command});
 			$remoteWindowsCommand =~ s/\'/\\\'/g;
+			$remoteWindowsCommand =~ s/\n//g;
 			
 			$DO->{execRemoteWindowsCommand}->{remoteUser} = replaceSpecChar($DO->{execRemoteWindowsCommand}->{remoteUser});
 			$DO->{execRemoteWindowsCommand}->{remoteHost} = replaceSpecChar($DO->{execRemoteWindowsCommand}->{remoteHost});
@@ -342,13 +331,22 @@ sub runDO {
 			$DO->{execRemoteWindowsCommand}->{remoteDomain} = $DO->{execRemoteWindowsCommand}->{remoteDomain} . '/' if $DO->{execRemoteWindowsCommand}->{remoteDomain};
 			
 			$VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} } = `winexe -k $DO->{execRemoteWindowsCommand}->{useKerberos} -U '$DO->{execRemoteWindowsCommand}->{remoteDomain}$DO->{execRemoteWindowsCommand}->{remoteUser}\%$DO->{execRemoteWindowsCommand}->{remotePasswd}' //$DO->{execRemoteWindowsCommand}->{remoteHost} '$remoteWindowsCommand' 2>/dev/null`;
+			$VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} } =~ s/^\n//g;
+			$VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} } =~ s/\n$//g;
 			
 			## debug
 			# print qq~COMMAND LINE:winexe -U '$DO->{execRemoteWindowsCommand}->{remoteDomain}$DO->{execRemoteWindowsCommand}->{remoteUser}\%$DO->{execRemoteWindowsCommand}->{remotePasswd}' //$DO->{execRemoteWindowsCommand}->{remoteHost} '$remoteWindowsCommand'\n~;
 			
-			$VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} } =~ s/\n$//g;
-			
-			mlog($TT, qq~Remote Windows Command [$remoteWindowsCommand] Executed on Remote Server [$DO->{execRemoteWindowsCommand}->{remoteHost}]. Results: [$VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} }]~);
+			if ( $VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} } ) {
+				$VAR{Error} = '';
+				mlog($TT, qq~Remote Windows Command [$remoteWindowsCommand] Executed on Remote Server [$DO->{execRemoteWindowsCommand}->{remoteHost}].\nResults: [$VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} }]~ . "\nError: []");
+			} else {
+				$VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} } = `winexe -k $DO->{execRemoteWindowsCommand}->{useKerberos} -U '$DO->{execRemoteWindowsCommand}->{remoteDomain}$DO->{execRemoteWindowsCommand}->{remoteUser}\%$DO->{execRemoteWindowsCommand}->{remotePasswd}' //$DO->{execRemoteWindowsCommand}->{remoteHost} '$remoteWindowsCommand' 2>&1`;
+				$VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} } =~ s/^\n//g;
+				$VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} } =~ s/\n$//g;
+				$VAR{Error} = $VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} };
+				mlog($TT, qq~Remote Windows Command [$remoteWindowsCommand] Executed on Remote Server [$DO->{execRemoteWindowsCommand}->{remoteHost}].\nResults: []~ . "\nError: [" . $VAR{Error} . "]");
+			}
 		}
 		
 		
@@ -725,15 +723,15 @@ sub mlog {
 	
 	print "$sysdate : $ticketNumber : $log\n" if  $ticketNumber eq '00000000';
 	
-	 if ( $ticketNumber ne '00000000' ) {
-		 connected();
+	if ( $ticketNumber ne '00000000' ) {
+		connected();
 		# my $insert_string = "INSERT INTO log (numberTicket, insertDate, log) VALUES ('$ticketNumber', '$sysdate', '$log')";
 		my $insert_string = "INSERT INTO log (numberTicket, insertDate, log) VALUES ('$ticketNumber', '$sysdate', ?)";
 		my $sth = $dbh->prepare("$insert_string");
 		$sth->execute($log);
 		$sth->finish;
 		$dbh->disconnect if ($dbh);
-	 }
+	}
 }
 
 sub connected {

@@ -125,7 +125,8 @@ if ( $input{submod} eq 'save_autobot_xml' ) {
 		$input{xml} =~ s/\&quot;/\"/g;
 		$input{xml} =~ s/\&apos\;/\'/g;
 		
-		$input{xml} =~ s/\\/\\\\/g;
+		# $input{xml} =~ s/\\/\\\\/g;
+		$input{xml} =~ s/\n//g;
 		
 		my $sysdate = sysdate();
 		# $input{xml} = s/\r\n//g;		# If someone is using windows
