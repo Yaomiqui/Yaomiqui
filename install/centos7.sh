@@ -23,7 +23,7 @@ export LC_ALL=en_US.UTF-8
 
 source ./keys_auto.conf
 
-yum install -y wget vim net-tools httpd perl perl-core perl-CGI perl-DBI mod_ssl perl-JSON perl-XML-Simple
+yum install -y wget vim net-tools httpd perl perl-core perl-CGI perl-DBI mod_ssl perl-JSON perl-XML-Simple sendmail
 
 wget -c http://repo.mysql.com/mysql-community-release-el7-5.noarch.rpm
 
@@ -31,7 +31,7 @@ rpm -ivh mysql-community-release-el7-5.noarch.rpm
 
 yum install -y mysql-server perl-DBD-MySQL epel-release
 
-yum --enablerepo=epel install -y sshpass perl-Parallel-ForkManager samba4-libs gnutls-devel
+yum --enablerepo=epel install -y sshpass perl-Parallel-ForkManager samba4-libs gnutls-devel perl-Net-OpenSSH perl-IO-Pty-Easy perl-MIME-Lite
 
 ### Install winexe. You can comment the next two lines to enhance performance. Then you can run it later.
 # yum install -y gcc perl mingw-binutils-generic mingw-filesystem-base mingw32-binutils mingw32-cpp mingw32-crt mingw32-filesystem mingw32-gcc mingw32-headers mingw64-binutils mingw64-cpp mingw64-crt mingw64-filesystem mingw64-gcc mingw64-headers libcom_err-devel popt-devel zlib-devel zlib-static glibc-devel glibc-static python-devel git gnutls-devel libacl-devel openldap-devel rpm-build pkgconfig samba4-libs

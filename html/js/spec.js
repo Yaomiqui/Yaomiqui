@@ -236,6 +236,11 @@
 							actionParameter: "<AUTOBOT idAutoBot=\"\" catchVarName=\"\"><JsonVars><![CDATA[]]></JsonVars></AUTOBOT>"
 						},
 						{
+							caption: "Append a <SendEMAIL>",
+							action: Xonomy.newElementChild,
+							actionParameter: "<SendEMAIL From=\"\" To=\"\" Subject=\"\" Type=\"text\"><Body><![CDATA[]]></Body></SendEMAIL>"
+						},
+						{
 							caption: "Append a <RETURN>",
 							action: Xonomy.newElementChild,
 							actionParameter: "<RETURN value=\"\"/>"
@@ -622,16 +627,16 @@
 							caption: "Delete this <LOGING>",
 							action: Xonomy.deleteElement
 						},
-						// {
-							// caption: "New <LOGING> before this",
-							// action: Xonomy.newElementBefore,
-							// actionParameter: "<LOGING comment=\"\"/>"
-						// },
-						// {
-							// caption: "New <LOGING> after this",
-							// action: Xonomy.newElementAfter,
-							// actionParameter: "<LOGING comment=\"\"/>"
-						// }
+						{
+							caption: "New <LOGING> before this",
+							action: Xonomy.newElementBefore,
+							actionParameter: "<LOGING comment=\"\"/>"
+						},
+						{
+							caption: "New <LOGING> after this",
+							action: Xonomy.newElementAfter,
+							actionParameter: "<LOGING comment=\"\"/>"
+						}
 					],
 					canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand"],
 					attributes: {
@@ -677,6 +682,37 @@
 								{value: "Failed", caption: "Failed"},
 								{value: "Rejected", caption: "Rejected"},
 								{value: "Pending", caption: "Pending"},
+							]
+						},
+					},
+				},
+				
+				
+				"SendEMAIL": {
+					// oneliner: true,
+					menu: [
+						// Deletes END
+						{
+							caption: "Delete this <SendEMAIL>",
+							action: Xonomy.deleteElement
+						},
+					],
+					canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand"],
+					attributes: {
+						"From": {
+							asker: Xonomy.askString,
+						},
+						"To": {
+							asker: Xonomy.askString,
+						},
+						"Subject": {
+							asker: Xonomy.askString,
+						},
+						"Type": {
+							asker: Xonomy.askPicklist,
+							askerParameter: [
+								{value: "text", caption: "Text"},
+								{value: "text/html", caption: "Text/HTML"},
 							]
 						},
 					},

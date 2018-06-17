@@ -54,7 +54,7 @@ if ( $input{submod} eq 'showLogs' ) {
 	
 	for my $i ( 0 .. $#{$LOG} ) {
 		my $color = '#000000';
-		if ( $LOG->[$i][1] =~ /^Comparison\:|Setting value|Remote Windows Command|Remote Linux Command|Local Linux Command/ ) {
+		if ( $LOG->[$i][1] =~ /^Comparison\:|Setting value|Remote Windows Command|Remote Linux Command|Local Linux Command|SendEMAIL/ ) {
 			$color = '#969696';
 		}
 		$LOG->[$i][1] =~ s/\n/<br\/>/g;

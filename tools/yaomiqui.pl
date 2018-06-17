@@ -25,6 +25,7 @@ use XML::Simple;
 use JSON;
 use FindBin qw($RealBin);
 use strict;
+use Net::OpenSSH;
 use Data::Dumper;
 
 our ($ticketNumber, $dbh, %VAR, $jsonCode);
@@ -269,7 +270,8 @@ sub runDO {
 	my @output;
 	
 	foreach my $DO ( @{$DOarray} ) {
-	
+		# $VAR{Error} = '';
+		
 		if ( $DO->{execLinuxCommand} ) {
 			my $linuxCommand = replaceSpecChar($DO->{execLinuxCommand}->{command});
 			
@@ -280,7 +282,7 @@ sub runDO {
 			## debug
 			# print "RESULTS:\n" . $VAR{ $DO->{execLinuxCommand}->{catchVarName} } . "\n\n";
 			
-			mlog($TT, qq~Linux Command [$linuxCommand] Executed on Local Server [localhost]. Results: []~);
+			mlog($TT, qq~Linux Command [$linuxCommand] Executed on Local Server [localhost]. Results: [$VAR{ $DO->{execLinuxCommand}->{catchVarName} }]~);
 		}
 		
 		
@@ -288,32 +290,65 @@ sub runDO {
 			my $remoteLinuxCommand;
 			if ( $DO->{execRemoteLinuxCommand}->{publicKey} ) {
 				$remoteLinuxCommand = replaceSpecChar($DO->{execRemoteLinuxCommand}->{command});
-				$remoteLinuxCommand =~ s/'/'\\''/g;
+				# $remoteLinuxCommand =~ s/'/'\\''/g;
 				$DO->{execRemoteLinuxCommand}->{remoteUser} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{remoteUser});
 				$DO->{execRemoteLinuxCommand}->{remoteHost} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{remoteHost});
 				$DO->{execRemoteLinuxCommand}->{publicKey} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{publicKey});
 				
-				$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } = `/usr/bin/ssh -o StrictHostKeyChecking=no -o LogLevel=QUIET -i $DO->{execRemoteLinuxCommand}->{publicKey} $DO->{execRemoteLinuxCommand}->{remoteUser}\@$DO->{execRemoteLinuxCommand}->{remoteHost} -t -t '$remoteLinuxCommand 2>&1'`;
-				$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } =~ s/^\n//g;
-				$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } =~ s/\n$//g;
-				
-				mlog($TT, qq~Remote Linux Command [$remoteLinuxCommand] Executed on Remote Server [$DO->{execRemoteLinuxCommand}->{remoteHost}]. Results: []~);
+				my $ssh = Net::OpenSSH->new($DO->{execRemoteLinuxCommand}->{remoteHost},
+					user		=> $DO->{execRemoteLinuxCommand}->{remoteUser},
+					key_path	=> $DO->{execRemoteLinuxCommand}->{publicKey},
+					master_opts => [-o => "StrictHostKeyChecking=no", -o => "LogLevel=QUIET"]
+				);
+				my $results;
+				unless ( $ssh->error ) {
+					$results = $ssh->capture2($remoteLinuxCommand);
+					$results =~ s/\n//g;
+					unless ( $ssh->error ) {
+						mlog($TT, qq~Remote Linux Command [$remoteLinuxCommand] Executed on Remote Server [$DO->{execRemoteLinuxCommand}->{remoteHost}]. Results: [$results]~ . "\nError: []");
+					} else {
+						$VAR{Error} = $ssh->error;
+						mlog($TT, qq~Remote Linux Command [$remoteLinuxCommand] Executed on Remote Server [$DO->{execRemoteLinuxCommand}->{remoteHost}]. Results: [$results]~ . "\nError: [$VAR{Error}]");
+					}
+				} else {
+					$VAR{Error} = $ssh->error;
+					mlog($TT, qq~Remote Linux Command [$remoteLinuxCommand] Executed on Remote Server [$DO->{execRemoteLinuxCommand}->{remoteHost}]. Results: [$results]~ . "\nError: [$VAR{Error}]");
+				}
+				# $VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } = `/usr/bin/ssh -o StrictHostKeyChecking=no -o LogLevel=QUIET -i $DO->{execRemoteLinuxCommand}->{publicKey} $DO->{execRemoteLinuxCommand}->{remoteUser}\@$DO->{execRemoteLinuxCommand}->{remoteHost} -t -t '$remoteLinuxCommand 2>&1'`;
+				# $VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } =~ s/^\n//g;
+				# $VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } =~ s/\n$//g;
+				# mlog($TT, qq~Remote Linux Command [$remoteLinuxCommand] Executed on Remote Server [$DO->{execRemoteLinuxCommand}->{remoteHost}]. Results: []~);
 			}
 			else {
 				$remoteLinuxCommand = replaceSpecChar($DO->{execRemoteLinuxCommand}->{command});
-				$remoteLinuxCommand =~ s/'/'\\''/g;
+				# $remoteLinuxCommand =~ s/'/'\\''/g;
 				$DO->{execRemoteLinuxCommand}->{remoteUser} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{remoteUser});
 				$DO->{execRemoteLinuxCommand}->{remoteHost} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{remoteHost});
 				$DO->{execRemoteLinuxCommand}->{passwd} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{passwd});
 				
-				$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } = `/usr/bin/sshpass -p "$DO->{execRemoteLinuxCommand}->{passwd}" /usr/bin/ssh -o StrictHostKeyChecking=no -o LogLevel=QUIET $DO->{execRemoteLinuxCommand}->{remoteUser}\@$DO->{execRemoteLinuxCommand}->{remoteHost} -t -t '$remoteLinuxCommand 2>&1'`;
-				$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } =~ s/^\n//g;
-				$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } =~ s/\n$//g;
-				
-				# ## debug
-				# print "RESULTS:\n" . $VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } . "\n\n";
-				
-				mlog($TT, qq~Remote Linux Command [$remoteLinuxCommand] Executed on Remote Server [$DO->{execRemoteLinuxCommand}->{remoteHost}]. Results: []~);
+				my $ssh = Net::OpenSSH->new($DO->{execRemoteLinuxCommand}->{remoteHost},
+					user		=> $DO->{execRemoteLinuxCommand}->{remoteUser},
+					password	=> $DO->{execRemoteLinuxCommand}->{passwd},
+					master_opts => [-o => "StrictHostKeyChecking=no", -o => "LogLevel=QUIET"]
+				);
+				my $results;
+				unless ( $ssh->error ) {
+					$results = $ssh->capture2($remoteLinuxCommand);
+					$results =~ s/\n//g;
+					unless ( $ssh->error ) {
+						mlog($TT, qq~Remote Linux Command [$remoteLinuxCommand] Executed on Remote Server [$DO->{execRemoteLinuxCommand}->{remoteHost}]. Results: [$results]~ . "\nError: []");
+					} else {
+						$VAR{Error} = $ssh->error;
+						mlog($TT, qq~Remote Linux Command [$remoteLinuxCommand] Executed on Remote Server [$DO->{execRemoteLinuxCommand}->{remoteHost}]. Results: [$results]~ . "\nError: [$VAR{Error}]");
+					}
+				} else {
+					$VAR{Error} = $ssh->error;
+					mlog($TT, qq~Remote Linux Command [$remoteLinuxCommand] Executed on Remote Server [$DO->{execRemoteLinuxCommand}->{remoteHost}]. Results: [$results]~ . "\nError: [$VAR{Error}]");
+				}
+				# $VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } = `/usr/bin/sshpass -p "$DO->{execRemoteLinuxCommand}->{passwd}" /usr/bin/ssh -o StrictHostKeyChecking=no -o LogLevel=QUIET $DO->{execRemoteLinuxCommand}->{remoteUser}\@$DO->{execRemoteLinuxCommand}->{remoteHost} -t -t '$remoteLinuxCommand 2>&1'`;
+				# $VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } =~ s/^\n//g;
+				# $VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } =~ s/\n$//g;
+				# mlog($TT, qq~Remote Linux Command [$remoteLinuxCommand] Executed on Remote Server [$DO->{execRemoteLinuxCommand}->{remoteHost}]. Results: []~);
 			}
 		}
 		
@@ -330,23 +365,27 @@ sub runDO {
 			
 			$DO->{execRemoteWindowsCommand}->{remoteDomain} = $DO->{execRemoteWindowsCommand}->{remoteDomain} . '/' if $DO->{execRemoteWindowsCommand}->{remoteDomain};
 			
-			$VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} } = `winexe -k $DO->{execRemoteWindowsCommand}->{useKerberos} -U '$DO->{execRemoteWindowsCommand}->{remoteDomain}$DO->{execRemoteWindowsCommand}->{remoteUser}\%$DO->{execRemoteWindowsCommand}->{remotePasswd}' //$DO->{execRemoteWindowsCommand}->{remoteHost} '$remoteWindowsCommand' 2>/dev/null`;
+			my $winerrfile = '/tmp/' . $TT . '.err';
+			
+			$VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} } = `winexe -k $DO->{execRemoteWindowsCommand}->{useKerberos} -U '$DO->{execRemoteWindowsCommand}->{remoteDomain}$DO->{execRemoteWindowsCommand}->{remoteUser}\%$DO->{execRemoteWindowsCommand}->{remotePasswd}' //$DO->{execRemoteWindowsCommand}->{remoteHost} '$remoteWindowsCommand' 2>$winerrfile`;
 			$VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} } =~ s/^\n//g;
 			$VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} } =~ s/\n$//g;
 			
 			## debug
 			# print qq~COMMAND LINE:winexe -U '$DO->{execRemoteWindowsCommand}->{remoteDomain}$DO->{execRemoteWindowsCommand}->{remoteUser}\%$DO->{execRemoteWindowsCommand}->{remotePasswd}' //$DO->{execRemoteWindowsCommand}->{remoteHost} '$remoteWindowsCommand'\n~;
 			
-			if ( $VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} } ) {
-				$VAR{Error} = '';
+			$VAR{Error} = `cat $winerrfile 2>/dev/null`;
+			$VAR{Error} =~ s/^\n//g;
+			$VAR{Error} =~ s/\n$//g;
+			
+			unless ( $VAR{Error} ) {
 				mlog($TT, qq~Remote Windows Command [$remoteWindowsCommand] Executed on Remote Server [$DO->{execRemoteWindowsCommand}->{remoteHost}].\nResults: [$VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} }]~ . "\nError: []");
-			} else {
-				$VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} } = `winexe -k $DO->{execRemoteWindowsCommand}->{useKerberos} -U '$DO->{execRemoteWindowsCommand}->{remoteDomain}$DO->{execRemoteWindowsCommand}->{remoteUser}\%$DO->{execRemoteWindowsCommand}->{remotePasswd}' //$DO->{execRemoteWindowsCommand}->{remoteHost} '$remoteWindowsCommand' 2>&1`;
-				$VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} } =~ s/^\n//g;
-				$VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} } =~ s/\n$//g;
-				$VAR{Error} = $VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} };
-				mlog($TT, qq~Remote Windows Command [$remoteWindowsCommand] Executed on Remote Server [$DO->{execRemoteWindowsCommand}->{remoteHost}].\nResults: []~ . "\nError: [" . $VAR{Error} . "]");
 			}
+			else {
+				mlog($TT, qq~Remote Windows Command [$remoteWindowsCommand] Executed on Remote Server [$DO->{execRemoteWindowsCommand}->{remoteHost}].\nResults: [$VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} }]~ . "\nError: [" . $VAR{Error} . "]");
+			}
+			
+			unlink "$winerrfile";
 		}
 		
 		
@@ -402,11 +441,6 @@ sub runDO {
 		}
 		
 		
-		# if ( $DO->{SplitFile} ) {
-			# 
-		# }
-		
-		
 		if ( $DO->{FOREACH} ) {
 			foreach my $i ( @{ $VAR{ $DO->{FOREACH}->{arrayName} } } ) {
 				$VAR{i} = $i;
@@ -430,6 +464,41 @@ sub runDO {
 		}
 		
 		
+		if ( $DO->{SendEMAIL} ) {
+			if ( $DO->{SendEMAIL}->{Subject} and $DO->{SendEMAIL}->{From} and $DO->{SendEMAIL}->{To} and $DO->{SendEMAIL}->{Type} and $DO->{SendEMAIL}->{Body} ) {
+				
+				$DO->{SendEMAIL}->{From} =~ s/\\//g;
+				$DO->{SendEMAIL}->{To} =~ s/\\//g;
+				
+				if ( $DO->{SendEMAIL}->{From} =~ /\@/ and $DO->{SendEMAIL}->{To} =~ /\@/ ) {
+					use MIME::Lite;
+					my $msg = MIME::Lite->new(
+								Subject => $DO->{SendEMAIL}->{Subject},
+								From    => $DO->{SendEMAIL}->{From},
+								To      => $DO->{SendEMAIL}->{To},
+								Type    => $DO->{SendEMAIL}->{Type},
+								Data    => $DO->{SendEMAIL}->{Body}
+							);
+					$msg->attr('content-type.charset' => 'UTF-8');
+					
+					# $msg->send();
+					eval { $msg->send() };
+					$VAR{Error} = "MIME::Lite->send failed: $@" if $@;
+					
+					my $results = $msg->last_send_successful();
+					$results = 'Ok' if $results == 1;
+					mlog($TT, qq~SendEMAIL Executed. Results: [$results]~);
+				} else {
+					$VAR{Error} = qq~Error: Some data is wrong [$DO->{SendEMAIL}->{From} or $DO->{SendEMAIL}->{To}]~;
+					mlog($TT, qq~SendEMAIL NOT Executed. Error: Some data is wrong [$DO->{SendEMAIL}->{From} or $DO->{SendEMAIL}->{To}]~);
+				}
+			} else {
+				$VAR{Error} = qq~Error: Some data is missing [Subject, From, To, Type or Body]~;
+				mlog($TT, qq~SendEMAIL NOT Executed. Error: Some data is missing [Subject, From, To, Type or Body]~);
+			}
+		}
+		
+		
 		if ( $DO->{LOGING} ) {
 			
 			# ## debug
@@ -442,7 +511,9 @@ sub runDO {
 		if ( $DO->{END} ) {
 			runEND($DO->{END}->{value}, $TT);
 		}
-		elsif ( $DO->{RETURN} ) {
+		
+		
+		if ( $DO->{RETURN} ) {
 			runRETURN($DO->{RETURN}->{value}, $TT);
 		}
 		
@@ -708,6 +779,8 @@ sub forceDOarray {
 	$string =~ s/<\/FOREACH>/<\/FOREACH><\/DO>/g;
 	$string =~ s/<AUTOBOT/<DO><AUTOBOT/g;
 	$string =~ s/<\/AUTOBOT>/<\/AUTOBOT><\/DO>/g;
+	$string =~ s/<SendEMAIL/<DO><SendEMAIL/g;
+	$string =~ s/<\/SendEMAIL>/<\/SendEMAIL><\/DO>/g;
 	$string =~ s/<LOGING /<DO><LOGING /g;
 	$string =~ s/<RETURN /<DO><RETURN /g;
 	$string =~ s/<END /<DO><END /g;

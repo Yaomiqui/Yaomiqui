@@ -23,7 +23,7 @@ export LC_ALL=en_US.UTF-8
 
 source ./keys_auto.conf
 
-yum install -y wget vim net-tools httpd perl perl-core perl-CGI perl-DBI mod_ssl perl-JSON perl-XML-Simple
+yum install -y wget vim net-tools httpd perl perl-core perl-CGI perl-DBI mod_ssl perl-JSON perl-XML-Simple sendmail
 
 wget -c http://repo.mysql.com/mysql-community-release-el7-5.noarch.rpm
 
@@ -33,7 +33,7 @@ yum install -y mysql-server perl-DBD-MySQL
 
 rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 
-yum --enablerepo=epel install -y sshpass perl-Parallel-ForkManager samba4-libs gnutls-devel
+yum --enablerepo=epel install -y sshpass perl-Parallel-ForkManager samba4-libs gnutls-devel perl-Net-OpenSSH perl-IO-Pty-Easy perl-MIME-Lite
 
 ### Install winexe. You can comment the next two lines to enhance performance. Then you can run it later.
 yum remove libbsd-devel

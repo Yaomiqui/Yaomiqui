@@ -29,7 +29,7 @@ source ./keys_auto.conf
 
 apt-get update
 
-apt install -y apache2 mysql-server sshpass libnet-openssh-perl libdbi-perl libdbd-mysql-perl libjson-perl libtest-json-perl libxml-validate-perl libparallel-forkmanager-perl
+apt install -y apache2 mysql-server sshpass libnet-openssh-perl libdbi-perl libdbd-mysql-perl libjson-perl libtest-json-perl libxml-validate-perl libparallel-forkmanager-perl libnet-openssh-perl libio-pty-perl sendmail libmime-lite-perl
 
 # Install winexe. You can comment the next five lines to enhance performance. Then you can run it later.
 apt-get -y install python2.7 gcc-mingw-w64 libtevent-dev samba-dev libsmbclient comerr-dev libc6-dev libpopt-dev --fix-missing

@@ -60,6 +60,10 @@ Restore_This_XML = Restore This XML
 Load_Restore_XML = Load/Restore XML
 Enter_XML_code = Enter XML code
 Insert_AutoBot_Name = Insert AutoBot Name
+Create_New_from_XML = Create New Autobot from XML
+Enter_XML_Code_to_import = Enter XML Code to import
+Enter_Autobot_ID = Enter the Autobot ID
+Enter_new_Autobot_ID = Enter a new Autobot ID
 
 
 [tickets]

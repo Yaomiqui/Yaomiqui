@@ -1,11 +1,9 @@
 %MSG = loadLang('design');
 
 my $html;
-$html .= qq~<div class="contentTitle">$MSG{Autobots_Design}</div>~ unless $input{'shtl'};
-
-
 
 unless ( $input{submod} ) {
+	$html .= qq~<div class="contentTitle">$MSG{Autobots_Design}</div>~ unless $input{'shtl'};
 	
 	$html .= qq~
 	<form method="post" action="index.cgi">
@@ -14,6 +12,17 @@ unless ( $input{submod} ) {
 	$MSG{Create_new_Autobot}: &nbsp; <input type="text" name="NewAutoBotName" maxlength="100" placeholder="$MSG{Type_a_new_NAME}" required> &nbsp; 
 	<input class="blueLightButton" type="submit" value="$MSG{Create_New}">
 	</form>
+	
+	&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 
+	
+	<div style="with:auto; padding: 0 40px 0 0;" align="right">
+	<form method="get" action="index.cgi">
+	<input type="hidden" name="mod" value="design">
+	<input type="hidden" name="submod" value="new_autoBot_from_xml">
+	<input class="blueLightButton" type="submit" value="$MSG{Create_New_from_XML}">
+	</form>
+	</div>
+	
 	<br><br>
 	~;
 	
@@ -59,33 +68,84 @@ unless ( $input{submod} ) {
 
 
 
+if ( $input{submod} eq 'new_autoBot_from_xml' ) {
+	$html .= qq~<div class="contentTitle">$MSG{Create_New_from_XML}</div>~ unless $input{'shtl'};
+	
+	$html .= qq~<table cellpadding="0" cellspacing="0"><tr><td align="right">
+	
+	<form method="post" action="index.cgi">
+	<input type="hidden" name="mod" value="design">
+	<input type="hidden" name="submod" value="new_autoBot">
+	$MSG{AutoBot_Name}: &nbsp; <input type="text" name="NewAutoBotName" maxlength="100" placeholder="$MSG{Type_a_new_NAME}" required> <br />
+	$MSG{Enter_Autobot_ID}: &nbsp; <input type="text" name="idAutoBotManual" maxlength="40" placeholder="$MSG{Enter_new_Autobot_ID}" required>  <br />
+	$MSG{Enter_XML_code}: &nbsp; <input type="text" name="xml" placeholder="$MSG{Enter_XML_Code_to_import}" required>
+	<br />
+	<br />
+	<input class="blueLightButton" type="submit" value="$MSG{Create_New}">
+	</form>
+	
+	</td></tr></table>~;
+}
+
+
+
 if ( $input{submod} eq 'new_autoBot' ) {
 	my $newID = `../generateEncKey.pl 40`;
+	if ( $input{idAutoBotManual} ) {
+		$newID = $input{idAutoBotManual};
+	}
+	# my $newID = $input{idAutoBotManual} ? $input{idAutoBotManual} : `../generateEncKey.pl 40`;
 	
 	connected();
 	my $sth = $dbh->prepare("SELECT idUser FROM users WHERE username = '$username'");
 	$sth->execute();
 	my ($myIDuser) = $sth->fetchrow_array;
 	$sth->finish;
-	$dbh->disconnect if ($dbh);
+	# $dbh->disconnect if ($dbh);
 	
-	connected();
+	# connected();
 	my $sth = $dbh->prepare("SELECT idAutoBot FROM autoBot WHERE idAutoBot = '$newID'");
 	$sth->execute();
 	my ($IDexists) = $sth->fetchrow_array;
 	$sth->finish;
-	$dbh->disconnect if ($dbh);
+	# $dbh->disconnect if ($dbh);
 	
 	unless ( $IDexists ) {
 		my $sysdate = sysdate();
-		connected();
 		my $xml = '<AUTO><ON><VAR name="number" compare="exists"/><VAR name="sys_id" compare="exists"/><VAR name="subject" compare="eq" value=""/><VAR name="state" compare="exists"/><VAR name="type" compare="exists"/></ON></AUTO>';
-		my $insert_string = "INSERT INTO autoBot (idAutoBot, autoBotName, deployedDate, idUserDeploy, active, autoBotXML) VALUES ('$newID', '$input{NewAutoBotName}', '$sysdate', '$myIDuser', '0', '$xml')";
+		
+		if ( $input{xml} ) {
+			$input{xml} =~ s/\%20/ /g;
+			$input{xml} =~ s/\%27/\'/g;
+			$input{xml} =~ s/\%22/\"/g;
+			$input{xml} =~ s/\%3B/\;/g;
+			$input{xml} =~ s/\%3A/\:/g;
+			$input{xml} =~ s/\%3C/\</g;
+			$input{xml} =~ s/\%3E/\>/g;
+			
+			$input{xml} =~ s/\&gt\;/\>/g;
+			$input{xml} =~ s/\&lt\;/\</g;
+			$input{xml} =~ s/\&amp;/\&/g;
+			$input{xml} =~ s/\&quot;/\"/g;
+			$input{xml} =~ s/\&apos\;/\'/g;
+			
+			$input{xml} =~ s/\n//g;
+			
+			$xml = $input{xml};
+		}
+		
+		# $html .= qq~
+		# VALUES ('$newID', '$input{NewAutoBotName}', '$sysdate', '$myIDuser', '0', <br>
+		# <pre>$xml</pre>
+		# ~;
+		
+		my $insert_string = "INSERT INTO autoBot (idAutoBot, autoBotName, deployedDate, idUserDeploy, active, autoBotXML) 
+		VALUES ('$newID', '$input{NewAutoBotName}', '$sysdate', '$myIDuser', '0', ?)";
 		$sth = $dbh->prepare("$insert_string");
-		$sth->execute();
+		$sth->execute($xml);
 		$sth->finish;
-		$dbh->disconnect if ($dbh);
 	}
+	$dbh->disconnect if ($dbh);
 	
 	print "Location: index.cgi?mod=design&submod=edit_autobot&autoBotId=$newID\n\n";
 }
@@ -210,6 +270,8 @@ if ( $input{submod} eq 'downloadXML' ) {
 
 
 if ( $input{submod} eq 'edit_autobot' ) {
+	$html .= qq~<div class="contentTitle">$MSG{Autobots_Design}</div>~ unless $input{'shtl'};
+	
 	my $QUERY = qq~SELECT * FROM autoBot WHERE idAutoBot = '$input{autoBotId}'~;
 	my $ADVRT;
 	my $CurrDeploy;
@@ -262,9 +324,9 @@ if ( $input{submod} eq 'edit_autobot' ) {
 	<input type="hidden" name="submod" value="save_autobot_data">
 	<input type="hidden" name="autoBotId" value="$ABOT[0]">
 	$MSG{AutoBot_Name}: &nbsp; <input type="text" name="autoBotName" value="$ABOT[1]" maxlength="100" placeholder="$MSG{Insert_AutoBot_Name}" required> &nbsp; &nbsp; 
-	$MSG{Description}: &nbsp; <input type="text" name="description" value="$ABOT[2]" maxlength="255" style="width: 400px;"> <br>
-	$MSG{Active}: &nbsp; <input type="radio" name="active" value="1" $chkActive> <br>
-	$MSG{InActive}: &nbsp; <input type="radio" name="active" value="0" $chkUnActive> &nbsp; &nbsp; &nbsp; 
+	$MSG{Description}: &nbsp; <input type="text" name="description" value="$ABOT[2]" maxlength="255" style="width: 400px;"> <br /><br />
+	<font color="#008000">$MSG{Active}</font>&nbsp;<input type="radio" name="active" value="1" $chkActive> &nbsp; 
+	 &nbsp; <input type="radio" name="active" value="0" $chkUnActive>&nbsp;<font color="#A52A2A">$MSG{InActive}</font> &nbsp; &nbsp; 
 	<input class="blueLightButton" type="submit" value="$MSG{Update_Data}">
 	</form>
 	<br>
@@ -276,15 +338,17 @@ if ( $input{submod} eq 'edit_autobot' ) {
 	<input type="hidden" name="submod" value="save_autobot_xml">
 	<input type="hidden" name="autoBotId" value="$input{autoBotId}">
 	
+	<br>
+	<hr style="border-bottom: 1px solid #0000FF" noshade>
+	<br>
+	
 	$MSG{Deployed_by} <i>$userDeploy</i> $MSG{on} $ABOT[3]
 	
 	<font color="#BB0000" style="padding-left: 200px;">$MSG{Load_Restore_XML}</font>: <input type="text" name="xml" placeholder="$MSG{Enter_XML_code}" required>
 	<button class="blueLightButton" type="submit" form="loadxml" value="$MSG{Restore_This_XML}">$MSG{Restore_This_XML}</button>
 	</form>
 	
-	<br>
-	<hr style="border-bottom: 1px solid #0000FF" noshade>
-	<br>
+	
 	
 	$MSG{XML_Edition}:~;
 	# $html .= qq~ &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp; &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp; 
