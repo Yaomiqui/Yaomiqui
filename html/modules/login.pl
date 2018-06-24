@@ -19,7 +19,14 @@ if ( $active ) {
 	
 	if ( $user_registred eq $user) {
 		if ( $crypt_passwd eq $crypt->encode($pass, $encKey) ) {
-			print "Set-Cookie: $vendor=$num_sesion \n";
+			# print "Set-Cookie: $vendor=$num_sesion \n";
+			$cookie = new CGI::Cookie(
+				-name    => $vendor,
+				-value   => $num_sesion,
+				-expires =>  $VAR{COOKIE_TERM},
+			);
+			print "Set-Cookie: $cookie\n";
+			
 			set_session_in_file($user);
 			
 			my $log = new Log::Man($VAR{log_dir}, $VAR{log_file}, $user_registred);

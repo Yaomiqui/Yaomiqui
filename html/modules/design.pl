@@ -129,7 +129,7 @@ if ( $input{submod} eq 'new_autoBot' ) {
 			$input{xml} =~ s/\&quot;/\"/g;
 			$input{xml} =~ s/\&apos\;/\'/g;
 			
-			$input{xml} =~ s/\n//g;
+			# $input{xml} =~ s/\n//g;
 			
 			$xml = $input{xml};
 		}
@@ -185,11 +185,9 @@ if ( $input{submod} eq 'save_autobot_xml' ) {
 		$input{xml} =~ s/\&quot;/\"/g;
 		$input{xml} =~ s/\&apos\;/\'/g;
 		
-		# $input{xml} =~ s/\\/\\\\/g;
-		$input{xml} =~ s/\n//g;
+		# $input{xml} =~ s/\n//g;
 		
 		my $sysdate = sysdate();
-		# $input{xml} = s/\r\n//g;		# If someone is using windows
 		
 		my $sth = $dbh->prepare(qq~UPDATE autoBot SET deployedDate=?, idUserDeploy=?, autoBotXML=? WHERE idAutoBot=?~);
 		$sth->execute($sysdate, $myIDuser, $input{xml}, $input{autoBotId});

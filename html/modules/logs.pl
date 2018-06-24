@@ -54,13 +54,14 @@ if ( $input{submod} eq 'showLogs' ) {
 	
 	for my $i ( 0 .. $#{$LOG} ) {
 		my $color = '#000000';
-		if ( $LOG->[$i][1] =~ /^Comparison\:|Setting value|Remote Windows Command|Remote Linux Command|Local Linux Command|SendEMAIL/ ) {
+		if ( $LOG->[$i][1] =~ /^Comparison\:|Setting value \[|Remote Windows Command \[|Linux Command \[|SendEMAIL|Returned value\: \[/ ) {
 			$color = '#969696';
 		}
 		$LOG->[$i][1] =~ s/\n/<br\/>/g;
 		$LOG->[$i][1] =~ s/Final State/<b>Final State<\/b>/;
 		$LOG->[$i][1] =~ s/NOTE/<b><i>NOTE<\/i><\/b>/;
 		$LOG->[$i][1] =~ s/Value Returned/<b><i>Value Returned<\/i><\/b>/;
+		$LOG->[$i][1] =~ s/AutoBot \[(.+)\] Executed/<b><i>AutoBot<\/i><\/b> \[$1\] <b><i>Executed<\/i><\/b>/;
 		
 		$html .= qq~
 		<table cellpadding="0" cellspacing="0" border="0" width="100%" style="padding-top: 8px; background-color: #E7E7E7;">

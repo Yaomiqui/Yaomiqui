@@ -54,6 +54,8 @@ $dbh->disconnect if ($dbh);
 
 my $jsonCode = $ARGV[2] ? $ARGV[2] : $TTS[10];
 $jsonCode =~ s/\\/\\\\/g;
+$jsonCode =~ s/\r//g;
+$jsonCode =~ s/\n//g;
 
 # ## debug
 # print "JSONCODE:\n" . $jsonCode . "\n";
@@ -81,6 +83,9 @@ if ( $json ) {
 		
 	####	CHECK FOR EACH AUTOBOT
 	AUTOBOT: for my $i ( 0 .. $#{$AB} ) {
+		
+		$AB->[$i][6] =~ s/\r//g;
+		$AB->[$i][6] =~ s/\n//g;
 		
 		$AB->[$i][6] =~ s/ xml\:space\=\'preserve\'//g;
 		
@@ -124,7 +129,7 @@ if ( $json ) {
 			## debug
 			# print "GOTCHA!! I have ticket '$TTS[1]' to this Autobot\n\n";
 			
-			mlog($TTS[1], qq~Ticket was caught by Autobot ID: <a href="index.cgi?mod=design&submod=edit_autobot&autoBotId=$AB->[$i][0]" target="_blank">[$AB->[$i][0]]</a>~) if $ticketNumber ne '00000000';
+			mlog($TTS[1], qq~Ticket was caught by Autobot ID: [<a href="index.cgi?mod=design&submod=edit_autobot&autoBotId=$AB->[$i][0]" target="_blank">$AB->[$i][0]</a>]~) if $ticketNumber ne '00000000';
 			
 			unless ( $ARGV[1] ) {
 				connected();
@@ -356,6 +361,7 @@ sub runDO {
 		if ( $DO->{execRemoteWindowsCommand} ) {
 			my $remoteWindowsCommand = replaceSpecChar($DO->{execRemoteWindowsCommand}->{command});
 			$remoteWindowsCommand =~ s/\'/\\\'/g;
+			$remoteWindowsCommand =~ s/\r//g;
 			$remoteWindowsCommand =~ s/\n//g;
 			
 			$DO->{execRemoteWindowsCommand}->{remoteUser} = replaceSpecChar($DO->{execRemoteWindowsCommand}->{remoteUser});
@@ -457,15 +463,27 @@ sub runDO {
 		
 		if ( $DO->{AUTOBOT} ) {
 			my $JsonVars = replaceSpecChar($DO->{AUTOBOT}->{JsonVars});
-			$VAR{ $DO->{AUTOBOT}->{catchVarName} } = `$RealBin/yaomiqui.pl '$TT' '$DO->{AUTOBOT}->{idAutoBot}' '$JsonVars' 2>&1`;
-			$VAR{ $DO->{AUTOBOT}->{catchVarName} } =~ s/\n//g;
 			
-			mlog($TT, qq~AutoBot [$DO->{AUTOBOT}->{idAutoBot}] Executed. Results: [$VAR{ $DO->{AUTOBOT}->{catchVarName} }]~);
+			$JsonVars =~ s/\r/ /g;
+			$JsonVars =~ s/\n/ /g;
+			
+			$VAR{ $DO->{AUTOBOT}->{catchVarName} } = `$RealBin/yaomiqui.pl '$TT' '$DO->{AUTOBOT}->{idAutoBot}' '$JsonVars' 2>&1`;
+			$VAR{ $DO->{AUTOBOT}->{catchVarName} } =~ s/^\n//g;
+			$VAR{ $DO->{AUTOBOT}->{catchVarName} } =~ s/\n$//g;
+			
+			mlog($TT, qq~AutoBot [<a href="index.cgi?mod=design&submod=edit_autobot&autoBotId=$DO->{AUTOBOT}->{idAutoBot}" target="_blank">$DO->{AUTOBOT}->{idAutoBot}</a>] Executed. Results: [$VAR{ $DO->{AUTOBOT}->{catchVarName} }]~);
 		}
 		
 		
 		if ( $DO->{SendEMAIL} ) {
 			if ( $DO->{SendEMAIL}->{Subject} and $DO->{SendEMAIL}->{From} and $DO->{SendEMAIL}->{To} and $DO->{SendEMAIL}->{Type} and $DO->{SendEMAIL}->{Body} ) {
+				
+				$DO->{SendEMAIL}->{Subject} = replaceSpecChar($DO->{SendEMAIL}->{Subject});
+				$DO->{SendEMAIL}->{From} = replaceSpecChar($DO->{SendEMAIL}->{From});
+				$DO->{SendEMAIL}->{To} = replaceSpecChar($DO->{SendEMAIL}->{To});
+				$DO->{SendEMAIL}->{Body} = replaceSpecChar($DO->{SendEMAIL}->{Body});
+				$DO->{SendEMAIL}->{Body} =~ s/\r//g;
+				$DO->{SendEMAIL}->{Body} =~ s/\n//g;
 				
 				$DO->{SendEMAIL}->{From} =~ s/\\//g;
 				$DO->{SendEMAIL}->{To} =~ s/\\//g;
