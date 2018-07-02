@@ -13,16 +13,6 @@ unless ( $input{submod} ) {
 	<input class="blueLightButton" type="submit" value="$MSG{Create_New}">
 	</form>
 	
-	&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 
-	
-	<div style="with:auto; padding: 0 40px 0 0;" align="right">
-	<form method="get" action="index.cgi">
-	<input type="hidden" name="mod" value="design">
-	<input type="hidden" name="submod" value="new_autoBot_from_xml">
-	<input class="blueLightButton" type="submit" value="$MSG{Create_New_from_XML}">
-	</form>
-	</div>
-	
 	<br><br>
 	~;
 	
@@ -54,7 +44,7 @@ unless ( $input{submod} ) {
 		if ( $autoBot->[$i][5] eq '1' ) {
 			$active = qq~<font color="#008000">$MSG{Active}</font>~;
 		}
-		$html .= qq~<tr>
+		$html .= qq~<tr class="gridRowContent">
 		<td class="gridContent" style="overflow: hidden; text-overflow: ellipsis"><a href="index.cgi?mod=design&submod=edit_autobot&autoBotId=$autoBot->[$i][0]">$autoBot->[$i][1]</a></td>
 		<td class="gridContent" style="overflow: hidden; text-overflow: ellipsis">$autoBot->[$i][2]</td>
 		<td class="gridContent">$autoBot->[$i][3]</td>
@@ -329,7 +319,7 @@ if ( $input{submod} eq 'edit_autobot' ) {
 	</form>
 	<br>
 	
-	$ADVRT
+	
 	
 	<form method="post" action="index.cgi" id="loadxml">
 	<input type="hidden" name="mod" value="design">
@@ -338,6 +328,9 @@ if ( $input{submod} eq 'edit_autobot' ) {
 	
 	<br>
 	<hr style="border-bottom: 1px solid #0000FF" noshade>
+	<br>
+	
+	$ADVRT
 	<br>
 	
 	$MSG{Deployed_by} <i>$userDeploy</i> $MSG{on} $ABOT[3]

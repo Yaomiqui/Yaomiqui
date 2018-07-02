@@ -30,53 +30,129 @@ if ( $input{submod} eq 'showLogs' ) {
 	$sth->finish;
 	$dbh->disconnect if ($dbh);
 	
-	$html .= qq~<p width="100%" align="right" style="padding-right: 80px"><a href="javascript:document.location.reload(true)"><img src="images/refresh-32x35.png" style="width: 20px"></a></p>
-	
-	<table cellpadding="0" cellspacing="0" border="0" class="gridTable" style="height: 120px">
-		<tr><td class="gridTitle">$MSG{Ticket}</td><td class="gridContent"><b>$TT[0]</b></td></tr>
-		<tr><td class="gridTitle">$MSG{Subject}</td><td class="gridContent">$TT[1]</td></tr>
-		<tr><td class="gridTitle">$MSG{AutoBot_Name}</td><td class="gridContent"><a href="index.cgi?mod=design&submod=edit_autobot&autoBotId=$TT[4]" target="_blank">$TT[2]</a></td></tr>
-		<tr><td class="gridTitle">$MSG{Initial_Date}</td><td class="gridContent">$TT[3]</td></tr>
-	</table>
-	~;
-	
-	connected();
-	my $sth = $dbh->prepare("SELECT insertDate, log FROM log WHERE numberTicket = '$input{numberTicket}' ORDER BY idLog ASC");
-	$sth->execute();
-	my $LOG = $sth->fetchall_arrayref;
-	$sth->finish;
-	$dbh->disconnect if ($dbh);
-	
-	$html .= qq~
-	<table cellpadding="0" cellspacing="0" border="0" style="width:auto; height: calc(100% - 150px); background-color: #E7E7E7;">
-	<tr><td width="100%" valign="top">
-	~;
-	
-	for my $i ( 0 .. $#{$LOG} ) {
-		my $color = '#000000';
-		if ( $LOG->[$i][1] =~ /^Comparison\:|Setting value \[|Remote Windows Command \[|Linux Command \[|SendEMAIL|Returned value\: \[/ ) {
-			$color = '#969696';
-		}
-		$LOG->[$i][1] =~ s/\n/<br\/>/g;
-		$LOG->[$i][1] =~ s/Final State/<b>Final State<\/b>/;
-		$LOG->[$i][1] =~ s/NOTE/<b><i>NOTE<\/i><\/b>/;
-		$LOG->[$i][1] =~ s/Value Returned/<b><i>Value Returned<\/i><\/b>/;
-		$LOG->[$i][1] =~ s/AutoBot \[(.+)\] Executed/<b><i>AutoBot<\/i><\/b> \[$1\] <b><i>Executed<\/i><\/b>/;
+	if ( $input{timeLine} eq 'true' ) {
+		$html .= qq~<div class="timeline">\n~;
+		$html .= qq~<p width="100%" align="right" style="padding: 20px 80px 0 0"><a href="javascript:document.location.reload(true)"><img src="images/refresh-32x35.png" style="width: 20px; position: fixed; z-index: 999;"></a></p>~;
 		
 		$html .= qq~
-		<table cellpadding="0" cellspacing="0" border="0" width="100%" style="padding-top: 8px; background-color: #E7E7E7;">
-			<tr>
-			<td style="border-bottom: 1px dashed #C9C9C9; padding: 4px 10px 4px 0; color: $color; width: 140px;" valign="top">$LOG->[$i][0]</td>
-			<td style="border-bottom: 1px dashed #C9C9C9; padding: 4px 10px 4px 0; color: $color;" valign="top">$LOG->[$i][1]</td>
-			</tr>
+		<div class="container left">
+			<div class="contentLine">
+				<p class="dateleft">$TT[3]</p>
+				<p>$MSG{Ticket}: <b>$TT[0]</b><br />
+				$MSG{Subject}: $TT[1]<br />
+				$MSG{AutoBot_Name}: <a href="index.cgi?mod=design&submod=edit_autobot&autoBotId=$TT[4]" target="_blank">$TT[2]</a><br />
+				$MSG{Initial_Date}: $TT[3]<br />
+				</p>
+			</div>
+		</div>
+		~;
+		
+		connected();
+		my $sth = $dbh->prepare("SELECT insertDate, log FROM log WHERE numberTicket = '$input{numberTicket}' ORDER BY idLog ASC");
+		$sth->execute();
+		my $LOG = $sth->fetchall_arrayref;
+		$sth->finish;
+		$dbh->disconnect if ($dbh);
+		
+		for my $i ( 0 .. $#{$LOG} ) {
+			my $side = 'left';
+			unless ( $LOG->[$i][1] =~ /^Ticket was caught by|NOTE:|Final State:|AutoBot \[/ ) {
+				$side = 'right';
+			}
+			
+			my $ST;
+			if ( $LOG->[$i][1] =~ /Final State: \[Resolved\]/ ) {
+				$ST = '#0000FF';
+			} elsif ( $LOG->[$i][1] =~ /Final State: \[Rejected\]/ ) {
+				$ST = '#BB0000';
+			} elsif ( $LOG->[$i][1] =~ /Final State: \[Pending\]/ ) {
+				$ST = '#9C7411';
+			} elsif ( $LOG->[$i][1] =~ /Final State: \[Failed\]/ ) {
+				$ST = '#FF0000';
+			}
+			
+			$LOG->[$i][1] =~ s/\n/<br\/>/g;
+			# $LOG->[$i][1] =~ s/Final State/<b>Final State<\/b>/;
+			# $LOG->[$i][1] =~ s/NOTE/<b><i>NOTE<\/i><\/b>/;
+			# $LOG->[$i][1] =~ s/Value Returned/<b><i>Value Returned<\/i><\/b>/;
+			$LOG->[$i][1] =~ s/AutoBot \[(.+)\] Executed/<b><i>AutoBot<\/i><\/b> \[$1\] <b><i>Executed<\/i><\/b>/;
+			$LOG->[$i][1] =~ s/Final State: \[([a-zA-Z]+)\]/Final State: \[<font color="$ST">$1<\/font>\]/;
+			
+			
+			
+			$html .= qq~
+			<div class="container $side">
+				<div class="contentLine">
+					<p class="date$side">$LOG->[$i][0]</p>
+					<p>$LOG->[$i][1]</p>
+				</div>
+			</div>
+			~;
+		}
+		
+		$html .= qq~<br><br></div>\n~;
+	} else {
+		$html .= qq~<p width="100%" align="right" style="padding: 20px 80px 0 0"><a href="javascript:document.location.reload(true)"><img src="images/refresh-32x35.png" style="width: 20px; position: fixed; z-index: 999;"></a></p>
+		
+		<table cellpadding="0" cellspacing="0" border="0" class="gridTable" style="height: 120px">
+			<tr><td class="gridTitle">$MSG{Ticket}</td><td class="gridContent"><b>$TT[0]</b></td></tr>
+			<tr><td class="gridTitle">$MSG{Subject}</td><td class="gridContent">$TT[1]</td></tr>
+			<tr><td class="gridTitle">$MSG{AutoBot_Name}</td><td class="gridContent"><a href="index.cgi?mod=design&submod=edit_autobot&autoBotId=$TT[4]" target="_blank">$TT[2]</a></td></tr>
+			<tr><td class="gridTitle">$MSG{Initial_Date}</td><td class="gridContent">$TT[3]</td></tr>
 		</table>
 		~;
+		
+		connected();
+		my $sth = $dbh->prepare("SELECT insertDate, log FROM log WHERE numberTicket = '$input{numberTicket}' ORDER BY idLog ASC");
+		$sth->execute();
+		my $LOG = $sth->fetchall_arrayref;
+		$sth->finish;
+		$dbh->disconnect if ($dbh);
+		
+		$html .= qq~
+		<table cellpadding="0" cellspacing="0" border="0" style="width:auto; height: calc(100% - 150px); background-color: #E7E7E7;">
+		<tr><td width="100%" valign="top">
+		~;
+		
+		for my $i ( 0 .. $#{$LOG} ) {
+			my $color = '#000000';
+			if ( $LOG->[$i][1] =~ /^Comparison\:|Setting value \[|Remote Windows Command \[|Linux Command \[|SendEMAIL|Returned value\: \[/ ) {
+				$color = '#969696';
+			}
+			
+			my $ST;
+			if ( $LOG->[$i][1] =~ /Final State: \[Resolved\]/ ) {
+				$ST = '#0000FF';
+			} elsif ( $LOG->[$i][1] =~ /Final State: \[Rejected\]/ ) {
+				$ST = '#BB0000';
+			} elsif ( $LOG->[$i][1] =~ /Final State: \[Pending\]/ ) {
+				$ST = '#9C7411';
+			} elsif ( $LOG->[$i][1] =~ /Final State: \[Failed\]/ ) {
+				$ST = '#FF0000';
+			}
+			
+			$LOG->[$i][1] =~ s/\n/<br\/>/g;
+			# $LOG->[$i][1] =~ s/Final State/<b>Final State<\/b>/;
+			$LOG->[$i][1] =~ s/NOTE/<b><i>NOTE<\/i><\/b>/;
+			$LOG->[$i][1] =~ s/Value Returned/<b><i>Value Returned<\/i><\/b>/;
+			$LOG->[$i][1] =~ s/AutoBot \[(.+)\] Executed/<b><i>AutoBot<\/i><\/b> \[$1\] <b><i>Executed<\/i><\/b>/;
+			$LOG->[$i][1] =~ s/Final State: \[([a-zA-Z]+)\]/Final State: \[<font color="$ST">$1<\/font>\]/;
+			
+			$html .= qq~
+			<table cellpadding="0" cellspacing="0" border="0" width="100%" style="padding-top: 8px; background-color: #E7E7E7;">
+				<tr>
+				<td style="border-bottom: 1px dashed #C9C9C9; padding: 4px 10px 4px 0; color: $color; width: 140px;" valign="top">$LOG->[$i][0]</td>
+				<td style="border-bottom: 1px dashed #C9C9C9; padding: 4px 10px 4px 0; color: $color;" valign="top">$LOG->[$i][1]</td>
+				</tr>
+			</table>
+			~;
+		}
+		
+		$html .= qq~
+		</tr></table>
+		<br><br>
+		~;
 	}
-	
-	$html .= qq~
-	</tr></table>
-	<br><br>
-	~;
 }
 
 

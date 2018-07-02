@@ -220,11 +220,7 @@ if ( $input{submod} eq 'new_record' ) {
 	# <button class="blueLightButton" onclick="javascript:popUpUserEdition('launcher.cgi?mod=accounts_edit&idUser=&shtl=1')">$MSG{New_user}</button>
 	# </p>
 	$html .= qq~
-	<p align="right" style="padding: 0 50px 8px 0;">
-	<input type="button" class="blueLightButton" onclick="location.href='index.cgi?mod=accounts_edit&idUser=';" value="$MSG{New_user}" />
-	</p>
-	
-	<table cellpadding="0" cellspacing="2" border="0" width="100%" class="gridTable" style="width: 100%; background-color: #FFFFFF">
+	<table cellpadding="0" cellspacing="0" border="0" width="100%" class="gridTable" style="width: 100%; background-color: #FFFFFF">
 		<tr>
 			<td class="gridTitle">$MSG{User_Name}</td>
 			<td class="gridTitle">$MSG{Name}</td>
@@ -238,7 +234,7 @@ if ( $input{submod} eq 'new_record' ) {
 	for my $i ( 0 .. $#{$users} ) {
 		$users->[$i][16] = 1 ? 'Yes' : 'No';
 		$html .= qq~
-		<tr>
+		<tr class="gridRowContent">
 			<td class="gridContent"><a href="index.cgi?mod=accounts_edit&idUser=$users->[$i][0]">$users->[$i][1]</a></td>
 			<td class="gridContent">$users->[$i][3]</td>
 			<td class="gridContent">$users->[$i][4]</td>
