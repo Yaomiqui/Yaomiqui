@@ -18,6 +18,15 @@ Ticket_Form = Formulario para Ticket
 AutoBot_Design = Diseño AutoBot
 Charts = Gráficas
 Reports = Reportes
+Autobots_List = Lista de Autobots
+Create_New_Autobot = Crear Nuevo Autobot
+Standard_View = Vista Standard
+Time_Line = Time Line
+Saving_Reports = Reportes de Ahorro
+Accounts_List = Lista de cuentas
+New_User = Nuevo Usuario
+About_Yaomiqui = Acerca de Yaomiqui
+License = Licencia
 
 
 [overview]
@@ -30,7 +39,7 @@ Search = Buscar
 [design]
 Autobots_Design = Diseño Autobots
 Create_new_Autobot = Crear nuevo Autobot
-Create_New = Create Nuevo
+Create_New = Crear Nuevo
 Type_a_new_NAME = Intruduzca un nuevo NOMBRE
 AutoBot_Name = Nombre de AutoBot
 Name = Nombre
