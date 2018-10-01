@@ -31,7 +31,7 @@
 							actionParameter: "<VAR name='' compare=''/>"
 						}
 					],
-					//canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand"],
+					//canDropTo: [],
 				},
 				"IF": {
 					backgroundColour: '#E3FAE3',
@@ -77,7 +77,7 @@
 							// actionParameter: "<IF/>"
 						// }
 					],
-					canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand"],
+					canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "FOREACH_NUMBER", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand", "IntegerArray", "Sleep"]
 				},
 				"VAR": {
 					backgroundColour: '#F3F3F3',
@@ -138,7 +138,7 @@
 							actionParameter: "<VAR name='' compare=''><DO/></VAR>"
 						}
 					],
-					canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand"],
+					canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "FOREACH_NUMBER", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand", "IntegerArray", "Sleep"],
 					attributes: {
 						"name": {
 							asker: Xonomy.askString,
@@ -194,7 +194,6 @@
 						{
 							caption: "Append a <execRemoteWindowsCommand>",
 							action: Xonomy.newElementChild,
-							// actionParameter: "<execRemoteWindowsCommand catchVarName=\"\" remoteHost=\"\" domain=\"\" remoteUser=\"\" passwd=\"\" command=\"\"  useKerberos=\"yes\" />"
 							actionParameter: "<execRemoteWindowsCommand catchVarName=\"\" remoteHost=\"\" domain=\"\" remoteUser=\"\" passwd=\"\" useKerberos=\"yes\"><command><![CDATA[]]></command></execRemoteWindowsCommand>"
 						},
 						{
@@ -216,19 +215,22 @@
 						{
 							caption: "Append a <JSONtoVar>",
 							action: Xonomy.newElementChild,
-							// actionParameter: "<JSONtoVar catchVarName=\"\" JsonSource=\"\"/>"
 							actionParameter: "<JSONtoVar catchVarName=\"\"><JsonSource><![CDATA[]]></JsonSource></JSONtoVar>"
 						},
 						{
 							caption: "Append a <IF>",
 							action: Xonomy.newElementChild,
-							// actionParameter: "<IF/>"
 							actionParameter: "<IF><VAR name='' compare=''><DO/></VAR></IF>"
 						},
 						{
 							caption: "Append a <FOREACH>",
 							action: Xonomy.newElementChild,
 							actionParameter: "<FOREACH element=\"i\" arrayName=\"\"><DO/></FOREACH>"
+						},
+						{
+							caption: "Append a <FOREACH_NUMBER>",
+							action: Xonomy.newElementChild,
+							actionParameter: "<FOREACH_NUMBER element=\"i\" initRange=\"\" endRange=\"\"><DO/></FOREACH_NUMBER>"
 						},
 						{
 							caption: "Append a <AUTOBOT>",
@@ -239,6 +241,16 @@
 							caption: "Append a <SendEMAIL>",
 							action: Xonomy.newElementChild,
 							actionParameter: "<SendEMAIL From=\"\" To=\"\" Subject=\"\" Type=\"text\"><Body><![CDATA[]]></Body></SendEMAIL>"
+						},
+						{
+							caption: "Append a <IntegerArray>",
+							action: Xonomy.newElementChild,
+							actionParameter: "<IntegerArray arrayName=\"\" initRange=\"\" endRange=\"\"/>"
+						},
+						{
+							caption: "Append a <Sleep>",
+							action: Xonomy.newElementChild,
+							actionParameter: "<Sleep seconds=\"1\"/>"
 						},
 						{
 							caption: "Append a <RETURN>",
@@ -271,7 +283,7 @@
 							action: Xonomy.deleteElement
 						},
 					],
-					canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand"],
+					canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "FOREACH_NUMBER", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand", "IntegerArray", "Sleep"]
 					// attributes: {
 						// "id": {
 							// asker: Xonomy.askString,
@@ -302,7 +314,7 @@
 							actionParameter: "<execLinuxCommand catchVarName=\"\"><command><![CDATA[]]></command></execLinuxCommand>"
 						}
 					],
-					canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand"],
+					canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "FOREACH_NUMBER", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand", "IntegerArray", "Sleep"],
 					attributes: {
 						"catchVarName": {
 							asker: Xonomy.askString,
@@ -333,7 +345,7 @@
 							actionParameter: "<execRemoteLinuxCommand catchVarName=\"\" remoteHost=\"\" remoteUser=\"\" passwd=\"\" publicKey=\"\"><command><![CDATA[]]></command></execRemoteLinuxCommand>"
 						}
 					],
-					canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand"],
+					canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "FOREACH_NUMBER", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand", "IntegerArray", "Sleep"],
 					attributes: {
 						"catchVarName": {
 							asker: Xonomy.askString,
@@ -376,7 +388,7 @@
 							actionParameter: "<execRemoteWindowsCommand catchVarName=\"\" remoteHost=\"\" domain=\"\" remoteUser=\"\" passwd=\"\" useKerberos=\"yes\"><command><![CDATA[]]></command></execRemoteWindowsCommand>"
 						}
 					],
-					canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand"],
+					canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "FOREACH_NUMBER", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand", "IntegerArray", "Sleep"],
 					attributes: {
 						"catchVarName": {
 							asker: Xonomy.askString,
@@ -425,7 +437,7 @@
 							actionParameter: "<JSONtoVar catchVarName=\"\"><JsonSource><![CDATA[]]></JsonSource></JSONtoVar>"
 						}
 					],
-					canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand"],
+					canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "FOREACH_NUMBER", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand", "IntegerArray", "Sleep"],
 					attributes: {
 						"catchVarName": {
 							asker: Xonomy.askString,
@@ -455,12 +467,35 @@
 							actionParameter: "<SetVar name=\"\"><value><![CDATA[]]></value></SetVar>"
 						}
 					],
-					canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand"],
+					canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "FOREACH_NUMBER", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand", "IntegerArray", "Sleep"],
 					attributes: {
 						"name": {
 							asker: Xonomy.askString,
 						},
 						"value": {
+							asker: Xonomy.askString,
+						},
+					}
+				},
+				
+				
+				"IntegerArray": {
+					menu: [
+						// Deletes SetVar
+						{
+							caption: "Delete this <IntegerArray>",
+							action: Xonomy.deleteElement
+						}
+					],
+					canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "FOREACH_NUMBER", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand", "IntegerArray", "Sleep"],
+					attributes: {
+						"arrayName": {
+							asker: Xonomy.askString,
+						},
+						"initRange": {
+							asker: Xonomy.askString,
+						},
+						"endRange": {
 							asker: Xonomy.askString,
 						},
 					}
@@ -485,7 +520,7 @@
 							// actionParameter: "<SplitVar arrayName=\"\" separator=\"\" inputVarName=\"\"/>"
 						// }
 					],
-					canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand"],
+					canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "FOREACH_NUMBER", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand", "IntegerArray", "Sleep"],
 					attributes: {
 						"arrayName": {
 							asker: Xonomy.askString,
@@ -531,7 +566,7 @@
 							// actionParameter: "<SplitFile arrayName=\"\" separator=\"\" inputFileName=\"\"/>"
 						// }
 					// ],
-					// canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand"],
+					// canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "FOREACH_NUMBER", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand", "IntegerArray", "Sleep"],
 					// attributes: {
 						// "arrayName": {
 							// asker: Xonomy.askString,
@@ -564,24 +599,43 @@
 							caption: "Delete this <FOREACH>",
 							action: Xonomy.deleteElement
 						},
-						// {
-							// caption: "New <FOREACH> before this",
-							// action: Xonomy.newElementBefore,
-							// actionParameter: "<FOREACH element=\"i\" arrayName=\"\"/>"
-						// },
-						// {
-							// caption: "New <FOREACH> after this",
-							// action: Xonomy.newElementAfter,
-							// actionParameter: "<FOREACH element=\"i\" arrayName=\"\"/>"
-						// }
 					],
-					canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand"],
+					canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "FOREACH_NUMBER", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand", "IntegerArray", "Sleep"],
 					attributes: {
 						"arrayName": {
 							asker: Xonomy.askString,
 						},
 						"element": {
 							isReadOnly: true
+						},
+					}
+				},
+				
+				
+				"FOREACH_NUMBER": {
+					menu: [
+						// CHILDS
+						{
+							caption: "Append a <DO>",
+							action: Xonomy.newElementChild,
+							actionParameter: "<DO/>"
+						},
+						// Deletes FOREACH
+						{
+							caption: "Delete this <FOREACH_NUMBER>",
+							action: Xonomy.deleteElement
+						},
+					],
+					canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "FOREACH_NUMBER", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand", "IntegerArray", "Sleep"],
+					attributes: {
+						"element": {
+							isReadOnly: true
+						},
+						"initRange": {
+							asker: Xonomy.askString,
+						},
+						"endRange": {
+							asker: Xonomy.askString,
 						},
 					}
 				},
@@ -605,7 +659,7 @@
 							actionParameter: "<AUTOBOT idAutoBot=\"\" catchVarName=\"\"><JsonVars><![CDATA[]]></JsonVars></AUTOBOT>"
 						}
 					],
-					canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand"],
+					canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "FOREACH_NUMBER", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand", "IntegerArray", "Sleep"],
 					attributes: {
 						"idAutoBot": {
 							asker: Xonomy.askString,
@@ -638,7 +692,7 @@
 							actionParameter: "<LOGING comment=\"\"/>"
 						}
 					],
-					canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand"],
+					canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "FOREACH_NUMBER", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand", "IntegerArray", "Sleep"],
 					attributes: {
 						"comment": {
 							asker: Xonomy.askString,
@@ -655,7 +709,7 @@
 							action: Xonomy.deleteElement
 						},
 					],
-					canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand"],
+					canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "FOREACH_NUMBER", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand", "IntegerArray", "Sleep"],
 					attributes: {
 						"value": {
 							asker: Xonomy.askString,
@@ -673,7 +727,7 @@
 							action: Xonomy.deleteElement
 						},
 					],
-					canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand"],
+					canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "FOREACH_NUMBER", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand", "IntegerArray", "Sleep"],
 					attributes: {
 						"value": {
 							asker: Xonomy.askPicklist,
@@ -682,6 +736,40 @@
 								{value: "Failed", caption: "Failed"},
 								{value: "Rejected", caption: "Rejected"},
 								{value: "Pending", caption: "Pending"},
+							]
+						},
+					},
+				},
+				
+				
+				"Sleep": {
+					// oneliner: true,
+					menu: [
+						// Deletes END
+						{
+							caption: "Delete this <Sleep>",
+							action: Xonomy.deleteElement
+						},
+					],
+					canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "FOREACH_NUMBER", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand", "IntegerArray", "Sleep"],
+					attributes: {
+						"seconds": {
+							asker: Xonomy.askPicklist,
+							askerParameter: [
+								{value: "1", caption: "1 Second"},
+								{value: "2", caption: "2 Seconds"},
+								{value: "3", caption: "3 Seconds"},
+								{value: "4", caption: "4 Seconds"},
+								{value: "5", caption: "5 Seconds"},
+								{value: "6", caption: "6 Seconds"},
+								{value: "7", caption: "7 Seconds"},
+								{value: "8", caption: "8 Seconds"},
+								{value: "9", caption: "9 Seconds"},
+								{value: "10", caption: "10 Seconds"},
+								{value: "20", caption: "20 Seconds"},
+								{value: "30", caption: "30 Seconds"},
+								{value: "60", caption: "60 Seconds"},
+								{value: "120", caption: "120 Seconds"},
 							]
 						},
 					},
@@ -697,7 +785,7 @@
 							action: Xonomy.deleteElement
 						},
 					],
-					canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand"],
+					canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "FOREACH_NUMBER", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand", "IntegerArray", "Sleep"],
 					attributes: {
 						"From": {
 							asker: Xonomy.askString,

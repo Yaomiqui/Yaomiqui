@@ -116,7 +116,7 @@ if ( $input{submod} eq 'showLogs' ) {
 		
 		for my $i ( 0 .. $#{$LOG} ) {
 			my $color = '#000000';
-			if ( $LOG->[$i][1] =~ /^Comparison\:|Setting value \[|Remote Windows Command \[|Linux Command \[|SendEMAIL|Returned value\: \[/ ) {
+			if ( $LOG->[$i][1] =~ /^Comparison\:|Array |Sleeping |Setting value \[|Remote Windows Command \[|Linux Command \[|SendEMAIL|Returned value\: \[|Starting to execute FOREACH|FOREACH.* executed/ ) {
 				$color = '#969696';
 			}
 			
