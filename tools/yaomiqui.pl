@@ -29,7 +29,9 @@ use Net::OpenSSH;
 use Data::Dumper;
 
 our ($ticketNumber, $dbh, %VAR, $jsonCode);
-my %VENV = get_vars();
+our %VENV = get_vars();
+
+$VAR{TIMEOUT} = $VENV{TIMEOUT};
 
 if ( $ARGV[0] ) {
 	$ticketNumber = $ARGV[0];
@@ -120,23 +122,43 @@ if ( $json ) {
 			# ## debug
 			# print "\$catch = $catch\n";
 			
-			next AUTOBOT unless $catch;		## 	THIS TICKET DOES NOT APLIES FOR THIS AUTOBOT
+			next AUTOBOT unless $catch;		## 	THIS TICKET DOES NOT APPLIES FOR THIS AUTOBOT BECAUSE ONE OF THEM IS NOT TRUE
 		}
 		
 		
 		if ( $catch ) {
 			
-			## debug
-			# print "GOTCHA!! I have ticket '$TTS[1]' to this Autobot\n\n";
-			
-			mlog($TTS[1], qq~Ticket was caught by Autobot ID: [<a href="index.cgi?mod=design&submod=edit_autobot&autoBotId=$AB->[$i][0]" target="_blank">$AB->[$i][0]</a>]~) if $ticketNumber ne '00000000';
-			
 			unless ( $ARGV[1] ) {
 				connected();
-				my $sth = $dbh->prepare("UPDATE ticket SET idAutoBotCatched='$AB->[$i][0]' WHERE numberTicket='$ticketNumber'");
-				$sth->execute();
-				$sth->finish;
-				$dbh->disconnect if $dbh;
+				
+				##### PARANOIAC!!! CHECK FOR id AutoBotCatched IF IS EMPTY (AGAIN) AND LOCK THE TABLE TO CATCH THIS
+				$dbh->do("LOCK TABLES ticket WRITE, ticket AS ticketRead READ");
+				
+				my $chk = $dbh->prepare("SELECT idAutoBotCatched FROM ticket AS ticketRead WHERE numberTicket = '$ticketNumber'");
+				$chk->execute();
+				my $ABc = $chk->fetchall_arrayref;
+				$chk->finish;
+				
+				my $doLog = 0;
+				unless ( $ABc->[0][0] ) {
+					my $sth = $dbh->prepare("UPDATE ticket SET idAutoBotCatched='$AB->[$i][0]' WHERE numberTicket='$ticketNumber'");
+					$sth->execute();
+					$sth->finish;
+					$dbh->do("UNLOCK TABLES");
+					$dbh->disconnect if $dbh;
+					$doLog = 1;
+				} else {
+					$dbh->do("UNLOCK TABLES");
+					$dbh->disconnect if $dbh;
+					next AUTOBOT;
+				}
+				
+				if ( $doLog ) {
+					## debug
+					# print "GOTCHA!! I have ticket '$TTS[1]' to this Autobot\n\n";
+					mlog($TTS[1], qq~Ticket was caught by Autobot ID: [<a href="index.cgi?mod=design&submod=edit_autobot&autoBotId=$AB->[$i][0]" target="_blank">$AB->[$i][0]</a>]~) if $ticketNumber ne '00000000';
+				}
+					
 			}
 			
 			####	waterfall depth
@@ -256,7 +278,7 @@ sub replaceHash {
 	my $content;
 	my @T = split(/\}\{/, $tmp);
 	
-	if ( scalar @T == 5 ) { $content = $VAR{$T[0]}{$T[1]}{$T[2]}{$T[3]}{$T[4]} }
+	   if ( scalar @T == 5 ) { $content = $VAR{$T[0]}{$T[1]}{$T[2]}{$T[3]}{$T[4]} }
 	elsif ( scalar @T == 4 ) { $content = $VAR{$T[0]}{$T[1]}{$T[2]}{$T[3]} }
 	elsif ( scalar @T == 3 ) { $content = $VAR{$T[0]}{$T[1]}{$T[2]} }
 	elsif ( scalar @T == 2 ) { $content = $VAR{$T[0]}{$T[1]} }
@@ -276,372 +298,401 @@ sub runDO {
 	my @output;
 	
 	foreach my $DO ( @{$DOarray} ) {
+		undef $VAR{Error};
 		
-		if ( $DO->{execLinuxCommand} ) {
-			undef $VAR{Error};
+		## Timeout function starts
+		eval {
+			local $SIG{ALRM} = sub { die "timeout\n" };
+			alarm $VAR{TIMEOUT};
+			## Timeout function 1rst section
 			
-			my $linuxCommand = replaceSpecChar($DO->{execLinuxCommand}->{command});
-			$linuxCommand =~ s/\\/\\\\/g;
 			
-			my $linerrfile = '/tmp/' . $TT . '.err';
 			
-			$VAR{ $DO->{execLinuxCommand}->{catchVarName} } = `$linuxCommand 2>$linerrfile`;
-			$VAR{ $DO->{execLinuxCommand}->{catchVarName} } =~ s/^\n//g;
-			$VAR{ $DO->{execLinuxCommand}->{catchVarName} } =~ s/\n$//g;
 			
-			$VAR{Error} = `cat $linerrfile 2>/dev/null`;
-			$VAR{Error} =~ s/^\n//g;
-			$VAR{Error} =~ s/\n$//g;
 			
-			## debug
-			# print "RESULTS:\n" . $VAR{ $DO->{execLinuxCommand}->{catchVarName} } . "\n\n";
+			## START TO EXECUTE ALL OF DO FUNCTION
 			
-			unless ( $VAR{Error} ) {
-				mlog($TT, qq~Linux Command [$linuxCommand] Executed on Local Server [localhost]. Results: [$VAR{ $DO->{execLinuxCommand}->{catchVarName} }]~ . "\nError: []");
-			} else {
-				mlog($TT, qq~Linux Command [$linuxCommand] Executed on Local Server [localhost]. Results: [$VAR{ $DO->{execLinuxCommand}->{catchVarName} }]~ . "\nError: [$VAR{Error}]");
+			if ( $DO->{execLinuxCommand} ) {
+				# undef $VAR{Error};
+				
+				my $linuxCommand = replaceSpecChar($DO->{execLinuxCommand}->{command});
+				$linuxCommand =~ s/\\/\\\\/g;
+				
+				my $linerrfile = '/tmp/' . $TT . '.err';
+				
+				$VAR{ $DO->{execLinuxCommand}->{catchVarName} } = `$linuxCommand 2>$linerrfile`;
+				$VAR{ $DO->{execLinuxCommand}->{catchVarName} } =~ s/^\n//g;
+				$VAR{ $DO->{execLinuxCommand}->{catchVarName} } =~ s/\n$//g;
+				
+				$VAR{Error} = `cat $linerrfile 2>/dev/null`;
+				$VAR{Error} =~ s/^\n//g;
+				$VAR{Error} =~ s/\n$//g;
+				
+				## debug
+				# print "RESULTS:\n" . $VAR{ $DO->{execLinuxCommand}->{catchVarName} } . "\n\n";
+				
+				unless ( $VAR{Error} ) {
+					mlog($TT, qq~Linux Command [$linuxCommand] Executed on Local Server [localhost]. Results: [$VAR{ $DO->{execLinuxCommand}->{catchVarName} }]~ . "\nError: []");
+				} else {
+					mlog($TT, qq~Linux Command [$linuxCommand] Executed on Local Server [localhost]. Results: [$VAR{ $DO->{execLinuxCommand}->{catchVarName} }]~ . "\nError: [$VAR{Error}]");
+				}
+				
+				unlink "$linerrfile";
 			}
 			
-			unlink "$linerrfile";
-		}
-		
-		
-		if ( $DO->{execRemoteLinuxCommand} ) {
-			undef $VAR{Error};
-			my $remoteLinuxCommand;
-			if ( $DO->{execRemoteLinuxCommand}->{publicKey} ) {
-				$remoteLinuxCommand = replaceSpecChar($DO->{execRemoteLinuxCommand}->{command});
-				# $remoteLinuxCommand =~ s/'/'\\''/g;
-				$DO->{execRemoteLinuxCommand}->{remoteUser} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{remoteUser});
-				$DO->{execRemoteLinuxCommand}->{remoteHost} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{remoteHost});
-				$DO->{execRemoteLinuxCommand}->{publicKey} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{publicKey});
-				
-				my $ssh = Net::OpenSSH->new($DO->{execRemoteLinuxCommand}->{remoteHost},
-					user		=> $DO->{execRemoteLinuxCommand}->{remoteUser},
-					key_path	=> $DO->{execRemoteLinuxCommand}->{publicKey},
-					master_opts => [-o => "StrictHostKeyChecking=no", -o => "LogLevel=QUIET"]
-				);
-				
-				unless ( $ssh->error ) {
-					$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } = $ssh->capture2($remoteLinuxCommand);
+			
+			if ( $DO->{execRemoteLinuxCommand} ) {
+				# undef $VAR{Error};
+				my $remoteLinuxCommand;
+				if ( $DO->{execRemoteLinuxCommand}->{publicKey} ) {
+					$remoteLinuxCommand = replaceSpecChar($DO->{execRemoteLinuxCommand}->{command});
+					# $remoteLinuxCommand =~ s/'/'\\''/g;
+					$DO->{execRemoteLinuxCommand}->{remoteUser} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{remoteUser});
+					$DO->{execRemoteLinuxCommand}->{remoteHost} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{remoteHost});
+					$DO->{execRemoteLinuxCommand}->{publicKey} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{publicKey});
+					
+					my $ssh = Net::OpenSSH->new($DO->{execRemoteLinuxCommand}->{remoteHost},
+						user		=> $DO->{execRemoteLinuxCommand}->{remoteUser},
+						key_path	=> $DO->{execRemoteLinuxCommand}->{publicKey},
+						master_opts => [-o => 'StrictHostKeyChecking=no', -o => 'LogLevel=QUIET', -o => "ConnectTimeout=$VENV{CONNECTTIMEOUT}"]
+					);
 					
 					unless ( $ssh->error ) {
+						$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } = $ssh->capture2("$remoteLinuxCommand 2>&1");
+						$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } =~ s/^\n//g;
+						$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } =~ s/\n$//g;
 						mlog($TT, qq~Remote Linux Command [$remoteLinuxCommand] Executed on Remote Server [$DO->{execRemoteLinuxCommand}->{remoteHost}]. Results: [$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} }]~ . "\nError: []");
 					}
 					else {
 						$VAR{Error} = $ssh->error;
+						$VAR{Error} =~ s/^\n//g;
+						$VAR{Error} =~ s/\n$//g;
 						mlog($TT, qq~Remote Linux Command [$remoteLinuxCommand] Executed on Remote Server [$DO->{execRemoteLinuxCommand}->{remoteHost}]. Results: [$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} }]~ . "\nError: [$VAR{Error}]");
 					}
+					## END OF execRemoteLinuxCommand WITH PUBLIC KEY
 				}
 				else {
-					$VAR{Error} = $ssh->error;
-					mlog($TT, qq~Remote Linux Command [$remoteLinuxCommand] Executed on Remote Server [$DO->{execRemoteLinuxCommand}->{remoteHost}]. Results: [$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} }]~ . "\nError: [$VAR{Error}]");
-				}
-				## END OF execRemoteLinuxCommand WITH PUBLIC KEY
-			}
-			else {
-				undef $VAR{Error};
-				$remoteLinuxCommand = replaceSpecChar($DO->{execRemoteLinuxCommand}->{command});
-				# $remoteLinuxCommand =~ s/'/'\\''/g;
-				$DO->{execRemoteLinuxCommand}->{remoteUser} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{remoteUser});
-				$DO->{execRemoteLinuxCommand}->{remoteHost} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{remoteHost});
-				$DO->{execRemoteLinuxCommand}->{passwd} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{passwd});
-				
-				my $ssh = Net::OpenSSH->new($DO->{execRemoteLinuxCommand}->{remoteHost},
-					user		=> $DO->{execRemoteLinuxCommand}->{remoteUser},
-					password	=> $DO->{execRemoteLinuxCommand}->{passwd},
-					master_opts => [-o => "StrictHostKeyChecking=no", -o => "LogLevel=QUIET"]
-				);
-				
-				unless ( $ssh->error ) {
-					$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } = $ssh->capture2($remoteLinuxCommand);
+					# undef $VAR{Error};
+					$remoteLinuxCommand = replaceSpecChar($DO->{execRemoteLinuxCommand}->{command});
+					# $remoteLinuxCommand =~ s/'/'\\''/g;
+					$DO->{execRemoteLinuxCommand}->{remoteUser} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{remoteUser});
+					$DO->{execRemoteLinuxCommand}->{remoteHost} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{remoteHost});
+					$DO->{execRemoteLinuxCommand}->{passwd} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{passwd});
+					
+					my $ssh = Net::OpenSSH->new($DO->{execRemoteLinuxCommand}->{remoteHost},
+						user		=> $DO->{execRemoteLinuxCommand}->{remoteUser},
+						password	=> $DO->{execRemoteLinuxCommand}->{passwd},
+						master_opts => [-o => 'StrictHostKeyChecking=no', -o => 'LogLevel=QUIET', -o => "ConnectTimeout=$VENV{CONNECTTIMEOUT}"]
+					);
 					
 					unless ( $ssh->error ) {
+						$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } = $ssh->capture2("$remoteLinuxCommand 2>&1");
+						$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } =~ s/^\n//g;
+						$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } =~ s/\n$//g;
 						mlog($TT, qq~Remote Linux Command [$remoteLinuxCommand] Executed on Remote Server [$DO->{execRemoteLinuxCommand}->{remoteHost}]. Results: [$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} }]~ . "\nError: []");
 					}
 					else {
 						$VAR{Error} = $ssh->error;
+						$VAR{Error} =~ s/^\n//g;
+						$VAR{Error} =~ s/\n$//g;
 						mlog($TT, qq~Remote Linux Command [$remoteLinuxCommand] Executed on Remote Server [$DO->{execRemoteLinuxCommand}->{remoteHost}]. Results: [$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} }]~ . "\nError: [$VAR{Error}]");
 					}
+					## END OF execRemoteLinuxCommand WITH USER AND PASSWORD
+				}
+			}
+			
+			
+			if ( $DO->{execRemoteWindowsCommand} ) {
+				# undef $VAR{Error};
+				my $remoteWindowsCommand = replaceSpecChar($DO->{execRemoteWindowsCommand}->{command});
+				$remoteWindowsCommand =~ s/\'/\\\'/g;
+				$remoteWindowsCommand =~ s/\r//g;
+				$remoteWindowsCommand =~ s/\n//g;
+				
+				$DO->{execRemoteWindowsCommand}->{remoteUser} = replaceSpecChar($DO->{execRemoteWindowsCommand}->{remoteUser});
+				$DO->{execRemoteWindowsCommand}->{remoteHost} = replaceSpecChar($DO->{execRemoteWindowsCommand}->{remoteHost});
+				$DO->{execRemoteWindowsCommand}->{remotePasswd} = replaceSpecChar($DO->{execRemoteWindowsCommand}->{passwd});
+				$DO->{execRemoteWindowsCommand}->{remoteDomain} = replaceSpecChar($DO->{execRemoteWindowsCommand}->{domain});
+				
+				$DO->{execRemoteWindowsCommand}->{remoteDomain} = $DO->{execRemoteWindowsCommand}->{remoteDomain} . '/' if $DO->{execRemoteWindowsCommand}->{remoteDomain};
+				
+				my $winerrfile = '/tmp/' . $TT . '.err';
+				
+				$VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} } = `winexe -k $DO->{execRemoteWindowsCommand}->{useKerberos} -U '$DO->{execRemoteWindowsCommand}->{remoteDomain}$DO->{execRemoteWindowsCommand}->{remoteUser}\%$DO->{execRemoteWindowsCommand}->{remotePasswd}' //$DO->{execRemoteWindowsCommand}->{remoteHost} '$remoteWindowsCommand' 2>$winerrfile`;
+				$VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} } =~ s/^\n//g;
+				$VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} } =~ s/\n$//g;
+				
+				## debug
+				# print qq~COMMAND LINE:winexe -U '$DO->{execRemoteWindowsCommand}->{remoteDomain}$DO->{execRemoteWindowsCommand}->{remoteUser}\%$DO->{execRemoteWindowsCommand}->{remotePasswd}' //$DO->{execRemoteWindowsCommand}->{remoteHost} '$remoteWindowsCommand'\n~;
+				
+				$VAR{Error} = `cat $winerrfile 2>/dev/null`;
+				$VAR{Error} =~ s/^\n//g;
+				$VAR{Error} =~ s/\n$//g;
+				
+				unless ( $VAR{Error} ) {
+					mlog($TT, qq~Remote Windows Command [$remoteWindowsCommand] Executed on Remote Server [$DO->{execRemoteWindowsCommand}->{remoteHost}].\nResults: [$VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} }]~ . "\nError: []");
 				}
 				else {
-					$VAR{Error} = $ssh->error;
-					mlog($TT, qq~Remote Linux Command [$remoteLinuxCommand] Executed on Remote Server [$DO->{execRemoteLinuxCommand}->{remoteHost}]. Results: [$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} }]~ . "\nError: [$VAR{Error}]");
+					mlog($TT, qq~Remote Windows Command [$remoteWindowsCommand] Executed on Remote Server [$DO->{execRemoteWindowsCommand}->{remoteHost}].\nResults: [$VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} }]~ . "\nError: [" . $VAR{Error} . "]");
 				}
-				## END OF execRemoteLinuxCommand WITH USER AND PASSWORD
-			}
-		}
-		
-		
-		if ( $DO->{execRemoteWindowsCommand} ) {
-			undef $VAR{Error};
-			my $remoteWindowsCommand = replaceSpecChar($DO->{execRemoteWindowsCommand}->{command});
-			$remoteWindowsCommand =~ s/\'/\\\'/g;
-			$remoteWindowsCommand =~ s/\r//g;
-			$remoteWindowsCommand =~ s/\n//g;
-			
-			$DO->{execRemoteWindowsCommand}->{remoteUser} = replaceSpecChar($DO->{execRemoteWindowsCommand}->{remoteUser});
-			$DO->{execRemoteWindowsCommand}->{remoteHost} = replaceSpecChar($DO->{execRemoteWindowsCommand}->{remoteHost});
-			$DO->{execRemoteWindowsCommand}->{remotePasswd} = replaceSpecChar($DO->{execRemoteWindowsCommand}->{passwd});
-			$DO->{execRemoteWindowsCommand}->{remoteDomain} = replaceSpecChar($DO->{execRemoteWindowsCommand}->{domain});
-			
-			$DO->{execRemoteWindowsCommand}->{remoteDomain} = $DO->{execRemoteWindowsCommand}->{remoteDomain} . '/' if $DO->{execRemoteWindowsCommand}->{remoteDomain};
-			
-			my $winerrfile = '/tmp/' . $TT . '.err';
-			
-			$VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} } = `winexe -k $DO->{execRemoteWindowsCommand}->{useKerberos} -U '$DO->{execRemoteWindowsCommand}->{remoteDomain}$DO->{execRemoteWindowsCommand}->{remoteUser}\%$DO->{execRemoteWindowsCommand}->{remotePasswd}' //$DO->{execRemoteWindowsCommand}->{remoteHost} '$remoteWindowsCommand' 2>$winerrfile`;
-			$VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} } =~ s/^\n//g;
-			$VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} } =~ s/\n$//g;
-			
-			## debug
-			# print qq~COMMAND LINE:winexe -U '$DO->{execRemoteWindowsCommand}->{remoteDomain}$DO->{execRemoteWindowsCommand}->{remoteUser}\%$DO->{execRemoteWindowsCommand}->{remotePasswd}' //$DO->{execRemoteWindowsCommand}->{remoteHost} '$remoteWindowsCommand'\n~;
-			
-			$VAR{Error} = `cat $winerrfile 2>/dev/null`;
-			$VAR{Error} =~ s/^\n//g;
-			$VAR{Error} =~ s/\n$//g;
-			
-			unless ( $VAR{Error} ) {
-				mlog($TT, qq~Remote Windows Command [$remoteWindowsCommand] Executed on Remote Server [$DO->{execRemoteWindowsCommand}->{remoteHost}].\nResults: [$VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} }]~ . "\nError: []");
-			}
-			else {
-				mlog($TT, qq~Remote Windows Command [$remoteWindowsCommand] Executed on Remote Server [$DO->{execRemoteWindowsCommand}->{remoteHost}].\nResults: [$VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} }]~ . "\nError: [" . $VAR{Error} . "]");
+				
+				unlink "$winerrfile";
 			}
 			
-			unlink "$winerrfile";
-		}
-		
-		
-		if ( $DO->{JSONtoVar} ) {
-			undef $VAR{Error};
-			$DO->{JSONtoVar}->{JsonSource} =~ s/\$|\{|\}|\s//g;
 			
-			my $json = eval { decode_json $VAR{ $DO->{JSONtoVar}->{JsonSource} } };
-			## debug
-			# print "VAR:\n" . Dumper(%{$VAR{$DO->{JSONtoVar}->{catchVarName}}}) . "\n";
-			
-			if ( $json ) {
-				%{$VAR{$DO->{JSONtoVar}->{catchVarName}}} = %{$json};
+			if ( $DO->{JSONtoVar} ) {
+				# undef $VAR{Error};
+				$DO->{JSONtoVar}->{JsonSource} =~ s/\$|\{|\}|\s//g;
+				
+				my $json = eval { decode_json $VAR{ $DO->{JSONtoVar}->{JsonSource} } };
 				## debug
 				# print "VAR:\n" . Dumper(%{$VAR{$DO->{JSONtoVar}->{catchVarName}}}) . "\n";
 				
-				mlog($TT, qq~JSONtoVar [$DO->{JSONtoVar}->{catchVarName}] Mapped. Results: [Ok]~);
-			} else {
-				# ## debug
-				# print "Error: NOT VALID JSON\n";
-				$VAR{Error} = 'NOT VALID JSON';
-				mlog($TT, qq~JSONtoVar [$DO->{JSONtoVar}->{catchVarName}] Not Mapped. Results: [Error: $VAR{Error}]~);
-			}
-		}
-		
-		
-		if ( $DO->{SetVar} ) {
-			$DO->{SetVar}->{value} = replaceSpecChar($DO->{SetVar}->{value});
-			$VAR{ $DO->{SetVar}->{name} } = $DO->{SetVar}->{value};
-			
-			## debug
-			# print "NAME:" . $DO->{SetVar}->{name} . "\n";
-			# print "VALUE: " . $DO->{SetVar}->{value} . "\n";
-			# print "VALUE: " . $VAR{ $DO->{SetVar}->{name} } . "\n";
-			
-			mlog($TT, qq~Setting value [$DO->{SetVar}->{value}] to var [$DO->{SetVar}->{name}]. Results: [Ok]~);
-		}
-		
-		
-		if ( $DO->{SplitVar} ) {
-			my $separator = $DO->{SplitVar}->{separator};
-			$separator =~ s/comma/\,/;
-			$separator =~ s/semicolon/\;/;
-			$separator =~ s/pipe/\\|/;
-			$separator =~ s/nl/\\n/;
-			
-			@{ $VAR{ $DO->{SplitVar}->{arrayName} } } = split(/$separator/, replaceSpecChar($DO->{SplitVar}->{inputVarName}));
-			
-			# ## debug
-			# print "Split Dumper: \n" . Dumper($VAR{ $DO->{SplitVar}->{arrayName} }) . "\n";
-			
-			mlog($TT, qq~Splitting variable [$DO->{SplitVar}->{inputVarName}] to Array Variable [$DO->{SplitVar}->{arrayName}]. Results: [Ok]~);
-		}
-		
-		
-		if ( $DO->{FOREACH} ) {
-			mlog($TT, qq~Starting to execute FOREACH~);
-			
-			$DO->{FOREACH}->{arrayName} =~ s/\$|\{|\}|\s//g;
-			foreach my $i ( @{ $VAR{ $DO->{FOREACH}->{arrayName} } } ) {
-				$VAR{i} = $i;
-				
-				# ## debug
-				# print $VAR{i}, "\n";
-				
-				runDO($DO->{FOREACH}->{DO}, $TT);
-			}
-			
-			mlog($TT, qq~FOREACH executed. Results: [Ok]~);
-		}
-		
-		
-		if ( $DO->{FOREACH_NUMBER} ) {
-			mlog($TT, qq~Starting to execute FOREACH_NUMBER~);
-			
-			foreach my $i ( $DO->{FOREACH_NUMBER}->{initRange} .. $DO->{FOREACH_NUMBER}->{endRange} ) {
-				$VAR{i} = $i;
-				
-				# ## debug
-				# print $VAR{i}, "\n";
-				
-				runDO($DO->{FOREACH_NUMBER}->{DO}, $TT);
-			}
-			
-			mlog($TT, qq~FOREACH_NUMBER executed. Results: [Ok]~);
-		}
-		
-		
-		if ( $DO->{AUTOBOT} ) {
-			my $JsonVars = replaceSpecChar($DO->{AUTOBOT}->{JsonVars});
-			
-			$JsonVars =~ s/\r/ /g;
-			$JsonVars =~ s/\n/ /g;
-			
-			$VAR{ $DO->{AUTOBOT}->{catchVarName} } = `$RealBin/yaomiqui.pl '$TT' '$DO->{AUTOBOT}->{idAutoBot}' '$JsonVars' 2>&1`;
-			$VAR{ $DO->{AUTOBOT}->{catchVarName} } =~ s/^\n//g;
-			$VAR{ $DO->{AUTOBOT}->{catchVarName} } =~ s/\n$//g;
-			
-			mlog($TT, qq~AutoBot [<a href="index.cgi?mod=design&submod=edit_autobot&autoBotId=$DO->{AUTOBOT}->{idAutoBot}" target="_blank">$DO->{AUTOBOT}->{idAutoBot}</a>] Executed. Results: [$VAR{ $DO->{AUTOBOT}->{catchVarName} }]~);
-		}
-		
-		
-		if ( $DO->{SendEMAIL} ) {
-			undef $VAR{Error};
-			if ( $DO->{SendEMAIL}->{Subject} and $DO->{SendEMAIL}->{From} and $DO->{SendEMAIL}->{To} and $DO->{SendEMAIL}->{Type} and $DO->{SendEMAIL}->{Body} ) {
-				
-				$DO->{SendEMAIL}->{Subject} = replaceSpecChar($DO->{SendEMAIL}->{Subject});
-				$DO->{SendEMAIL}->{From} = replaceSpecChar($DO->{SendEMAIL}->{From});
-				$DO->{SendEMAIL}->{To} = replaceSpecChar($DO->{SendEMAIL}->{To});
-				$DO->{SendEMAIL}->{Body} = replaceSpecChar($DO->{SendEMAIL}->{Body});
-				# $DO->{SendEMAIL}->{Body} =~ s/\r//g;
-				# $DO->{SendEMAIL}->{Body} =~ s/\n//g;
-				
-				$DO->{SendEMAIL}->{From} =~ s/\\//g;
-				$DO->{SendEMAIL}->{To} =~ s/\\//g;
-				
-				if ( $DO->{SendEMAIL}->{From} =~ /\@/ and $DO->{SendEMAIL}->{To} =~ /\@/ ) {
-					use MIME::Lite;
-					my $msg = MIME::Lite->new(
-								Subject => $DO->{SendEMAIL}->{Subject},
-								From    => $DO->{SendEMAIL}->{From},
-								To      => $DO->{SendEMAIL}->{To},
-								Type    => $DO->{SendEMAIL}->{Type},
-								Data    => qq~$DO->{SendEMAIL}->{Body}~
-							);
-					$msg->attr('content-type.charset' => 'UTF-8');
+				if ( $json ) {
+					%{$VAR{$DO->{JSONtoVar}->{catchVarName}}} = %{$json};
+					## debug
+					# print "VAR:\n" . Dumper(%{$VAR{$DO->{JSONtoVar}->{catchVarName}}}) . "\n";
 					
-					# $msg->send();
-					eval { $msg->send() };
-					$VAR{Error} = "MIME::Lite->send failed: $@" if $@;
-					
-					my $results = $msg->last_send_successful();
-					$results = 'Ok' if $results == 1;
-					mlog($TT, qq~SendEMAIL Executed. Results: [$results]~);
+					mlog($TT, qq~JSONtoVar [$DO->{JSONtoVar}->{catchVarName}] Mapped. Results: [Ok]~);
 				} else {
-					$VAR{Error} = qq~Error: Some data is wrong [$DO->{SendEMAIL}->{From} or $DO->{SendEMAIL}->{To}]~;
-					mlog($TT, qq~SendEMAIL NOT Executed. Error: Some data is wrong [$DO->{SendEMAIL}->{From} or $DO->{SendEMAIL}->{To}]~);
+					# ## debug
+					# print "Error: NOT VALID JSON\n";
+					$VAR{Error} = 'NOT VALID JSON';
+					mlog($TT, qq~JSONtoVar [$DO->{JSONtoVar}->{catchVarName}] Not Mapped. Results: [Error: $VAR{Error}]~);
 				}
-			} else {
-				$VAR{Error} = qq~Error: Some data is missing [Subject, From, To, Type or Body]~;
-				mlog($TT, qq~SendEMAIL NOT Executed. Error: Some data is missing [Subject, From, To, Type or Body]~);
-			}
-		}
-		
-		
-		if ( $DO->{IntegerArray} ) {
-			for my $i ( $DO->{IntegerArray}->{initRange} .. $DO->{IntegerArray}->{endRange} ) {
-				push @{ $VAR{ $DO->{IntegerArray}->{arrayName} } }, $i;
 			}
 			
-			mlog($TT, qq~Array [$DO->{IntegerArray}->{arrayName}] created (from $DO->{IntegerArray}->{initRange} to $DO->{IntegerArray}->{endRange})~);
-		}
-		
-		
-		if ( $DO->{Sleep} ) {
-			sleep ($DO->{Sleep}->{seconds});
-			mlog($TT, qq~Sleeping $DO->{Sleep}->{seconds} seconds~);
-		}
-		
-		
-		if ( $DO->{LOGING} ) {
 			
-			# ## debug
-			# print "LOGIN:\n" . Dumper($DO->{LOGING}) . "\n";
+			if ( $DO->{SetVar} ) {
+				$DO->{SetVar}->{value} = replaceSpecChar($DO->{SetVar}->{value});
+				$VAR{ $DO->{SetVar}->{name} } = $DO->{SetVar}->{value};
+				
+				## debug
+				# print "NAME:" . $DO->{SetVar}->{name} . "\n";
+				# print "VALUE: " . $DO->{SetVar}->{value} . "\n";
+				# print "VALUE: " . $VAR{ $DO->{SetVar}->{name} } . "\n";
+				
+				mlog($TT, qq~Setting value [$DO->{SetVar}->{value}] to var [$DO->{SetVar}->{name}]. Results: [Ok]~);
+			}
 			
-			runLOGING($DO->{LOGING}->{comment}, $TT);
-		}
-		
-		
-		if ( $DO->{END} ) {
-			runEND($DO->{END}->{value}, $TT);
-		}
-		
-		
-		if ( $DO->{RETURN} ) {
-			runRETURN($DO->{RETURN}->{value}, $TT);
-		}
-		
-		
-			####	waterfall depth
-			if ( exists $DO->{IF} ) {
-				foreach my $i ( 0 .. $#{$DO->{IF}->{VAR}} ) {
-					my $catchInitIF = 0;
+			
+			if ( $DO->{SplitVar} ) {
+				my $separator = $DO->{SplitVar}->{separator};
+				$separator =~ s/comma/\,/;
+				$separator =~ s/semicolon/\;/;
+				$separator =~ s/pipe/\\|/;
+				$separator =~ s/nl/\\n/;
+				
+				@{ $VAR{ $DO->{SplitVar}->{arrayName} } } = split(/$separator/, replaceSpecChar($DO->{SplitVar}->{inputVarName}));
+				
+				# ## debug
+				# print "Split Dumper: \n" . Dumper($VAR{ $DO->{SplitVar}->{arrayName} }) . "\n";
+				
+				mlog($TT, qq~Splitting variable [$DO->{SplitVar}->{inputVarName}] to Array Variable [$DO->{SplitVar}->{arrayName}]. Results: [Ok]~);
+			}
+			
+			
+			if ( $DO->{FOREACH} ) {
+				mlog($TT, qq~Starting to execute FOREACH~);
+				
+				$DO->{FOREACH}->{arrayName} =~ s/\$|\{|\}|\s//g;
+				foreach my $i ( @{ $VAR{ $DO->{FOREACH}->{arrayName} } } ) {
+					$VAR{i} = $i;
 					
 					# ## debug
-					# print "Dumper DO-IF-VAR:\n" . Dumper($DO->{IF}->{VAR}->[$i]) . "\n";
-					# print "Dumper DO-IF:\n" . Dumper($DO->{IF}->{VAR}) . "\n";
+					# print $VAR{i}, "\n";
 					
-					my $name = replaceSpecChar($DO->{IF}->{VAR}->[$i]->{name}); # to be frienldy next line
-					my $value = replaceSpecChar($DO->{IF}->{VAR}->[$i]->{value});
+					runDO($DO->{FOREACH}->{DO}, $TT);
+				}
+				
+				mlog($TT, qq~FOREACH executed. Results: [Ok]~);
+			}
+			
+			
+			if ( $DO->{FOREACH_NUMBER} ) {
+				mlog($TT, qq~Starting to execute FOREACH_NUMBER~);
+				
+				foreach my $i ( $DO->{FOREACH_NUMBER}->{initRange} .. $DO->{FOREACH_NUMBER}->{endRange} ) {
+					$VAR{i} = $i;
 					
 					# ## debug
-					# print "RAW: $DO->{IF}->{VAR}->[$i]->{name} <-> $DO->{IF}->{VAR}->[$i]->{value}\n";
-					# print "SUS: $name <-> $value\n";
+					# print $VAR{i}, "\n";
 					
-					$catchInitIF = compareVAR($name, $DO->{IF}->{VAR}->[$i]->{compare}, $value, $TT);
+					runDO($DO->{FOREACH_NUMBER}->{DO}, $TT);
+				}
+				
+				mlog($TT, qq~FOREACH_NUMBER executed. Results: [Ok]~);
+			}
+			
+			
+			if ( $DO->{AUTOBOT} ) {
+				my $JsonVars = replaceSpecChar($DO->{AUTOBOT}->{JsonVars});
+				
+				$JsonVars =~ s/\r/ /g;
+				$JsonVars =~ s/\n/ /g;
+				
+				$VAR{ $DO->{AUTOBOT}->{catchVarName} } = `$RealBin/yaomiqui.pl '$TT' '$DO->{AUTOBOT}->{idAutoBot}' '$JsonVars' 2>&1`;
+				$VAR{ $DO->{AUTOBOT}->{catchVarName} } =~ s/^\n//g;
+				$VAR{ $DO->{AUTOBOT}->{catchVarName} } =~ s/\n$//g;
+				
+				mlog($TT, qq~AutoBot [<a href="index.cgi?mod=design&submod=edit_autobot&autoBotId=$DO->{AUTOBOT}->{idAutoBot}" target="_blank">$DO->{AUTOBOT}->{idAutoBot}</a>] Executed. Results: [$VAR{ $DO->{AUTOBOT}->{catchVarName} }]~);
+			}
+			
+			
+			if ( $DO->{SendEMAIL} ) {
+				# undef $VAR{Error};
+				if ( $DO->{SendEMAIL}->{Subject} and $DO->{SendEMAIL}->{From} and $DO->{SendEMAIL}->{To} and $DO->{SendEMAIL}->{Type} and $DO->{SendEMAIL}->{Body} ) {
 					
-					# ## debug
-					# print "catchInitIF: " . $catchInitIF . "\n";
+					$DO->{SendEMAIL}->{Subject} = replaceSpecChar($DO->{SendEMAIL}->{Subject});
+					$DO->{SendEMAIL}->{From} = replaceSpecChar($DO->{SendEMAIL}->{From});
+					$DO->{SendEMAIL}->{To} = replaceSpecChar($DO->{SendEMAIL}->{To});
+					$DO->{SendEMAIL}->{Body} = replaceSpecChar($DO->{SendEMAIL}->{Body});
+					# $DO->{SendEMAIL}->{Body} =~ s/\r//g;
+					# $DO->{SendEMAIL}->{Body} =~ s/\n//g;
 					
-					if ( $catchInitIF ) {
-						if ( $DO->{IF}->{VAR}->[$i]->{DO} ) {
-							
-							# ## debug
-							# print "DO:\n" . Dumper($DO->{IF}->{VAR}->[$i]->{DO}) . "\n";
-							
-							runDO($DO->{IF}->{VAR}->[$i]->{DO}, $TT);
-						}
-						else {
-							
-							# ## debug
-							# print "IF:\n" . Dumper($DO->{IF}) . "\n";
-							
-							if ( $DO->{IF}->{DO}->{LOGING} ) {
-								my $comment = replaceSpecChar($DO->{IF}->{DO}->{LOGING}->{comment});
-								runLOGING($comment, $TT);
-							}
-							if ( $DO->{IF}->{DO}->{END} ) {
-								my $value = replaceSpecChar($DO->{IF}->{DO}->{END}->{value});
-								runEND($value, $TT);
-							}
-							elsif ( $DO->{IF}->{DO}->{RETURN} ) {
-								my $value = replaceSpecChar($DO->{IF}->{DO}->{RETURN}->{value});
-								runRETURN($value, $TT);
-							}
-						}
+					$DO->{SendEMAIL}->{From} =~ s/\\//g;
+					$DO->{SendEMAIL}->{To} =~ s/\\//g;
+					
+					if ( $DO->{SendEMAIL}->{From} =~ /\@/ and $DO->{SendEMAIL}->{To} =~ /\@/ ) {
+						use MIME::Lite;
+						my $msg = MIME::Lite->new(
+									Subject => $DO->{SendEMAIL}->{Subject},
+									From    => $DO->{SendEMAIL}->{From},
+									To      => $DO->{SendEMAIL}->{To},
+									Type    => $DO->{SendEMAIL}->{Type},
+									Data    => qq~$DO->{SendEMAIL}->{Body}~
+								);
+						$msg->attr('content-type.charset' => 'UTF-8');
 						
+						# $msg->send();
+						eval { $msg->send() };
+						$VAR{Error} = "MIME::Lite->send failed: $@" if $@;
+						
+						my $results = $msg->last_send_successful();
+						$results = 'Ok' if $results == 1;
+						mlog($TT, qq~SendEMAIL Executed. Results: [$results]~);
+					} else {
+						$VAR{Error} = qq~Error: Some data is wrong [$DO->{SendEMAIL}->{From} or $DO->{SendEMAIL}->{To}]~;
+						mlog($TT, qq~SendEMAIL NOT Executed. Error: Some data is wrong [$DO->{SendEMAIL}->{From} or $DO->{SendEMAIL}->{To}]~);
+					}
+				} else {
+					$VAR{Error} = qq~Error: Some data is missing [Subject, From, To, Type or Body]~;
+					mlog($TT, qq~SendEMAIL NOT Executed. Error: Some data is missing [Subject, From, To, Type or Body]~);
+				}
+			}
+			
+			
+			if ( $DO->{IntegerArray} ) {
+				for my $i ( $DO->{IntegerArray}->{initRange} .. $DO->{IntegerArray}->{endRange} ) {
+					push @{ $VAR{ $DO->{IntegerArray}->{arrayName} } }, $i;
+				}
+				
+				mlog($TT, qq~Array [$DO->{IntegerArray}->{arrayName}] created (from $DO->{IntegerArray}->{initRange} to $DO->{IntegerArray}->{endRange})~);
+			}
+			
+			
+			if ( $DO->{Sleep} ) {
+				sleep ($DO->{Sleep}->{seconds});
+				mlog($TT, qq~Sleeping $DO->{Sleep}->{seconds} seconds~);
+			}
+			
+			
+			if ( $DO->{LOGING} ) {
+				
+				# ## debug
+				# print "LOGIN:\n" . Dumper($DO->{LOGING}) . "\n";
+				
+				runLOGING($DO->{LOGING}->{comment}, $TT);
+			}
+			
+			
+			if ( $DO->{END} ) {
+				runEND($DO->{END}->{value}, $TT);
+			}
+			
+			
+			if ( $DO->{RETURN} ) {
+				runRETURN($DO->{RETURN}->{value}, $TT);
+			}
+			
+			
+				####	waterfall depth
+				if ( exists $DO->{IF} ) {
+					foreach my $i ( 0 .. $#{$DO->{IF}->{VAR}} ) {
+						my $catchInitIF = 0;
+						
+						# ## debug
+						# print "Dumper DO-IF-VAR:\n" . Dumper($DO->{IF}->{VAR}->[$i]) . "\n";
+						# print "Dumper DO-IF:\n" . Dumper($DO->{IF}->{VAR}) . "\n";
+						
+						my $name = replaceSpecChar($DO->{IF}->{VAR}->[$i]->{name}); # to be frienldy next line
+						my $value = replaceSpecChar($DO->{IF}->{VAR}->[$i]->{value});
+						
+						# ## debug
+						# print "RAW: $DO->{IF}->{VAR}->[$i]->{name} <-> $DO->{IF}->{VAR}->[$i]->{value}\n";
+						# print "SUS: $name <-> $value\n";
+						
+						$catchInitIF = compareVAR($name, $DO->{IF}->{VAR}->[$i]->{compare}, $value, $TT);
+						
+						# ## debug
+						# print "catchInitIF: " . $catchInitIF . "\n";
+						
+						if ( $catchInitIF ) {
+							if ( $DO->{IF}->{VAR}->[$i]->{DO} ) {
+								
+								# ## debug
+								# print "DO:\n" . Dumper($DO->{IF}->{VAR}->[$i]->{DO}) . "\n";
+								
+								runDO($DO->{IF}->{VAR}->[$i]->{DO}, $TT);
+							}
+							else {
+								
+								# ## debug
+								# print "IF:\n" . Dumper($DO->{IF}) . "\n";
+								
+								if ( $DO->{IF}->{DO}->{LOGING} ) {
+									my $comment = replaceSpecChar($DO->{IF}->{DO}->{LOGING}->{comment});
+									runLOGING($comment, $TT);
+								}
+								if ( $DO->{IF}->{DO}->{END} ) {
+									my $value = replaceSpecChar($DO->{IF}->{DO}->{END}->{value});
+									runEND($value, $TT);
+								}
+								elsif ( $DO->{IF}->{DO}->{RETURN} ) {
+									my $value = replaceSpecChar($DO->{IF}->{DO}->{RETURN}->{value});
+									runRETURN($value, $TT);
+								}
+							}
+							
+						}
 					}
 				}
+				elsif ( exists $DO->{DO} ) {
+					runDO($DO->{DO}, $TT);
+				}
+				
+				## FINISH TO EXECUTE ALL OF DO FUNCTION
+			
+			
+			
+			
+			
+			## Timeout function continues
+			alarm 0;
+		};
+		
+		if ( $@ eq "timeout\n" ) {
+			`rm -f /tmp/*.err >/dev/null 2>&1`;
+			
+			$VAR{Error} = qq~TIMEOUT REACHED. \${TIMEOUT} var was configured to ($VAR{TIMEOUT} seconds)~;
+			mlog($TT, qq~TIMEOUT REACHED. \${TIMEOUT} var was configured to ($VAR{TIMEOUT} seconds)~);
+			
+			if ( $VENV{STATUS_AFTER_TIMEOUT} ) {
+				mlog($TT, qq~Ticket automatically closed as $VENV{STATUS_AFTER_TIMEOUT} by Time Out policies~);
+				runEND($VENV{STATUS_AFTER_TIMEOUT}, $TT) ;
 			}
-			elsif ( exists $DO->{DO} ) {
-				runDO($DO->{DO}, $TT);
-			}
-	
+		}
+		## Timeout function ends
 	}
 
 }
@@ -871,7 +922,6 @@ sub mlog {
 	
 	if ( $ticketNumber ne '00000000' ) {
 		connected();
-		# my $insert_string = "INSERT INTO log (numberTicket, insertDate, log) VALUES ('$ticketNumber', '$sysdate', '$log')";
 		my $insert_string = "INSERT INTO log (numberTicket, insertDate, log) VALUES ('$ticketNumber', '$sysdate', ?)";
 		my $sth = $dbh->prepare("$insert_string");
 		$sth->execute($log);
