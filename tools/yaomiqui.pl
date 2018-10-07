@@ -45,8 +45,14 @@ $specAutoBot = " AND idAutoBot = '$ARGV[1]'" if $ARGV[1];
 connected();
 my $sth = $dbh->prepare("SELECT * FROM autoBot WHERE active = '1'$specAutoBot ORDER BY idAutoBot ASC");
 $sth->execute();
-my $AB = $sth->fetchall_arrayref;
+my $ABdb = $sth->fetchall_arrayref;
 $sth->finish;
+
+## push on references was actually removed entirely in Perl 5.24
+my @a = ('','NO AUTOBOT NAME','','2018-10-07 00:00:00','1','1',"<AUTO><ON><VAR name='number' compare='exists'/></ON><DO><LOGING comment='No any Autobot caught this Ticket'/><SetVar name='TIMEOUT' value='1'></SetVar></DO></AUTO>");
+my @noref = @$ABdb;
+push (@noref, [@a]);
+my $AB = \@noref;
 
 my $sth = $dbh->prepare("SELECT * FROM ticket WHERE numberTicket = '$ticketNumber'");
 $sth->execute();
@@ -91,6 +97,13 @@ if ( $json ) {
 		
 		$AB->[$i][6] =~ s/ xml\:space\=\'preserve\'//g;
 		
+		##	Adding a DO Statement for Timeout if you forget to put some END function
+		my $extendedTO = $VAR{TIMEOUT} + 30;
+		$AB->[$i][6] =~ s/<\/AUTO>/<DO><Sleep seconds='$extendedTO'\/><\/DO><\/AUTO>/;
+		
+		# ## Debug
+		# print "\nXML code:\n" . $AB->[$i][6] . "\n";
+		
 		$AB->[$i][6] = forceDOarray($AB->[$i][6]);
 		
 		# ## debug
@@ -134,13 +147,13 @@ if ( $json ) {
 				##### PARANOIAC!!! CHECK FOR id AutoBotCatched IF IS EMPTY (AGAIN) AND LOCK THE TABLE TO CATCH THIS
 				$dbh->do("LOCK TABLES ticket WRITE, ticket AS ticketRead READ");
 				
-				my $chk = $dbh->prepare("SELECT idAutoBotCatched FROM ticket AS ticketRead WHERE numberTicket = '$ticketNumber'");
+				my $chk = $dbh->prepare("SELECT idAutoBotCatched, finalState FROM ticket AS ticketRead WHERE numberTicket = '$ticketNumber'");
 				$chk->execute();
 				my $ABc = $chk->fetchall_arrayref;
 				$chk->finish;
 				
 				my $doLog = 0;
-				unless ( $ABc->[0][0] ) {
+				unless ( $ABc->[0][0] or $ABc->[0][1] ) {
 					my $sth = $dbh->prepare("UPDATE ticket SET idAutoBotCatched='$AB->[$i][0]' WHERE numberTicket='$ticketNumber'");
 					$sth->execute();
 					$sth->finish;
@@ -278,7 +291,7 @@ sub replaceHash {
 	my $content;
 	my @T = split(/\}\{/, $tmp);
 	
-	   if ( scalar @T == 5 ) { $content = $VAR{$T[0]}{$T[1]}{$T[2]}{$T[3]}{$T[4]} }
+	if ( scalar @T == 5 ) { $content = $VAR{$T[0]}{$T[1]}{$T[2]}{$T[3]}{$T[4]} }
 	elsif ( scalar @T == 4 ) { $content = $VAR{$T[0]}{$T[1]}{$T[2]}{$T[3]} }
 	elsif ( scalar @T == 3 ) { $content = $VAR{$T[0]}{$T[1]}{$T[2]} }
 	elsif ( scalar @T == 2 ) { $content = $VAR{$T[0]}{$T[1]} }

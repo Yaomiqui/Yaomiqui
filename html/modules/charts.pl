@@ -47,7 +47,7 @@ $html .= qq~
 ~;
 
 connected();
-my $sth = $dbh->prepare("SELECT DISTINCT(typeTicket) FROM ticket");
+my $sth = $dbh->prepare("SELECT DISTINCT(typeTicket) FROM ticket WHERE finalDate between '$year-$month-01 00:00:00' and '$year-$month-31 23:59:59'");
 $sth->execute();
 my $TypeTT = $sth->fetchall_arrayref;
 $sth->finish;
