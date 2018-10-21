@@ -28,7 +28,7 @@ use strict;
 use Net::OpenSSH;
 use Data::Dumper;
 
-our ($ticketNumber, $dbh, %VAR, $jsonCode);
+our ($ticketNumber, $dbh, %VAR, $jsonCode, $AutoBot);
 our %VENV = get_vars();
 
 $VAR{TIMEOUT} = $VENV{TIMEOUT};
@@ -43,18 +43,19 @@ my $specAutoBot;
 $specAutoBot = " AND idAutoBot = '$ARGV[1]'" if $ARGV[1];
 
 connected();
-my $sth = $dbh->prepare("SELECT * FROM autoBot WHERE active = '1'$specAutoBot ORDER BY idAutoBot ASC");
+my $sth = $dbh->prepare("SELECT * FROM autoBot WHERE active = '1'$specAutoBot ORDER BY idAutoBot ASC") or engineLog("ERROR :: $ticketNumber : I cannot do Select on autoBot table") and exit;
 $sth->execute();
 my $ABdb = $sth->fetchall_arrayref;
 $sth->finish;
 
-## push on references was actually removed entirely in Perl 5.24
+## Adding a last Autobot for tickets without no one filter to catch it but
+## push on references was actually removed entirely in Perl 5.24 or newer
 my @a = ('','NO AUTOBOT NAME','','2018-10-07 00:00:00','1','1',"<AUTO><ON><VAR name='number' compare='exists'/></ON><DO><LOGING comment='No any Autobot caught this Ticket'/><SetVar name='TIMEOUT' value='1'></SetVar></DO></AUTO>");
 my @noref = @$ABdb;
 push (@noref, [@a]);
 my $AB = \@noref;
 
-my $sth = $dbh->prepare("SELECT * FROM ticket WHERE numberTicket = '$ticketNumber'");
+my $sth = $dbh->prepare("SELECT * FROM ticket WHERE numberTicket = '$ticketNumber'") or engineLog("ERROR :: $ticketNumber : I cannot do Select on ticket table") and exit;
 $sth->execute();
 my @TTS = $sth->fetchrow_array;
 $sth->finish;
@@ -68,7 +69,9 @@ $jsonCode =~ s/\n//g;
 # ## debug
 # print "JSONCODE:\n" . $jsonCode . "\n";
 
-$TTS[1] = $ARGV[0] unless $TTS[1];
+$TTS[1] = $ticketNumber unless $TTS[1];
+
+engineLog("INFO  :: $TTS[1] : Processing ticket with JSON: " . $jsonCode);
 
 my $json = eval { decode_json $jsonCode };		# my $json = eval { from_json($jsonCode) };
 
@@ -111,15 +114,16 @@ if ( $json ) {
 		
 		my $xml = XML::Simple->new;
 		
-		my $aBot = $xml->XMLin($AB->[$i][6],
+		my $aBot = eval { $xml->XMLin($AB->[$i][6],
 		KeyAttr => { NoEscape => 1 },
 		ForceArray => [ 'VAR', 'DO' ],
-		ContentKey => '-content' ) or next;
+		ContentKey => '-content' ) };
+		unless ( $aBot ) {
+			engineLog(qq~ERROR :: $ticketNumber : Not Valid XML for AutoBot when trying to parser the string '$AB->[$i][6]'. Trying with next AutoBot~);
+			next;
+		};
 		
 			# ## debug
-			# print "JSON START:\n";
-			# print Dumper($aBot) . "\n";
-			# print "JSON END:\n";
 			# print Dumper($aBot->{ON}->{VAR}->[0], $aBot->{ON}->{VAR}->[1], $aBot->{ON}->{VAR}->[2]) . "\n";
 		
 		my $catch = 0;
@@ -169,9 +173,11 @@ if ( $json ) {
 				if ( $doLog ) {
 					## debug
 					# print "GOTCHA!! I have ticket '$TTS[1]' to this Autobot\n\n";
+					$AutoBot = $AB->[$i][0];
 					mlog($TTS[1], qq~Ticket was caught by Autobot ID: [<a href="index.cgi?mod=design&submod=edit_autobot&autoBotId=$AB->[$i][0]" target="_blank">$AB->[$i][0]</a>]~) if $ticketNumber ne '00000000';
+					engineLog("INFO  :: $ticketNumber : Ticket was caught by Autobot ID $AB->[$i][0] ($AB->[$i][1])");
 				}
-					
+				
 			}
 			
 			####	waterfall depth
@@ -205,7 +211,7 @@ if ( $json ) {
 							}
 							elsif ( $aBot->{IF}->{DO}->{RETURN} ) {
 								my $value = replaceSpecChar($aBot->{IF}->{DO}->{RETURN}->{value});
-								runRETURN($value, $VAR{number});
+								runRETURN($value, $VAR{number}, $AutoBot);
 							}
 						}
 						
@@ -219,19 +225,21 @@ if ( $json ) {
 				
 				runDO($aBot->{DO}, $VAR{number});
 			}
-			
-			exit;
+			# `kill -9 $$`;
+			# exit;
 		}
 	}
 	
 } else {
 	print "Error: Not Valid JSON";
-	exit;
+	engineLog(qq~ERROR :: $ticketNumber : Not Valid JSON for ticket when trying to parser the string '$jsonCode'~);
+	# `kill -9 $$`;
+	# exit;
 }
 
 
 
-
+`kill -9 $$`;
 exit;
 
 sub runLOGING {
@@ -254,18 +262,24 @@ sub runEND {
 	$dbh->disconnect if $dbh;
 	
 	mlog($TT, qq~Final State: [$value]~);
+	engineLog("INFO  :: $TT : Ticket closed with status [$value]");
+	
 	my $pid = $$;
 	`kill -9 $pid`;
 	exit;
 }
 
 sub runRETURN {
-	my ($value, $TT) = @_;
+	my ($value, $TT, $AutoBot) = @_;
 	$value = replaceSpecChar($value);
 	
 	print $value;
 	
 	mlog($TT, qq~Returned value: [$value]~);
+	engineLog("INFO  :: $TT : Autobot $AutoBot returned with status [$value]");
+	
+	my $pid = $$;
+	`kill -9 $pid`;
 	exit;
 }
 
@@ -605,8 +619,9 @@ sub runDO {
 			
 			
 			if ( $DO->{Sleep} ) {
-				sleep ($DO->{Sleep}->{seconds});
 				mlog($TT, qq~Sleeping $DO->{Sleep}->{seconds} seconds~);
+				sleep ($DO->{Sleep}->{seconds});
+				mlog($TT, qq~Waking up~);
 			}
 			
 			
@@ -625,7 +640,7 @@ sub runDO {
 			
 			
 			if ( $DO->{RETURN} ) {
-				runRETURN($DO->{RETURN}->{value}, $TT);
+				runRETURN($DO->{RETURN}->{value}, $TT, $AutoBot);
 			}
 			
 			
@@ -673,7 +688,7 @@ sub runDO {
 								}
 								elsif ( $DO->{IF}->{DO}->{RETURN} ) {
 									my $value = replaceSpecChar($DO->{IF}->{DO}->{RETURN}->{value});
-									runRETURN($value, $TT);
+									runRETURN($value, $TT, $AutoBot);
 								}
 							}
 							
@@ -701,8 +716,10 @@ sub runDO {
 			mlog($TT, qq~TIMEOUT REACHED. \${TIMEOUT} var was configured to ($VAR{TIMEOUT} seconds)~);
 			
 			if ( $VENV{STATUS_AFTER_TIMEOUT} ) {
-				mlog($TT, qq~Ticket automatically closed as $VENV{STATUS_AFTER_TIMEOUT} by Time Out policies~);
-				runEND($VENV{STATUS_AFTER_TIMEOUT}, $TT) ;
+				mlog($TT, qq~Ticket automatically closed as $VENV{STATUS_AFTER_TIMEOUT} by Timeout policies~);
+				my $policy = $AutoBot ? 'Timeout policies' : 'Internal process when no AutoBot catching it';
+				engineLog("WARN  :: $TT : Ticket automatically closed as $VENV{STATUS_AFTER_TIMEOUT} by $policy ($VAR{TIMEOUT} seconds)");
+				runEND($VENV{STATUS_AFTER_TIMEOUT}, $TT);
 			}
 		}
 		## Timeout function ends
@@ -945,7 +962,8 @@ sub mlog {
 
 sub connected {
 	use DBI;
-	$dbh = DBI->connect("DBI:mysql:$VENV{'DB'}:$VENV{'DBHOST'}", $VENV{'DBUSER'}, $VENV{'DBPASSWD'}) or print "Error... $DBI::errstr mysql_error()<br>";
+	# $dbh = DBI->connect("DBI:mysql:$VENV{'DB'}:$VENV{'DBHOST'}", $VENV{'DBUSER'}, $VENV{'DBPASSWD'}) or print "Error... $DBI::errstr mysql_error()<br>";
+	$dbh = DBI->connect("DBI:mysql:$VENV{'DB'}:$VENV{'DBHOST'}", $VENV{'DBUSER'}, $VENV{'DBPASSWD'}) or engineLog("ERROR :: $ticketNumber : MySQL Connect: " . $DBI::errstr) and exit;
 }
 
 sub get_vars {
@@ -964,6 +982,19 @@ sub get_vars {
 	return %VARS;
 }
 
+sub engineLog {
+	my $msg = shift;
+	my $date = date_nospace();
+	my $sysdate = sysdate();
+	
+	open my $ELOG, ">>","$VENV{engine_log_dir}/$date.log";
+	print $ELOG $sysdate . " :: " . $msg . "\n";
+	close $ELOG;
+	# engineLog("ERROR :: TT : ");
+	# engineLog("INFO  :: TT : ");
+	# engineLog("WARN  :: TT : ");
+}
+
 sub sysdate {
 	my @fecha = localtime(time); # sec,min,hour,mday,mon,year,wday,yday ,isdst
 	$fecha[5] += 1900;
@@ -971,4 +1002,13 @@ sub sysdate {
 	@fecha = map { if ($_ < 10) { $_ = "0$_"; }else{ $_ } } @fecha;
 						#year	mon		 mday		hour	min		sec
 	return my $sysdate = "$fecha[5]-$fecha[4]-$fecha[3] $fecha[2]:$fecha[1]:$fecha[0]";
+}
+
+sub date_nospace {
+	my @fecha = localtime(time); # sec,min,hour,mday,mon,year,wday,yday ,isdst
+	$fecha[5] += 1900;
+	$fecha[4] ++;
+	@fecha = map { if ($_ < 10) { $_ = "0$_"; }else{ $_ } } @fecha;
+						#year	mon		 mday		hour	min		sec
+	return "$fecha[5]$fecha[4]$fecha[3]";
 }

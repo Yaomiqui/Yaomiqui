@@ -97,6 +97,8 @@ echo "${encKey}" > /var/www/yaomiqui/certs/yaomiquikey.enc
 encPasswd=`./cryptPasswdAdmin.pl admin`
 perl -pi -e "s/ADMIN_PASSWD/${encPasswd}/" yaomiqui.sql
 
+mysql -u root < yaomiqui.sql
+
 cd /var/www/yaomiqui/certs
 
 openssl req -new -x509 -nodes -days 3650 -newkey rsa:2048 -keyout yaomiqui-private.key -out yaomiqui-cert.crt -subj "/C=${COUNTRY}/ST=${CITY}/L=Region/O=${REGION}/OU=${ORGANIZATION}/CN=${COMMON_NAME}"
@@ -109,14 +111,19 @@ service httpd restart
 
 /usr/bin/find /var/www/yaomiqui -name *.pl -exec chmod 755 {} \;
 
+useradd -m -d /home/yaomiqui -g apache -s /bin/bash -k /etc/skel yaomiqui
+
+crontab -u yaomiqui /var/www/yaomiqui/crontab.txt
+
 echo ''
 echo '================================================================================'
-echo 'Installation finished'
+echo 'If there was some problem with SQL execution'
 echo 'Please enter to MySQL as root and run:'
 echo 'SQL> source yaomiqui.sql;'
 echo '================================================================================'
 echo ''
 echo '================================================================================'
-echo 'As a last step, insert the contents of the "/var/www/yaomiqui/crontab.txt" file into the root crontab'
+echo 'You can now pointing to your URL instance with SSL:'
+echo 'https://[FQDN or IP]'
 echo '================================================================================'
 echo ''

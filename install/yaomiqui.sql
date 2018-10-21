@@ -1,8 +1,4 @@
-DROP USER 'yaomiqui'@'localhost';
-
 CREATE USER 'yaomiqui'@'localhost' IDENTIFIED BY 'MYSQL_PASSWD';
-
-DROP DATABASE yaomiqui;
 
 CREATE DATABASE IF NOT EXISTS yaomiqui CHARACTER SET 'UTF8' COLLATE 'utf8_general_ci';
 
