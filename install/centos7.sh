@@ -62,7 +62,7 @@ perl -pi -e 's/SELINUX=enforcing/SELINUX=disabled/' /etc/selinux/config
 
 setenforce 0
 
-perl -pi -e 's/Listen 80/Listen 80\nListen 443\n\nTimeout 1200/' /etc/httpd/conf/httpd.conf
+perl -pi -e 's/Listen 80/Listen 80\nListen 443\n\nTimeout 1200\nLimitRequestLine 100000\nLimitRequestFieldSize 100000/' /etc/httpd/conf/httpd.conf
 
 mkdir /var/www/yaomiqui
 
@@ -111,6 +111,8 @@ service httpd restart
 /usr/bin/find /var/www/yaomiqui -name *.pl -exec chmod 755 {} \;
 
 useradd -m -d /home/yaomiqui -g apache -s /bin/bash -k /etc/skel yaomiqui
+
+chown yaomiqui:apache /var/www/yaomiqui/logs
 
 crontab -u yaomiqui /var/www/yaomiqui/crontab.txt
 

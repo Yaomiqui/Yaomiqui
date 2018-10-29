@@ -45,7 +45,7 @@ ln -s /usr/lib/x86_64-linux-gnu/samba/liberrors.so.0 /usr/lib/x86_64-linux-gnu/s
 dpkg -i winexe-1.1-20161124-0xenial1.deb
 ### run wget -c https://app.box.com/s/3amquwkdlwjoxwmr7p3v2uurv6w6s4aj to get it if came corrupted
 
-/usr/bin/perl -pi -e 's/Timeout 300/Timeout 1200/' /etc/apache2/apache2.conf
+/usr/bin/perl -pi -e 's/Timeout 300/Timeout 1200\nTimeout 1200\nLimitRequestLine 100000\nLimitRequestFieldSize 100000/' /etc/apache2/apache2.conf
 
 a2enmod ssl
 
@@ -104,6 +104,8 @@ service apache2 restart
 /usr/bin/find /var/www/yaomiqui -name *.pl -exec chmod 755 {} \;
 
 useradd -m -d /home/yaomiqui -g www-data -s /bin/bash -k /etc/skel yaomiqui
+
+chown yaomiqui:www-data /var/www/yaomiqui/logs
 
 crontab -u yaomiqui /var/www/yaomiqui/crontab.txt
 

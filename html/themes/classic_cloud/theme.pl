@@ -95,6 +95,13 @@ sub header {
 		}
 		
 		$header .= qq~
+		<li class="leftnavbar" style="opacity: 0.25; filter: alpha(opacity=25)">
+		<p align="center" style="font-size: 110%; font-weight: bold; color: #000;">
+		<img src="themes/$theme/images/YaomiquiLogoTransparent.png" style="padding-top:80px;"><br/>YAOMIQUI</p>
+		<p align="center" style="font-size: 100%; color: #000;">RPA Orchestrator</p>
+		</li>
+		~;
+		$header .= qq~
 		</ul>
 		
 		<div class="content">

@@ -185,7 +185,8 @@ sub login {
 	<html xmlns="http://www.w3.org/1999/xhtml">
 		<head>
 			<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-			<title>LogIn :: YAOMIQUI :: Automation Tool</title>
+			<title>LogIn :: YAOMIQUI :: RPA Orchestrator :: Automation tool for repetitive tasks</title>
+			<link rel="icon" type="image/png" href="images/favicon.ico" />
 			<meta name="keywords" content="automation,tasks,repetitive" />
 			<meta name="description" content="Automation for repetitive task" />
 		</head>

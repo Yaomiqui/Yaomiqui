@@ -22,12 +22,6 @@ unless ( $input{submod} ) {
 	my $autoBot = $sth1->fetchall_arrayref;
 	$sth1->finish;
 	
-	my $sth = $dbh->prepare("SELECT username FROM users WHERE idUser = '$autoBot->[$i][4]'");
-	$sth->execute();
-	my ($userDeploy) = $sth->fetchrow_array;
-	$sth->finish;
-	$dbh->disconnect if ($dbh);
-	
 	$html .= qq~
 	<table cellpadding="0" cellspacing="0" class="gridTable" style="background-color: #FFFFFF;">
 	<tr>
@@ -39,20 +33,28 @@ unless ( $input{submod} ) {
 	</tr>
 	~;
 	
-	for my $i ( 0 .. $#{$autoBot}) {
-		my $active = '<font color="#4D4D4D">No</font>';
-		if ( $autoBot->[$i][5] eq '1' ) {
-			$active = qq~<font color="#008000">$MSG{Active}</font>~;
+	if ( $autoBot ) {
+		for my $i ( 0 .. $#{$autoBot} ) {
+			my $sth = $dbh->prepare("SELECT username FROM users WHERE idUser = '$autoBot->[$i][4]'");
+			$sth->execute();
+			my ($userDeploy) = $sth->fetchrow_array;
+			$sth->finish;
+			
+			my $active = '<font color="#4D4D4D">No</font>';
+			if ( $autoBot->[$i][5] eq '1' ) {
+				$active = qq~<font color="#008000">$MSG{Active}</font>~;
+			}
+			$html .= qq~<tr class="gridRowContent">
+			<td class="gridContent" style="overflow: hidden; text-overflow: ellipsis"><a href="index.cgi?mod=design&submod=edit_autobot&autoBotId=$autoBot->[$i][0]">$autoBot->[$i][1]</a></td>
+			<td class="gridContent" style="overflow: hidden; text-overflow: ellipsis">$autoBot->[$i][2]</td>
+			<td class="gridContent">$autoBot->[$i][3]</td>
+			<td class="gridContent">$userDeploy</td>
+			<td class="gridContent">$active</td>
+			</tr>~;
 		}
-		$html .= qq~<tr class="gridRowContent">
-		<td class="gridContent" style="overflow: hidden; text-overflow: ellipsis"><a href="index.cgi?mod=design&submod=edit_autobot&autoBotId=$autoBot->[$i][0]">$autoBot->[$i][1]</a></td>
-		<td class="gridContent" style="overflow: hidden; text-overflow: ellipsis">$autoBot->[$i][2]</td>
-		<td class="gridContent">$autoBot->[$i][3]</td>
-		<td class="gridContent">$userDeploy</td>
-		<td class="gridContent">$active</td>
-		</tr>~;
 	}
 	
+	$dbh->disconnect if ($dbh);
 	$html .= qq~</table>~;
 }
 
@@ -119,9 +121,8 @@ if ( $input{submod} eq 'new_autoBot' ) {
 			$input{xml} =~ s/\&quot;/\"/g;
 			$input{xml} =~ s/\&apos\;/\'/g;
 			
-			# $input{xml} =~ s/\n//g;
-			
 			$xml = $input{xml};
+			$xml =~ s/\>\s*\</\>\</g;
 		}
 		
 		# $html .= qq~
@@ -175,7 +176,7 @@ if ( $input{submod} eq 'save_autobot_xml' ) {
 		$input{xml} =~ s/\&quot;/\"/g;
 		$input{xml} =~ s/\&apos\;/\'/g;
 		
-		# $input{xml} =~ s/\n//g;
+		$input{xml} =~ s/\>\s*\</\>\</g;
 		
 		my $sysdate = sysdate();
 		

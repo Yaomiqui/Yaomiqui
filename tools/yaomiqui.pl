@@ -114,10 +114,12 @@ if ( $json ) {
 		
 		my $xml = XML::Simple->new;
 		
-		my $aBot = eval { $xml->XMLin($AB->[$i][6],
-		KeyAttr => { NoEscape => 1 },
-		ForceArray => [ 'VAR', 'DO' ],
-		ContentKey => '-content' ) };
+		my $aBot = eval { $xml->XMLin(
+			$AB->[$i][6],
+			KeyAttr => { NoEscape => 1 },
+			ForceArray => [ 'VAR', 'DO' ],
+			ContentKey => '-content' 
+		)};
 		unless ( $aBot ) {
 			engineLog(qq~ERROR :: $ticketNumber : Not Valid XML for AutoBot when trying to parser the string '$AB->[$i][6]'. Trying with next AutoBot~);
 			next;
@@ -175,7 +177,7 @@ if ( $json ) {
 					# print "GOTCHA!! I have ticket '$TTS[1]' to this Autobot\n\n";
 					$AutoBot = $AB->[$i][0];
 					mlog($TTS[1], qq~Ticket was caught by Autobot ID: [<a href="index.cgi?mod=design&submod=edit_autobot&autoBotId=$AB->[$i][0]" target="_blank">$AB->[$i][0]</a>]~) if $ticketNumber ne '00000000';
-					engineLog("INFO  :: $ticketNumber : Ticket was caught by Autobot ID $AB->[$i][0] ($AB->[$i][1])");
+					engineLog(qq~INFO  :: $ticketNumber : Ticket was caught by Autobot ID $AB->[$i][0] ($AB->[$i][1])~);
 				}
 				
 			}
@@ -986,9 +988,10 @@ sub engineLog {
 	my $msg = shift;
 	my $date = date_nospace();
 	my $sysdate = sysdate();
+	my $engine_log_dir = $VENV{engine_log_dir};
 	
-	open my $ELOG, ">>","$VENV{engine_log_dir}/$date.log";
-	print $ELOG $sysdate . " :: " . $msg . "\n";
+	open my $ELOG, ">>", "$engine_log_dir/$date.log";
+	print $ELOG qq~$sysdate :: $msg\n~;
 	close $ELOG;
 	# engineLog("ERROR :: TT : ");
 	# engineLog("INFO  :: TT : ");
@@ -1010,5 +1013,5 @@ sub date_nospace {
 	$fecha[4] ++;
 	@fecha = map { if ($_ < 10) { $_ = "0$_"; }else{ $_ } } @fecha;
 						#year	mon		 mday		hour	min		sec
-	return "$fecha[5]$fecha[4]$fecha[3]";
+	return my $date_nospace = "$fecha[5]$fecha[4]$fecha[3]";
 }
