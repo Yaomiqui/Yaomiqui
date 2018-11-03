@@ -107,7 +107,7 @@ chown -R apache:apache /var/www/yaomiqui
 
 service httpd restart
 
-/usr/bin/find /var/www/yaomiqui/html -name *.cgi -exec chmod 755 {} \;
+/usr/bin/find /var/www/yaomiqui -name *.cgi -exec chmod 755 {} \;
 
 /usr/bin/find /var/www/yaomiqui -name *.pl -exec chmod 755 {} \;
 
