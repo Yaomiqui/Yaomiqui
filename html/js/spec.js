@@ -189,12 +189,12 @@
 						{
 							caption: "Append a <execRemoteLinuxCommand>",
 							action: Xonomy.newElementChild,
-							actionParameter: "<execRemoteLinuxCommand catchVarName=\"\" remoteHost=\"\" remoteUser=\"\" passwd=\"\" publicKey=\"\"><command><![CDATA[]]></command></execRemoteLinuxCommand>"
+							actionParameter: "<execRemoteLinuxCommand catchVarName=\"\" remoteHost=\"\" remoteUser=\"\" passwd=\"\" publicKey=\"\" EncKey=\"\" EncPasswd=\"\"><command><![CDATA[]]></command></execRemoteLinuxCommand>"
 						},
 						{
 							caption: "Append a <execRemoteWindowsCommand>",
 							action: Xonomy.newElementChild,
-							actionParameter: "<execRemoteWindowsCommand catchVarName=\"\" remoteHost=\"\" domain=\"\" remoteUser=\"\" passwd=\"\" useKerberos=\"yes\"><command><![CDATA[]]></command></execRemoteWindowsCommand>"
+							actionParameter: "<execRemoteWindowsCommand catchVarName=\"\" remoteHost=\"\" domain=\"\" remoteUser=\"\" passwd=\"\" useKerberos=\"yes\" EncKey=\"\" EncPasswd=\"\"><command><![CDATA[]]></command></execRemoteWindowsCommand>"
 						},
 						{
 							caption: "Append a <SetVar>",
@@ -337,12 +337,12 @@
 						{
 							caption: "New <execRemoteLinuxCommand> before this",
 							action: Xonomy.newElementBefore,
-							actionParameter: "<execRemoteLinuxCommand catchVarName=\"\" remoteHost=\"\" remoteUser=\"\" passwd=\"\" publicKey=\"\"><command><![CDATA[]]></command></execRemoteLinuxCommand>"
+							actionParameter: "<execRemoteLinuxCommand catchVarName=\"\" remoteHost=\"\" remoteUser=\"\" passwd=\"\" publicKey=\"\" EncKey=\"\" EncPasswd=\"\"><command><![CDATA[]]></command></execRemoteLinuxCommand>"
 						},
 						{
 							caption: "New <execRemoteLinuxCommand> after this",
 							action: Xonomy.newElementAfter,
-							actionParameter: "<execRemoteLinuxCommand catchVarName=\"\" remoteHost=\"\" remoteUser=\"\" passwd=\"\" publicKey=\"\"><command><![CDATA[]]></command></execRemoteLinuxCommand>"
+							actionParameter: "<execRemoteLinuxCommand catchVarName=\"\" remoteHost=\"\" remoteUser=\"\" passwd=\"\" publicKey=\"\" EncKey=\"\" EncPasswd=\"\"><command><![CDATA[]]></command></execRemoteLinuxCommand>"
 						}
 					],
 					canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "FOREACH_NUMBER", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand", "IntegerArray", "Sleep"],
@@ -360,6 +360,12 @@
 							asker: Xonomy.askString,
 						},
 						"publicKey": {
+							asker: Xonomy.askString,
+						},
+						"EncKey": {
+							asker: Xonomy.askString,
+						},
+						"EncPasswd": {
 							asker: Xonomy.askString,
 						},
 						"command": {
@@ -380,12 +386,12 @@
 						{
 							caption: "New <execRemoteWindowsCommand> before this",
 							action: Xonomy.newElementBefore,
-							actionParameter: "<execRemoteWindowsCommand catchVarName=\"\" remoteHost=\"\" domain=\"\" remoteUser=\"\" passwd=\"\" useKerberos=\"yes\"><command><![CDATA[]]></command></execRemoteWindowsCommand>"
+							actionParameter: "<execRemoteWindowsCommand catchVarName=\"\" remoteHost=\"\" domain=\"\" remoteUser=\"\" passwd=\"\" useKerberos=\"yes\" EncKey=\"\" EncPasswd=\"\"><command><![CDATA[]]></command></execRemoteWindowsCommand>"
 						},
 						{
 							caption: "New <execRemoteWindowsCommand> after this",
 							action: Xonomy.newElementAfter,
-							actionParameter: "<execRemoteWindowsCommand catchVarName=\"\" remoteHost=\"\" domain=\"\" remoteUser=\"\" passwd=\"\" useKerberos=\"yes\"><command><![CDATA[]]></command></execRemoteWindowsCommand>"
+							actionParameter: "<execRemoteWindowsCommand catchVarName=\"\" remoteHost=\"\" domain=\"\" remoteUser=\"\" passwd=\"\" useKerberos=\"yes\" EncKey=\"\" EncPasswd=\"\"><command><![CDATA[]]></command></execRemoteWindowsCommand>"
 						}
 					],
 					canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "FOREACH_NUMBER", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand", "IntegerArray", "Sleep"],
@@ -400,6 +406,12 @@
 							asker: Xonomy.askString,
 						},
 						"passwd": {
+							asker: Xonomy.askString,
+						},
+						"EncKey": {
+							asker: Xonomy.askString,
+						},
+						"EncPasswd": {
 							asker: Xonomy.askString,
 						},
 						"domain": {
