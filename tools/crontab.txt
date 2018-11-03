@@ -1,13 +1,12 @@
 # Heartbeat checks for listener be running
-* * * * * /var/www/yaomiqui/heartbeat.pl 2&1>/dev/null
+* * * * * /usr/bin/perl /var/www/yaomiqui/heartbeat.pl
 
 # It reads database looking for new tickets
-* * * * * /var/www/yaomiqui/auto.pl 2&1>/dev/null
+* * * * * /usr/bin/perl /var/www/yaomiqui/auto.pl
 
 # Cleaning insertTicket.pl <defuncts>. You can run manually
-#0 0 * * * /var/www/yaomiqui/insertTicket restart 2&1>/dev/null
+#0 0 * * * /usr/bin/perl /var/www/yaomiqui/insertTicket restart
 
 # It runs only Connector-AutoBots getting remote tickets.
 # You must design some AutoBot to query your ITSM, monitoring tool or another event source.
-#* * * * * /var/www/yaomiqui/yaomiqui.pl 00000000 'idAutoBot' '{"ticket":{"subject":"SPECIFIC SUBJECT"}}'
-
+#* * * * * /usr/bin/perl /var/www/yaomiqui/yaomiqui.pl 00000000 'idAutoBot' '{"ticket":{"subject":"SPECIFIC SUBJECT"}}'

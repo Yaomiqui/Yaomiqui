@@ -2,13 +2,11 @@ CREATE USER 'yaomiqui'@'localhost' IDENTIFIED BY 'MYSQL_PASSWD';
 
 CREATE DATABASE IF NOT EXISTS yaomiqui CHARACTER SET 'UTF8' COLLATE 'utf8_general_ci';
 
-use yaomiqui;
-
 GRANT ALL PRIVILEGES ON yaomiqui.* TO 'yaomiqui'@'localhost' IDENTIFIED BY 'MYSQL_PASSWD' WITH GRANT OPTION;
 
 FLUSH PRIVILEGES;
 
-
+use yaomiqui;
 
 DROP TABLE IF EXISTS users;
 
@@ -55,9 +53,9 @@ CREATE TABLE IF NOT EXISTS permissions (
 	about int(1) DEFAULT '1'
 ) ENGINE=InnoDB;
 
-INSERT INTO permissions (idUser, init, overview, design, accounts, accounts_edit, settings, tickets, tickets_form, logs, charts, reports, about) VALUES ('1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1');
+INSERT INTO permissions (idUser, init, overview, design, accounts, accounts_edit, settings, tickets, tickets_form, logs, charts, reports) VALUES ('1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1');
 INSERT INTO permissions (idUser, init, overview, settings) VALUES ('2', '0', '0', '0');
-INSERT INTO permissions (idUser, init, overview, design, accounts, accounts_edit, settings, tickets, tickets_form, logs, charts, reports, about) VALUES ('3', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1');
+--  INSERT INTO permissions (idUser, init, overview, design, accounts, accounts_edit, settings, tickets, tickets_form, logs, charts, reports) VALUES ('3', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1');
 
 
 DROP TABLE IF EXISTS autoBot;

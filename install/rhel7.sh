@@ -23,7 +23,7 @@ export LC_ALL=en_US.UTF-8
 
 source ./keys_auto.conf
 
-yum install -y wget vim net-tools httpd perl perl-core perl-CGI perl-DBI mod_ssl perl-JSON perl-XML-Simple sendmail
+yum install -y wget vim curl net-tools httpd perl perl-core perl-CGI perl-DBI mod_ssl perl-JSON perl-XML-Simple sendmail
 
 wget -c http://repo.mysql.com/mysql-community-release-el7-5.noarch.rpm
 
@@ -111,11 +111,7 @@ service httpd restart
 
 /usr/bin/find /var/www/yaomiqui -name *.pl -exec chmod 755 {} \;
 
-useradd -m -d /home/yaomiqui -g apache -s /bin/bash -k /etc/skel yaomiqui
-
-chown yaomiqui:apache /var/www/yaomiqui/logs
-
-crontab -u yaomiqui /var/www/yaomiqui/crontab.txt
+crontab /var/www/yaomiqui/crontab.txt
 
 echo ''
 echo '================================================================================'
@@ -127,5 +123,6 @@ echo ''
 echo '================================================================================'
 echo 'You can now pointing to your URL instance with SSL:'
 echo 'https://[FQDN or IP]'
+echo 'User and password default: admin/admin. You should change password immediately'
 echo '================================================================================'
 echo ''

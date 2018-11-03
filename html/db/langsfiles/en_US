@@ -27,6 +27,7 @@ Accounts_List = Accounts List
 New_User = New User
 About_Yaomiqui = About Yaomiqui
 License = License
+Encrypt_Password = Encrypt Password
 
 
 [overview]
@@ -73,6 +74,14 @@ Create_New_from_XML = Create New Autobot from XML
 Enter_XML_Code_to_import = Enter XML Code to import
 Enter_Autobot_ID = Enter the Autobot ID
 Enter_new_Autobot_ID = Enter a new Autobot ID
+Encrypt_Password = Encrypt Password
+Password = Password
+Long_of_the_Encryption_Key = Long of the Encryption Key
+Encryption_Key = Encryption Key
+Encrypted_Password = Encrypted Password
+Enter_the_password_to_encrypt = Enter the password to encrypt
+Enter_long_of_Encryption_Key = Enter long of Encryption Key
+Generate = Generate
 
 
 [tickets]
@@ -114,7 +123,6 @@ See_documentation_for = See documentation for
 See = See
 on_GitHub = on GitHub
 Version = Version
-
 
 
 [settings]

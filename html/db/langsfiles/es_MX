@@ -27,6 +27,7 @@ Accounts_List = Lista de cuentas
 New_User = Nuevo Usuario
 About_Yaomiqui = Acerca de Yaomiqui
 License = Licencia
+Encrypt_Password = Cifrar Password
 
 
 [overview]
@@ -73,6 +74,14 @@ Create_New_from_XML = Crear Nuevo Autobot de un XML
 Enter_XML_Code = Introduzca el código XML a importar
 Enter_Autobot_ID = Introduzca el ID del Autobot
 Enter_new_Autobot_ID = Introduzca un nuevo ID de Autobot
+Encrypt_Password = Cifrar Password
+Password = Password
+Long_of_the_Encryption_Key = Largo de la Llave de Cifrado
+Encryption_Key = Llave de Cifrado
+Encrypted_Password = Password Cifrado
+Enter_the_password_to_encrypt = Introduzca el password a cifrar
+Enter_long_of_Encryption_Key = Introduzca el largo de la Llave de Cifrado
+Generate = Generar
 
 
 [tickets]

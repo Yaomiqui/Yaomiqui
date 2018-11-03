@@ -489,7 +489,58 @@ if ( $input{submod} eq 'edit_autobot' ) {
 }
 #<button class="blueLightButton" onclick="alert(Xonomy.harvest())"> $MSG{Get_XML} </button>
 
+
+
+if ( $input{submod} eq 'cryptPasswd' ) {
+	$html .= qq~<div class="contentTitle">$MSG{Encrypt_Password}</div>~ unless $input{'shtl'};
+	
+	my $longKey = $input{longKey} || 24;
+	my $passwd = $input{passwd};
+	my $encKey = generateRandomKey($longKey);
+	
+	my $encryptedPass;
+	if ( $passwd ) {
+		use Crypt::Babel;
+		my $crypt = new Crypt::Babel;
+		$encryptedPass = $crypt->encode($passwd, $encKey);
+	}
+	
+	$html .= qq~<table cellpadding="0" cellspacing="0"><tr><td align="right">
+	
+	<form method="post" action="index.cgi">
+	<input type="hidden" name="mod" value="design">
+	<input type="hidden" name="submod" value="cryptPasswd">
+	<input type="hidden" name="encKey" value="$encKey">
+	
+	$MSG{Password}: &nbsp; <input type="password" name="passwd" maxlength="60" placeholder="$MSG{Enter_the_password_to_encrypt}" value="$passwd" required> <br />
+	$MSG{Long_of_the_Encryption_Key}: &nbsp; <input type="text" name="longKey" maxlength="128" placeholder="$MSG{Enter_long_of_Encryption_Key}" value="$longKey" required> <br />
+	<br />
+	<input class="blueLightButton" type="submit" value="$MSG{Generate}">
+	<br />
+	<br />
+	<br />
+	$MSG{Encryption_Key}: &nbsp; <input type="text" value="$encKey"> <br />
+	$MSG{Encrypted_Password}: &nbsp; <input type="text" value="$encryptedPass">  <br />
+	
+	</form>
+	
+	</td></tr></table>~;
+	
+	
+}
+
+
 return $html;
+
+sub generateRandomKey {
+	my @chars = ('a'..'z','A'..'Z',0..9);
+	my $long = shift;
+	my $key;
+	for ( 1 .. $long ) {
+		$key .= $chars[int(rand(@chars))];
+	}
+	return $key;
+}
 
 sub sysdate {
 	my @fecha = localtime(time); # sec,min,hour,mday,mon,year,wday,yday ,isdst

@@ -9,10 +9,10 @@ our %VENV = get_vars();
 our $MAX_PROCESSES = $VENV{'PROC_MAX_PARALLEL'};
 $VENV{'CRITICAL_PROC'} ++;
 
-if ( getPid() < $VENV{'CRITICAL_PROC'} ) {
-	# print "Reading tickets...\n";
+my $pids = getPid();
+
+if ( $pids < $VENV{'CRITICAL_PROC'} ) {
 	connected();
-	# my $sth = $dbh->prepare("SELECT numberTicket FROM ticket WHERE idAutoBotCatched IS NULL OR finalState IS NULL");
 	my $sth = $dbh->prepare("SELECT numberTicket FROM ticket WHERE idAutoBotCatched IS NULL");
 	$sth->execute();
 	my $AB = $sth->fetchall_arrayref;
@@ -24,8 +24,6 @@ if ( getPid() < $VENV{'CRITICAL_PROC'} ) {
 		for my $i ( 0 .. $#{$AB} ) {
 			my $pid = $pm->start and next; 
 			
-			# ## debug
-			# print "$RealBin/yaomiqui.pl $AB->[$i][0]\n";
 			eval { system ("$RealBin/yaomiqui.pl $AB->[$i][0]") };
 			
 			$pm->finish;

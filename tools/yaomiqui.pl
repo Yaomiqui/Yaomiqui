@@ -27,6 +27,7 @@ use FindBin qw($RealBin);
 use strict;
 use Net::OpenSSH;
 use Data::Dumper;
+use lib $RealBin;
 
 our ($ticketNumber, $dbh, %VAR, $jsonCode, $AutoBot);
 our %VENV = get_vars();
@@ -45,15 +46,13 @@ $specAutoBot = " AND idAutoBot = '$ARGV[1]'" if $ARGV[1];
 connected();
 my $sth = $dbh->prepare("SELECT * FROM autoBot WHERE active = '1'$specAutoBot ORDER BY idAutoBot ASC") or engineLog("ERROR :: $ticketNumber : I cannot do Select on autoBot table") and exit;
 $sth->execute();
-my $ABdb = $sth->fetchall_arrayref;
+my $AB = $sth->fetchall_arrayref;
 $sth->finish;
 
 ## Adding a last Autobot for tickets without no one filter to catch it but
-## push on references was actually removed entirely in Perl 5.24 or newer
 my @a = ('','NO AUTOBOT NAME','','2018-10-07 00:00:00','1','1',"<AUTO><ON><VAR name='number' compare='exists'/></ON><DO><LOGING comment='No any Autobot caught this Ticket'/><SetVar name='TIMEOUT' value='1'></SetVar></DO></AUTO>");
-my @noref = @$ABdb;
-push (@noref, [@a]);
-my $AB = \@noref;
+## push on references was actually removed entirely in Perl 5.24 or newer
+push @$AB, [@a];
 
 my $sth = $dbh->prepare("SELECT * FROM ticket WHERE numberTicket = '$ticketNumber'") or engineLog("ERROR :: $ticketNumber : I cannot do Select on ticket table") and exit;
 $sth->execute();
@@ -77,6 +76,8 @@ my $json = eval { decode_json $jsonCode };		# my $json = eval { from_json($jsonC
 
 # ## debug
 # print "JSON: " . Dumper($json) . "\n";
+
+chdir $RealBin;
 
 if ( $json ) {
 	
@@ -408,10 +409,21 @@ sub runDO {
 					$DO->{execRemoteLinuxCommand}->{remoteHost} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{remoteHost});
 					$DO->{execRemoteLinuxCommand}->{passwd} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{passwd});
 					
+					if ( $DO->{execRemoteLinuxCommand}->{EncKey} and $DO->{execRemoteLinuxCommand}->{EncPasswd} ) {
+						use Babel;
+						my $crypt = new Babel;
+						$DO->{execRemoteLinuxCommand}->{passwd} = $crypt->decode($DO->{execRemoteLinuxCommand}->{EncPasswd}, $DO->{execRemoteLinuxCommand}->{EncKey});
+					}
+					
+					## print "PASSWORD: " . $DO->{execRemoteLinuxCommand}->{passwd} . "\n";
+					
 					my $ssh = Net::OpenSSH->new($DO->{execRemoteLinuxCommand}->{remoteHost},
 						user		=> $DO->{execRemoteLinuxCommand}->{remoteUser},
 						password	=> $DO->{execRemoteLinuxCommand}->{passwd},
-						master_opts => [-o => 'StrictHostKeyChecking=no', -o => 'LogLevel=QUIET', -o => "ConnectTimeout=$VENV{CONNECTTIMEOUT}"]
+						strict_mode	=> 0,
+						timeout		=> 30,
+						# master_opts => [-o => 'StrictHostKeyChecking=no', -o => 'LogLevel=QUIET', -o => "ConnectTimeout=$VENV{CONNECTTIMEOUT}"]
+						master_opts => [-o => 'StrictHostKeyChecking=no', -o => 'LogLevel=QUIET']
 					);
 					
 					unless ( $ssh->error ) {
@@ -442,6 +454,12 @@ sub runDO {
 				$DO->{execRemoteWindowsCommand}->{remoteHost} = replaceSpecChar($DO->{execRemoteWindowsCommand}->{remoteHost});
 				$DO->{execRemoteWindowsCommand}->{remotePasswd} = replaceSpecChar($DO->{execRemoteWindowsCommand}->{passwd});
 				$DO->{execRemoteWindowsCommand}->{remoteDomain} = replaceSpecChar($DO->{execRemoteWindowsCommand}->{domain});
+				
+				if ( $DO->{execRemoteWindowsCommand}->{EncKey} and $DO->{execRemoteWindowsCommand}->{EncPasswd} ) {
+					use Babel;
+					my $crypt = new Babel;
+					$DO->{execRemoteWindowsCommand}->{passwd} = $crypt->decode($DO->{execRemoteWindowsCommand}->{EncPasswd}, $DO->{execRemoteWindowsCommand}->{EncKey});;
+				}
 				
 				$DO->{execRemoteWindowsCommand}->{remoteDomain} = $DO->{execRemoteWindowsCommand}->{remoteDomain} . '/' if $DO->{execRemoteWindowsCommand}->{remoteDomain};
 				

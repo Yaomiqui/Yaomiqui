@@ -31,7 +31,7 @@ source ./keys_auto.conf
 
 apt-get update
 
-apt install -y apache2 mysql-server sshpass libnet-openssh-perl libdbi-perl libdbd-mysql-perl libjson-perl libtest-json-perl libxml-simple-perl libxml-validate-perl libparallel-forkmanager-perl libnet-openssh-perl libio-pty-perl sendmail libmime-lite-perl
+apt install -y apache2 curl mysql-server sshpass libnet-openssh-perl libdbi-perl libdbd-mysql-perl libjson-perl libtest-json-perl libxml-simple-perl libxml-validate-perl libparallel-forkmanager-perl libnet-openssh-perl libio-pty-perl sendmail libmime-lite-perl
 
 # Install winexe. You can comment the next five lines to enhance performance. Then you can run it later.
 apt-get -y install python2.7 gcc-mingw-w64 libtevent-dev samba-dev libsmbclient comerr-dev libc6-dev libpopt-dev --fix-missing
@@ -103,11 +103,7 @@ service apache2 restart
 
 /usr/bin/find /var/www/yaomiqui -name *.pl -exec chmod 755 {} \;
 
-useradd -m -d /home/yaomiqui -g www-data -s /bin/bash -k /etc/skel yaomiqui
-
-chown yaomiqui:www-data /var/www/yaomiqui/logs
-
-crontab -u yaomiqui /var/www/yaomiqui/crontab.txt
+crontab /var/www/yaomiqui/crontab.txt
 
 echo ''
 echo '================================================================================'
@@ -119,5 +115,6 @@ echo ''
 echo '================================================================================'
 echo 'You can now pointing to your URL instance with SSL:'
 echo 'https://[FQDN or IP]'
+echo 'User and password default: admin/admin. You should change password immediately'
 echo '================================================================================'
 echo ''

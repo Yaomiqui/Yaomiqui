@@ -49,7 +49,7 @@ sub header {
 		<ul class="leftnavbar">
 		~;
 		
-		my ($abotlist, $crnewabot, $timeline, $reports, $charts, $accounts, $accounts_edit, $about);
+		my ($abotlist, $crnewabot, $timeline, $reports, $charts, $accounts, $accounts_edit, $about, $cryptPasswd);
 		unless ( $input{submod} ) { $list = 'active' }
 		
 		if ( $input{mod} eq 'overview' ) {
@@ -58,9 +58,11 @@ sub header {
 		}
 		if ( $input{mod} eq 'design' ) {
 			$crnewabot = 'active' if $input{submod} eq 'new_autoBot_from_xml';
+			$cryPassabot = 'active' if $input{submod} eq 'cryptPasswd';
 			$header .= qq~
 			<li class="leftnavbar"><a href="index.cgi?mod=design" class="$list">$MSG{Autobots_List}</a></li>
 			<li class="leftnavbar"><a href="index.cgi?mod=design&submod=new_autoBot_from_xml" class="$crnewabot">$MSG{Create_New_Autobot}</a></li>~;
+			$header .= qq~<li class="leftnavbar"><a href="index.cgi?mod=design&submod=cryptPasswd" class="$cryPassabot">$MSG{Encrypt_Password}</a></li>~;
 		}
 		if ( $input{mod} eq 'tickets_form' ) {
 			$header .= qq~
