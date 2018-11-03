@@ -26,6 +26,7 @@ use CGI;
 # use Page::Paginator;
 use Tie::File;
 use Log::Man;
+use lib $RealBin;
 
 our(%input, %VAR, %MSG, %PRM, $username, $html, $header, $footer, $module, $module_file, $theme, $dbh, $encKey);
 require 'common.pl';
