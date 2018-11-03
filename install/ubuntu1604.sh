@@ -103,6 +103,8 @@ service apache2 restart
 
 /usr/bin/find /var/www/yaomiqui -name *.pl -exec chmod 755 {} \;
 
+chmod 755 /var/www/yaomiqui/*.sh
+
 crontab /var/www/yaomiqui/crontab.txt
 
 echo ''

@@ -328,8 +328,6 @@ sub runDO {
 	my @output;
 	
 	foreach my $DO ( @{$DOarray} ) {
-		undef $VAR{Error};
-		
 		## Timeout function starts
 		eval {
 			local $SIG{ALRM} = sub { die "timeout\n" };
@@ -343,7 +341,7 @@ sub runDO {
 			## START TO EXECUTE ALL OF DO FUNCTION
 			
 			if ( $DO->{execLinuxCommand} ) {
-				# undef $VAR{Error};
+				$VAR{Error} = '';
 				
 				my $linuxCommand = replaceSpecChar($DO->{execLinuxCommand}->{command});
 				$linuxCommand =~ s/\\/\\\\/g;
@@ -372,7 +370,7 @@ sub runDO {
 			
 			
 			if ( $DO->{execRemoteLinuxCommand} ) {
-				# undef $VAR{Error};
+				$VAR{Error} = '';
 				my $remoteLinuxCommand;
 				if ( $DO->{execRemoteLinuxCommand}->{publicKey} ) {
 					$remoteLinuxCommand = replaceSpecChar($DO->{execRemoteLinuxCommand}->{command});
@@ -384,8 +382,13 @@ sub runDO {
 					my $ssh = Net::OpenSSH->new($DO->{execRemoteLinuxCommand}->{remoteHost},
 						user		=> $DO->{execRemoteLinuxCommand}->{remoteUser},
 						key_path	=> $DO->{execRemoteLinuxCommand}->{publicKey},
+						strict_mode	=> 0,
+						timeout		=> $VENV{SSH_TIMEOUT},
 						master_opts => [-o => 'StrictHostKeyChecking=no', -o => 'LogLevel=QUIET', -o => "ConnectTimeout=$VENV{CONNECTTIMEOUT}"]
 					);
+					$VAR{Error} = $ssh->error;
+					$VAR{Error} =~ s/^\n//g;
+					$VAR{Error} =~ s/\n$//g;
 					
 					unless ( $ssh->error ) {
 						$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } = $ssh->capture2("$remoteLinuxCommand 2>&1");
@@ -394,15 +397,11 @@ sub runDO {
 						mlog($TT, qq~Remote Linux Command [$remoteLinuxCommand] Executed on Remote Server [$DO->{execRemoteLinuxCommand}->{remoteHost}]. Results: [$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} }]~ . "\nError: []");
 					}
 					else {
-						$VAR{Error} = $ssh->error;
-						$VAR{Error} =~ s/^\n//g;
-						$VAR{Error} =~ s/\n$//g;
 						mlog($TT, qq~Remote Linux Command [$remoteLinuxCommand] Executed on Remote Server [$DO->{execRemoteLinuxCommand}->{remoteHost}]. Results: [$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} }]~ . "\nError: [$VAR{Error}]");
 					}
 					## END OF execRemoteLinuxCommand WITH PUBLIC KEY
 				}
 				else {
-					# undef $VAR{Error};
 					$remoteLinuxCommand = replaceSpecChar($DO->{execRemoteLinuxCommand}->{command});
 					# $remoteLinuxCommand =~ s/'/'\\''/g;
 					$DO->{execRemoteLinuxCommand}->{remoteUser} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{remoteUser});
@@ -421,21 +420,21 @@ sub runDO {
 						user		=> $DO->{execRemoteLinuxCommand}->{remoteUser},
 						password	=> $DO->{execRemoteLinuxCommand}->{passwd},
 						strict_mode	=> 0,
-						timeout		=> 30,
-						# master_opts => [-o => 'StrictHostKeyChecking=no', -o => 'LogLevel=QUIET', -o => "ConnectTimeout=$VENV{CONNECTTIMEOUT}"]
-						master_opts => [-o => 'StrictHostKeyChecking=no', -o => 'LogLevel=QUIET']
+						timeout		=> $VENV{SSH_TIMEOUT},
+						master_opts => [-o => 'StrictHostKeyChecking=no', -o => 'LogLevel=QUIET', -o => "ConnectTimeout=$VENV{CONNECTTIMEOUT}"]
+						# master_opts => [-o => 'StrictHostKeyChecking=no', -o => 'LogLevel=QUIET']
 					);
+					$VAR{Error} = $ssh->error;
+					$VAR{Error} =~ s/^\n//g;
+					$VAR{Error} =~ s/\n$//g;
 					
-					unless ( $ssh->error ) {
+					unless ( $VAR{Error} ) {
 						$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } = $ssh->capture2("$remoteLinuxCommand 2>&1");
 						$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } =~ s/^\n//g;
 						$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } =~ s/\n$//g;
 						mlog($TT, qq~Remote Linux Command [$remoteLinuxCommand] Executed on Remote Server [$DO->{execRemoteLinuxCommand}->{remoteHost}]. Results: [$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} }]~ . "\nError: []");
 					}
 					else {
-						$VAR{Error} = $ssh->error;
-						$VAR{Error} =~ s/^\n//g;
-						$VAR{Error} =~ s/\n$//g;
 						mlog($TT, qq~Remote Linux Command [$remoteLinuxCommand] Executed on Remote Server [$DO->{execRemoteLinuxCommand}->{remoteHost}]. Results: [$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} }]~ . "\nError: [$VAR{Error}]");
 					}
 					## END OF execRemoteLinuxCommand WITH USER AND PASSWORD
@@ -444,7 +443,7 @@ sub runDO {
 			
 			
 			if ( $DO->{execRemoteWindowsCommand} ) {
-				# undef $VAR{Error};
+				$VAR{Error} = '';
 				my $remoteWindowsCommand = replaceSpecChar($DO->{execRemoteWindowsCommand}->{command});
 				$remoteWindowsCommand =~ s/\'/\\\'/g;
 				$remoteWindowsCommand =~ s/\r//g;
@@ -488,7 +487,7 @@ sub runDO {
 			
 			
 			if ( $DO->{JSONtoVar} ) {
-				# undef $VAR{Error};
+				$VAR{Error} = '';
 				$DO->{JSONtoVar}->{JsonSource} =~ s/\$|\{|\}|\s//g;
 				
 				my $json = eval { decode_json $VAR{ $DO->{JSONtoVar}->{JsonSource} } };
@@ -587,7 +586,7 @@ sub runDO {
 			
 			
 			if ( $DO->{SendEMAIL} ) {
-				# undef $VAR{Error};
+				$VAR{Error} = '';
 				if ( $DO->{SendEMAIL}->{Subject} and $DO->{SendEMAIL}->{From} and $DO->{SendEMAIL}->{To} and $DO->{SendEMAIL}->{Type} and $DO->{SendEMAIL}->{Body} ) {
 					
 					$DO->{SendEMAIL}->{Subject} = replaceSpecChar($DO->{SendEMAIL}->{Subject});
@@ -750,6 +749,11 @@ sub runDO {
 
 sub compareVAR {
 	my ($name, $comparator, $value, $TT, $no_log) = @_;
+	
+	if ( $name =~ /^\$\{.+\}$/ ) {
+		$name =~ s/\$|\{|\}|\s//g;
+		$VAR{$name} = $value;
+	}
 	
 	if ( $comparator eq 'exists' ) {
 		if ( $name ) {

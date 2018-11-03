@@ -1,10 +1,11 @@
 # Heartbeat checks for listener be running
-* * * * * /usr/bin/perl /var/www/yaomiqui/heartbeat.pl
+* * * * * /var/www/yaomiqui/heartbeat.sh
 
 # It reads database looking for new tickets
-* * * * * /usr/bin/perl /var/www/yaomiqui/auto.pl
+* * * * * /var/www/yaomiqui/auto.sh
 
-# Cleaning insertTicket.pl <defuncts>. You can run manually
+# Cleaning insertTicket.pl <defuncts>.
+# You can run manually but, Yaomiqui knos how to kill zombies
 #0 0 * * * /usr/bin/perl /var/www/yaomiqui/insertTicket restart
 
 # It runs only Connector-AutoBots getting remote tickets.

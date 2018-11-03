@@ -102,7 +102,8 @@ sub common_header {
 	<script type="text/javascript" src="js/loader.js"></script>
 	<link rel="stylesheet" type="text/css" href="css/xonomy.css" />
 	
-	<link href="themes/$theme/css/style.css" rel="stylesheet">~;
+	<link href="themes/$theme/css/style.css" rel="stylesheet">
+	~;
 	
 	return  $header;
 }
