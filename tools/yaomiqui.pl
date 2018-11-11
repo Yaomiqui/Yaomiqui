@@ -60,6 +60,8 @@ my @TTS = $sth->fetchrow_array;
 $sth->finish;
 $dbh->disconnect if ($dbh);
 
+$TTS[1] = $ticketNumber unless $TTS[1];
+
 my $jsonCode = $ARGV[2] ? $ARGV[2] : $TTS[10];
 $jsonCode =~ s/\\/\\\\/g;
 $jsonCode =~ s/\r//g;
@@ -67,8 +69,6 @@ $jsonCode =~ s/\n//g;
 
 # ## debug
 # print "JSONCODE:\n" . $jsonCode . "\n";
-
-$TTS[1] = $ticketNumber unless $TTS[1];
 
 engineLog("INFO  :: $TTS[1] : Processing ticket with JSON: " . $jsonCode);
 
@@ -177,7 +177,7 @@ if ( $json ) {
 					## debug
 					# print "GOTCHA!! I have ticket '$TTS[1]' to this Autobot\n\n";
 					$AutoBot = $AB->[$i][0];
-					mlog($TTS[1], qq~Ticket was caught by Autobot ID: [<a href="index.cgi?mod=design&submod=edit_autobot&autoBotId=$AB->[$i][0]" target="_blank">$AB->[$i][0]</a>]~) if $ticketNumber ne '00000000';
+					mlog($TTS[1], qq~Ticket was caught by Autobot ID: [<a href="index.cgi?mod=design&submod=edit_autobot&autoBotId=$AB->[$i][0]" target="_blank">$AB->[$i][0]</a>]~);
 					engineLog(qq~INFO  :: $ticketNumber : Ticket was caught by Autobot ID $AB->[$i][0] ($AB->[$i][1])~);
 				}
 				
@@ -249,6 +249,8 @@ sub runLOGING {
 	my ($comment, $TT) = @_;
 	$comment = replaceSpecChar($comment);
 	
+	# print $comment . "\n";
+	
 	mlog($TT, qq~NOTE: [$comment]~);
 }
 
@@ -258,11 +260,13 @@ sub runEND {
 	
 	$value = replaceSpecChar($value);
 	
-	connected();
-	my $sth = $dbh->prepare("UPDATE ticket SET finalDate = '$sysdate', finalState = '$value' WHERE numberTicket='$TT'");
-	$sth->execute();
-	$sth->finish;
-	$dbh->disconnect if $dbh;
+	if ( $ticketNumber ne 'NDF00000001' ) {
+		connected();
+		my $sth = $dbh->prepare("UPDATE ticket SET finalDate = '$sysdate', finalState = '$value' WHERE numberTicket='$TT'");
+		$sth->execute();
+		$sth->finish;
+		$dbh->disconnect if $dbh;
+	}
 	
 	mlog($TT, qq~Final State: [$value]~);
 	engineLog("INFO  :: $TT : Ticket closed with status [$value]");
@@ -344,9 +348,12 @@ sub runDO {
 				$VAR{Error} = '';
 				
 				my $linuxCommand = replaceSpecChar($DO->{execLinuxCommand}->{command});
-				$linuxCommand =~ s/\\/\\\\/g;
+				# $linuxCommand =~ s/\\/\\\\/g;
 				
 				my $linerrfile = '/tmp/' . $TT . '.err';
+				
+				# ## debug
+				# print "COMMAND:\n" . $linuxCommand . "\n\n";
 				
 				$VAR{ $DO->{execLinuxCommand}->{catchVarName} } = `$linuxCommand 2>$linerrfile`;
 				$VAR{ $DO->{execLinuxCommand}->{catchVarName} } =~ s/^\n//g;
@@ -356,13 +363,13 @@ sub runDO {
 				$VAR{Error} =~ s/^\n//g;
 				$VAR{Error} =~ s/\n$//g;
 				
-				## debug
+				# ## debug
 				# print "RESULTS:\n" . $VAR{ $DO->{execLinuxCommand}->{catchVarName} } . "\n\n";
 				
 				unless ( $VAR{Error} ) {
-					mlog($TT, qq~Linux Command [$linuxCommand] Executed on Local Server [localhost]. Results: [$VAR{ $DO->{execLinuxCommand}->{catchVarName} }]~ . "\nError: []");
+					mlog($TT, qq~Linux Command [$DO->{execLinuxCommand}->{command}] Executed on Local Server [localhost]. Results: [$VAR{ $DO->{execLinuxCommand}->{catchVarName} }]~ . "\nError: []");
 				} else {
-					mlog($TT, qq~Linux Command [$linuxCommand] Executed on Local Server [localhost]. Results: [$VAR{ $DO->{execLinuxCommand}->{catchVarName} }]~ . "\nError: [$VAR{Error}]");
+					mlog($TT, qq~Linux Command [$DO->{execLinuxCommand}->{command}] Executed on Local Server [localhost]. Results: [$VAR{ $DO->{execLinuxCommand}->{catchVarName} }]~ . "\nError: [$VAR{Error}]");
 				}
 				
 				unlink "$linerrfile";
@@ -373,8 +380,6 @@ sub runDO {
 				$VAR{Error} = '';
 				my $remoteLinuxCommand;
 				if ( $DO->{execRemoteLinuxCommand}->{publicKey} ) {
-					$remoteLinuxCommand = replaceSpecChar($DO->{execRemoteLinuxCommand}->{command});
-					# $remoteLinuxCommand =~ s/'/'\\''/g;
 					$DO->{execRemoteLinuxCommand}->{remoteUser} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{remoteUser});
 					$DO->{execRemoteLinuxCommand}->{remoteHost} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{remoteHost});
 					$DO->{execRemoteLinuxCommand}->{publicKey} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{publicKey});
@@ -390,20 +395,21 @@ sub runDO {
 					$VAR{Error} =~ s/^\n//g;
 					$VAR{Error} =~ s/\n$//g;
 					
+					$remoteLinuxCommand = replaceSpecChar($DO->{execRemoteLinuxCommand}->{command});
+					# $remoteLinuxCommand =~ s/'/'\\''/g;
+					
 					unless ( $ssh->error ) {
 						$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } = $ssh->capture2("$remoteLinuxCommand 2>&1");
 						$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } =~ s/^\n//g;
 						$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } =~ s/\n$//g;
-						mlog($TT, qq~Remote Linux Command [$remoteLinuxCommand] Executed on Remote Server [$DO->{execRemoteLinuxCommand}->{remoteHost}]. Results: [$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} }]~ . "\nError: []");
+						mlog($TT, qq~Remote Linux Command [$DO->{execRemoteLinuxCommand}->{command}] Executed on Remote Server [$DO->{execRemoteLinuxCommand}->{remoteHost}]. Results: [$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} }]~ . "\nError: []");
 					}
 					else {
-						mlog($TT, qq~Remote Linux Command [$remoteLinuxCommand] Executed on Remote Server [$DO->{execRemoteLinuxCommand}->{remoteHost}]. Results: [$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} }]~ . "\nError: [$VAR{Error}]");
+						mlog($TT, qq~Remote Linux Command [$DO->{execRemoteLinuxCommand}->{command}] Executed on Remote Server [$DO->{execRemoteLinuxCommand}->{remoteHost}]. Results: [$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} }]~ . "\nError: [$VAR{Error}]");
 					}
 					## END OF execRemoteLinuxCommand WITH PUBLIC KEY
 				}
 				else {
-					$remoteLinuxCommand = replaceSpecChar($DO->{execRemoteLinuxCommand}->{command});
-					# $remoteLinuxCommand =~ s/'/'\\''/g;
 					$DO->{execRemoteLinuxCommand}->{remoteUser} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{remoteUser});
 					$DO->{execRemoteLinuxCommand}->{remoteHost} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{remoteHost});
 					$DO->{execRemoteLinuxCommand}->{passwd} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{passwd});
@@ -428,14 +434,17 @@ sub runDO {
 					$VAR{Error} =~ s/^\n//g;
 					$VAR{Error} =~ s/\n$//g;
 					
+					$remoteLinuxCommand = replaceSpecChar($DO->{execRemoteLinuxCommand}->{command});
+					# $remoteLinuxCommand =~ s/'/'\\''/g;
+					
 					unless ( $VAR{Error} ) {
 						$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } = $ssh->capture2("$remoteLinuxCommand 2>&1");
 						$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } =~ s/^\n//g;
 						$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } =~ s/\n$//g;
-						mlog($TT, qq~Remote Linux Command [$remoteLinuxCommand] Executed on Remote Server [$DO->{execRemoteLinuxCommand}->{remoteHost}]. Results: [$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} }]~ . "\nError: []");
+						mlog($TT, qq~Remote Linux Command [$DO->{execRemoteLinuxCommand}->{command}] Executed on Remote Server [$DO->{execRemoteLinuxCommand}->{remoteHost}]. Results: [$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} }]~ . "\nError: []");
 					}
 					else {
-						mlog($TT, qq~Remote Linux Command [$remoteLinuxCommand] Executed on Remote Server [$DO->{execRemoteLinuxCommand}->{remoteHost}]. Results: [$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} }]~ . "\nError: [$VAR{Error}]");
+						mlog($TT, qq~Remote Linux Command [$DO->{execRemoteLinuxCommand}->{command}] Executed on Remote Server [$DO->{execRemoteLinuxCommand}->{remoteHost}]. Results: [$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} }]~ . "\nError: [$VAR{Error}]");
 					}
 					## END OF execRemoteLinuxCommand WITH USER AND PASSWORD
 				}
@@ -457,7 +466,7 @@ sub runDO {
 				if ( $DO->{execRemoteWindowsCommand}->{EncKey} and $DO->{execRemoteWindowsCommand}->{EncPasswd} ) {
 					use Babel;
 					my $crypt = new Babel;
-					$DO->{execRemoteWindowsCommand}->{passwd} = $crypt->decode($DO->{execRemoteWindowsCommand}->{EncPasswd}, $DO->{execRemoteWindowsCommand}->{EncKey});;
+					$DO->{execRemoteWindowsCommand}->{passwd} = $crypt->decode($DO->{execRemoteWindowsCommand}->{EncPasswd}, $DO->{execRemoteWindowsCommand}->{EncKey});
 				}
 				
 				$DO->{execRemoteWindowsCommand}->{remoteDomain} = $DO->{execRemoteWindowsCommand}->{remoteDomain} . '/' if $DO->{execRemoteWindowsCommand}->{remoteDomain};
@@ -476,13 +485,27 @@ sub runDO {
 				$VAR{Error} =~ s/\n$//g;
 				
 				unless ( $VAR{Error} ) {
-					mlog($TT, qq~Remote Windows Command [$remoteWindowsCommand] Executed on Remote Server [$DO->{execRemoteWindowsCommand}->{remoteHost}].\nResults: [$VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} }]~ . "\nError: []");
+					mlog($TT, qq~Remote Windows Command [$DO->{execRemoteWindowsCommand}->{command}] Executed on Remote Server [$DO->{execRemoteWindowsCommand}->{remoteHost}].\nResults: [$VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} }]~ . "\nError: []");
 				}
 				else {
-					mlog($TT, qq~Remote Windows Command [$remoteWindowsCommand] Executed on Remote Server [$DO->{execRemoteWindowsCommand}->{remoteHost}].\nResults: [$VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} }]~ . "\nError: [" . $VAR{Error} . "]");
+					mlog($TT, qq~Remote Windows Command [$DO->{execRemoteWindowsCommand}->{command}] Executed on Remote Server [$DO->{execRemoteWindowsCommand}->{remoteHost}].\nResults: [$VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} }]~ . "\nError: [" . $VAR{Error} . "]");
 				}
 				
 				unlink "$winerrfile";
+			}
+			
+			
+			if ( $DO->{DecodePWDtoVar} ) {
+				$VAR{Error} = '';
+				if ( $DO->{DecodePWDtoVar}->{EncKey} and $DO->{DecodePWDtoVar}->{EncPasswd} ) {
+					use Babel;
+					my $crypt = new Babel;
+					$DO->{DecodePWDtoVar}->{name} = $crypt->decode($DO->{DecodePWDtoVar}->{EncPasswd}, $DO->{DecodePWDtoVar}->{EncKey});
+					mlog($TT, qq~Encrypted Password was decode using EncKey and assigned to variable~);
+				} else {
+					$VAR{Error} = 'Encrypted Password or EncKey is missing';
+					mlog($TT, qq~Error: Encrypted Password or EncKey is missing~);
+				}
 			}
 			
 			
@@ -607,6 +630,7 @@ sub runDO {
 									To      => $DO->{SendEMAIL}->{To},
 									Type    => $DO->{SendEMAIL}->{Type},
 									Data    => qq~$DO->{SendEMAIL}->{Body}~
+									# Data    => $DO->{SendEMAIL}->{Body}
 								);
 						$msg->attr('content-type.charset' => 'UTF-8');
 						
@@ -927,6 +951,24 @@ sub compareVAR {
 			return 0;
 		}
 	}
+	elsif ( $comparator eq 'lt' ) {
+		if ( $name lt $value ) {
+			mlog($TT, qq~Comparison: IF [$name] $comparator [$value] (RETURN = true)~) unless $no_log;
+			return 1;
+		} else {
+			mlog($TT, qq~Comparison: IF [$name] $comparator [$value] (RETURN = false)~) unless $no_log;
+			return 0;
+		}
+	}
+	elsif ( $comparator eq 'gt' ) {
+		if ( $name gt $value ) {
+			mlog($TT, qq~Comparison: IF [$name] $comparator [$value] (RETURN = true)~) unless $no_log;
+			return 1;
+		} else {
+			mlog($TT, qq~Comparison: IF [$name] $comparator [$value] (RETURN = false)~) unless $no_log;
+			return 0;
+		}
+	}
 }
 
 
@@ -972,9 +1014,7 @@ sub mlog {
 	# $log =~ s/\'/\"/g;
 	my $sysdate = sysdate();
 	
-	print "$sysdate : $ticketNumber : $log\n" if  $ticketNumber eq '00000000';
-	
-	if ( $ticketNumber ne '00000000' ) {
+	if ( $ticketNumber ne 'NDF00000001' ) {
 		connected();
 		my $insert_string = "INSERT INTO log (numberTicket, insertDate, log) VALUES ('$ticketNumber', '$sysdate', ?)";
 		my $sth = $dbh->prepare("$insert_string");
@@ -982,6 +1022,28 @@ sub mlog {
 		$sth->finish;
 		$dbh->disconnect if ($dbh);
 	}
+	# else {
+		# print "$sysdate : $ticketNumber : $log\n";
+	# }
+}
+
+sub engineLog {
+	my $msg = shift;
+	my $date = date_nospace();
+	my $sysdate = sysdate();
+	my $engine_log_dir = $VENV{engine_log_dir};
+	
+	if ( $ticketNumber ne 'NDF00000001' ) {
+		open my $ELOG, ">>", "$engine_log_dir/$date.log";
+		print $ELOG qq~$sysdate :: $msg\n~;
+		close $ELOG;
+		# engineLog("ERROR :: TT : ");
+		# engineLog("INFO  :: TT : ");
+		# engineLog("WARN  :: TT : ");
+	}
+	# else {
+		# print qq~$sysdate :: $msg\n~;
+	# }
 }
 
 sub connected {
@@ -1004,20 +1066,6 @@ sub get_vars {
 	}
 	close $file;
 	return %VARS;
-}
-
-sub engineLog {
-	my $msg = shift;
-	my $date = date_nospace();
-	my $sysdate = sysdate();
-	my $engine_log_dir = $VENV{engine_log_dir};
-	
-	open my $ELOG, ">>", "$engine_log_dir/$date.log";
-	print $ELOG qq~$sysdate :: $msg\n~;
-	close $ELOG;
-	# engineLog("ERROR :: TT : ");
-	# engineLog("INFO  :: TT : ");
-	# engineLog("WARN  :: TT : ");
 }
 
 sub sysdate {

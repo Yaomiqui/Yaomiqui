@@ -1,13 +1,14 @@
-# Heartbeat checks for listener be running
+## Heartbeat checks for listener be running
 * * * * * /var/www/yaomiqui/heartbeat.sh
 
-# It reads database looking for new tickets
+## It reads database looking for new tickets
 * * * * * /var/www/yaomiqui/auto.sh
 
-# Cleaning insertTicket.pl <defuncts>.
-# You can run manually but, Yaomiqui knos how to kill zombies
-#0 0 * * * /usr/bin/perl /var/www/yaomiqui/insertTicket restart
+## Self Monitoring - Free Memory
+## Threshold is 30 as default, but you can change it
+## Maybe in Ubuntu does not work because is a Perl script to execute
+*/5 * * * * /usr/bin/perl /var/www/yaomiqui/yaomiqui.pl 'NDF00000001' 'TFfDJRL2Hyw2U202aGLAfBgMAfx79r76OInrtipK' '{"ticket":{"number": "NDF00000001","subject":"SELF MONITORING","type":"MEMORY","threshold":"30"}}'
 
-# It runs only Connector-AutoBots getting remote tickets.
-# You must design some AutoBot to query your ITSM, monitoring tool or another event source.
-#* * * * * /usr/bin/perl /var/www/yaomiqui/yaomiqui.pl 00000000 'idAutoBot' '{"ticket":{"subject":"SPECIFIC SUBJECT"}}'
+## Self Monitoring - CPU usage
+## Threshold is 70 as default, but you can change it
+*/5 * * * * /usr/bin/perl /var/www/yaomiqui/yaomiqui.pl 'NDF00000001' 'kKzfSTwXnMw1QiOZ9agd2KSTl2ertZNvCv1IjMhI' '{"ticket":{"number": "NDF00000001","subject":"SELF MONITORING","type":"CPU","threshold":"70"}}'

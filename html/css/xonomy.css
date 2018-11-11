@@ -204,14 +204,14 @@
 .xonomy.laic .element > .children { padding-left: 10px; }
 .xonomy.laic .element > .children > .textnode { display: block; margin: 1px 0px 0px 0px; }
 .xonomy.laic .element.oneliner > .children > .textnode { margin-top: 0px; }
-.xonomy.laic .element > .children > .textnode > .value { display: inline-block; font-family: monospace; background-color: #ffffff; padding: 4px 0px; border-bottom: 1px solid #999999; cursor: pointer; min-width: 2em; }
+.xonomy.laic .element > .children > .textnode > .value { display: inline-block; font-family: monospace; padding: 3px 5px; background-color: #F1F4EA; border: 1px solid #DCDCDC; border-bottom: 2px solid #D6D6D6; border-radius: 2px; cursor: pointer; min-width: 2em; }
 .xonomy.laic .element.oneliner > .children > .textnode > .value { text-align: center; }
 .xonomy.laic .element > .tag.closing { display: none; }
 .xonomy.laic .element > .tag { display: block; padding: 5px 10px; background-color: #eeeeee; box-shadow: 0px 0px 2px #999999; z-index: 10; }
 .xonomy.laic .element > .tag > .name {font-weight: bold; color: #315696; cursor: pointer; }
 .xonomy.laic .element > .tag.opening > .attributes > .attribute { margin-left: 0.75em; border-left: 1px solid #cccccc; padding-left: 0.75em; padding-top: 5px; padding-bottom: 5px; }
 .xonomy.laic .element > .tag.opening > .attributes > .attribute > .name { font-weight: bold; color: #6385bf; cursor: pointer; }
-.xonomy.laic .element > .tag.opening > .attributes > .attribute > .valueContainer { display: inline; padding: 2px 5px; border-bottom: 1px solid #999999; margin-left: 10px; font-family: monospace; font-size: 0.85rem; cursor: pointer; }
+.xonomy.laic .element > .tag.opening > .attributes > .attribute > .valueContainer { display: inline; padding: 3px 5px; background-color: #F1F4EA; border: 1px solid #DCDCDC; border-bottom: 2px solid #D6D6D6; border-radius: 2px; margin-left: 10px; font-family: monospace; font-size: 0.85rem; cursor: pointer; }
 .xonomy.laic .element > .children > .textnode > .value > .insertionPoint { display: none; }
 .xonomy.laic .element > .children > .textnode > .value > .dots { display: none; }
 
@@ -409,22 +409,14 @@
 	border-radius: 2px;
 	background-color: #fff!important;
 }
-.xonomy.nerd .element {
-	padding-right: 6px!important;
-}
+
 
 .xonomy.laic .element {
-	padding: 10px 10px 10px 40px !important;
-	border: 1px solid #0E1E0F;
-	margin-bottom: 10px;
-    border-radius: 5px;
-}
-.xonomy.laic .element > .connector > .plusminus{
-	top: 8px;
-	left: -32px;
-}
-.xonomy.laic .connector > .draghandle{
-	top: 9px;
+	padding: 1px 5px 5px 10px !important;
+	border: 1px solid #C2C2C2;
+	margin-top: 4px;
+	margin-bottom: 0px;
+    border-radius: 3px;
 }
 .xonomy.laic .element > .tag{
 	border: 1px solid rgba(238,238,238,.1);
@@ -433,6 +425,14 @@
 }
 .xonomy.laic .element > .tag > .name{
 	text-decoration: underline;
-	color: #222!important;
-	font-size: 110%;
+	color: #171757!important;
+	font-size: 100%;
+}
+.xonomy.laic .element > .connector > .plusminus{
+	top: 7px;
+	left: -28px;
+}
+.xonomy.laic .connector > .draghandle{
+	top: 8px;
+	left: -5px;
 }
