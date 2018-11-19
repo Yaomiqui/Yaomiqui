@@ -1,7 +1,11 @@
 #!/usr/bin/perl
 ########################################################################
-# Yaomiqui is a Web UI for AUTOMATION
-# Copyright (C) 2017  Hugo Maza M.
+# Yaomiqui is a Web UI for Automation
+# This is the generic Listener to insert tickets for Yaomiqui 1.0
+# 
+# Written in freestyle Perl-CGI + Apache + MySQL
+# 
+# Copyright (C) 2018 Hugo Maza Moreno
 # 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

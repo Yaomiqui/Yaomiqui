@@ -1,6 +1,7 @@
 #!/usr/bin/perl
 ########################################################################
 # Yaomiqui is a Web UI for Automation
+# This is the secondary index for Web UI of Yaomiqui 1.0
 # 
 # Written in freestyle Perl-CGI + Apache + MySQL + Javascript + CSS
 # 

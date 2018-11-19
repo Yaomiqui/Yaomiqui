@@ -1,3 +1,25 @@
+########################################################################
+# Yaomiqui is a Web UI for Automation
+# Common libraries for Yaomiqui 1.0
+# 
+# Written in freestyle Perl-CGI + Apache + MySQL
+# 
+# Copyright (C) 2018 Hugo Maza Moreno
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+########################################################################
+
 sub get_vars {
 	my %VARS;
 	open my $file, "</var/www/yaomiqui/yaomiqui.conf";
@@ -187,8 +209,8 @@ sub login {
 			<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 			<title>LogIn :: YAOMIQUI :: RPA Orchestrator :: Automation tool for repetitive tasks</title>
 			<link rel="icon" type="image/png" href="images/favicon.ico" />
-			<meta name="keywords" content="automation,tasks,repetitive" />
-			<meta name="description" content="Automation for repetitive task" />
+			<meta name="keywords" content="rpa,automation,tasks,repetitive" />
+			<meta name="description" content="RPA, Automation for repetitive task" />
 		</head>
 		<style>
 			html {

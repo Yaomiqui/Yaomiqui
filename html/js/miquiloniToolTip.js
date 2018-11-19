@@ -1,4 +1,25 @@
-/* Miquiloni Tooltip 0.1.1 (c) http://www.miquiloni.org, hugo.maza@gmail.com */
+//######################################################################
+// Miquiloni Tooltip 0.1.1
+// http://www.miquiloni.org
+// 
+// This tooltip is not being used by Yaomiqui but we want to do it
+// in the future versions
+// 
+// Copyright (C) 2018 Hugo Maza Moreno
+// 
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//######################################################################
 window.onload = init;
 function init() {
 	// if (window.Event) {

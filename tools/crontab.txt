@@ -6,8 +6,8 @@
 
 ## Self Monitoring - Free Memory
 ## Threshold is 30 as default, but you can change it
-## Maybe in Ubuntu does not work because is a Perl script to execute
-*/5 * * * * /usr/bin/perl /var/www/yaomiqui/yaomiqui.pl 'NDF00000001' 'TFfDJRL2Hyw2U202aGLAfBgMAfx79r76OInrtipK' '{"ticket":{"number": "NDF00000001","subject":"SELF MONITORING","type":"MEMORY","threshold":"30"}}'
+## Sometimes in Ubuntu it may not work because it is a Perl script to execute
+*/5 * * * * /usr/bin/perl /var/www/yaomiqui/yaomiqui.pl 'NDF00000001' 'TFfDJRL2Hyw2U202aGLAfBgMAfx79r76OInrtipK' '{"ticket":{"number": "NDF00000001","subject":"SELF MONITORING","type":"MEMORY","threshold":"70"}}'
 
 ## Self Monitoring - CPU usage
 ## Threshold is 70 as default, but you can change it

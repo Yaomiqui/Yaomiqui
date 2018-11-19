@@ -1,7 +1,9 @@
 #!/bin/sh
 ########################################################################
 # Yaomiqui is a Web UI for AUTOMATION
-# Copyright (C) 2017  Hugo Maza M.
+# Copyright (C) 2018  Hugo Maza M.
+# 
+# Automated installation script for Yaomiqui 1.0 on CentOS 7.x
 # 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

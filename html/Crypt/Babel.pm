@@ -3,22 +3,44 @@ $VERSION = 1.11;
 $MODULENAME = "Crypt::Babel";
 $LASTEDIT = "04/08/05";
 
-### USAGE
-###________________________________________________________________________________
-###
-###	use Babel;
-### 
-###	$y =  new Babel;
-###
-###	$s = "Encrypt this!!";
-###	$t = $y->encode($s,"A key");
-###	$u = $y->decode($t,"A key");
-###
-###	print "The source string is  $s\n";
-###	print "The encrypted string  $t\n";
-###	print "The original string   $u\n";
-###________________________________________________________________________________
-###
+########################################################################
+# Yaomiqui is a Web UI for Automation
+# Encode and Decode tool for passwords and more
+# 
+# Written in freestyle Perl
+
+# Copyright (C) 2018 Hugo Maza Moreno
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# USAGE
+# ______________________________________________________________________
+#
+#	use Babel;
+# 
+#	$y =  new Babel;
+#
+#	$s = "Encrypt this!!";
+#	$t = $y->encode($s,"A key");
+#	$u = $y->decode($t,"A key");
+#
+#	print "The source string is  $s\n";
+#	print "The encrypted string  $t\n";
+#	print "The original string   $u\n";
+# ______________________________________________________________________
+# 
+########################################################################
 
 require Exporter;
 @ISA       = qw(Exporter);

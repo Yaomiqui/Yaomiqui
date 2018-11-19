@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 #######################################################################
 ## Executable
-## insertTicket manager
+## Insert Ticket manager
 ## Usage:
 ## insertTicket start|stop|status|restart
 ## Developed on GNU/Linux environment
 ## 
-## insertTicket 0.1 RunUp
+## insertTicket 0.1
 ## Develped by Hugo Maza Moreno
 ## hugo.maza@gmail.com
 ## 

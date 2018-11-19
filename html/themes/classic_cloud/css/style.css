@@ -4,6 +4,16 @@
 	padding: 0;
 }
 
+iframe {
+	margin:0;
+	padding:0;
+	height:98%;
+	width:100%;
+	display:block;
+	border:none;
+	min-height: 400px;
+}
+
 html,body {
 	font-family: Verdana, Arial, sans-serif, helvetica;
 	font-size: 85%;
@@ -70,7 +80,6 @@ li.topnavbar a.active {
     background-color: #515F6D;
 }
 /*TOP NAV BAR*/
-
 
 
 

@@ -41,7 +41,7 @@ It's be able to connect to any monitoring system with some API to get events and
 
 ------------
 
-Simple video demo of on of the most used use cases.
+Simple video demo of one of the most used use cases.
 
 [![AD user creation](https://img.youtube.com/vi/Qs0pRlhVSBE/0.jpg)](https://www.youtube.com/watch?v=Qs0pRlhVSBE "AD user creation")
 

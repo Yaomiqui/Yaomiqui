@@ -1,7 +1,8 @@
 #!/usr/bin/perl
 ########################################################################
 # Yaomiqui is a Web UI for Automation
-# This is the main ENGINE
+# This is the Main ENGINE
+# The automation power for Yaomiqui RPA Orchestrator
 # 
 # Written in freestyle Perl-CGI + Apache + MySQL + Javascript + CSS
 # 
@@ -1034,7 +1035,7 @@ sub engineLog {
 	my $engine_log_dir = $VENV{engine_log_dir};
 	
 	if ( $ticketNumber ne 'NDF00000001' ) {
-		open my $ELOG, ">>", "$engine_log_dir/$date.log";
+		open my $ELOG, ">>", "$engine_log_dir/engine-$date.log";
 		print $ELOG qq~$sysdate :: $msg\n~;
 		close $ELOG;
 		# engineLog("ERROR :: TT : ");

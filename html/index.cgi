@@ -1,6 +1,7 @@
 #!/usr/bin/perl
 ########################################################################
 # Yaomiqui is a Web UI for Automation
+# This is the main index for Web UI of Yaomiqui 1.0
 # 
 # Written in freestyle Perl-CGI + Apache + MySQL + Javascript + CSS
 # 
@@ -31,7 +32,7 @@ use lib $RealBin;
 our(%input, %VAR, %MSG, %PRM, $username, $html, $header, $footer, $module, $module_file, $theme, $dbh, $encKey);
 require 'common.pl';
 %VAR = get_vars();
-$VAR{Version} = '0.9.9.9-Candidate';
+$VAR{Version} = '0.9.9.9-stress';
 $encKey = getEncKey();
 $username = get_session();
 $theme = get_theme();
