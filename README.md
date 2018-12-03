@@ -1,6 +1,6 @@
 # Yaomiqui
-## Yaomiqui RPA (Robotic Process Automation) Orchestrator.
-### Automation Tool for repetitive tasks.
+## Yaomiqui RPA Orchestrator.
+### Automation Tool for repetitive tasks (Robotic Process Automation).
 
 Yaomiqui is a very easy to use and highly versatile Open Source tool to Automate repetitive tasks in your IT environment.
 

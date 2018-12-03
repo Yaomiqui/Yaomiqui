@@ -108,9 +108,24 @@ if ( $ENV{REQUEST_METHOD} eq 'GET' ) {
 				$sth->finish;
 				$dbh->disconnect if ($dbh);
 				
-				$var .= '"data":[';
+				$var .= '"logs":[';
 				foreach my $i ( 0 .. $#{$LOG} ) {
-					$LOG->[$i][1] =~ s/"/'/g;
+					$LOG->[$i][1] =~ s/\\/\\\\/g;
+					$LOG->[$i][1] =~ s/\n/\\n/g;
+					$LOG->[$i][1] =~ s/\r/\\r/g;
+					$LOG->[$i][1] =~ s/"/\\"/g;
+					$LOG->[$i][1] =~ s/'/\\'/g;
+					$LOG->[$i][1] =~ s/\//\\\//g;
+					$LOG->[$i][1] =~ s/\b/\\\b/g;
+					$LOG->[$i][1] =~ s/\f/\\\f/g;
+					$LOG->[$i][1] =~ s/\t/\\\t/g;
+					$LOG->[$i][1] =~ s/\&/\\\&/g;
+					$LOG->[$i][1] =~ s/\?/\\\?/g;
+					$LOG->[$i][1] =~ s/\$/\\\$/g;
+					$LOG->[$i][1] =~ s/\{/\\\{/g;
+					$LOG->[$i][1] =~ s/\}/\\\}/g;
+					$LOG->[$i][1] =~ s/\[/\\\[/g;
+					$LOG->[$i][1] =~ s/\]/\\\]/g;
 					$var .= qq~{"insertDate":"$LOG->[$i][0]","log":"$LOG->[$i][1]"},~;
 				}
 				$var =~ s/,$//;
@@ -140,6 +155,9 @@ elsif ( $ENV{REQUEST_METHOD} eq 'PUT' ) {
 			my $sysdate = sysdate();
 			
 			connected();
+			##### PARANOIAC!!! CHECK FOR id AutoBotCatched IF DOES NOT EXISTS
+			$dbh->do("LOCK TABLES ticket WRITE, ticket AS ticketRead READ");
+			
 			my $sth = $dbh->prepare("SELECT numberTicket FROM ticket WHERE numberTicket = '$json->{ticket}->{number}'");
 			$sth->execute();
 			my ($TT) = $sth->fetchrow_array;
@@ -159,11 +177,15 @@ elsif ( $ENV{REQUEST_METHOD} eq 'PUT' ) {
 				}
 				
 				$sth->finish;
+				$dbh->do("UNLOCK TABLES");
 				$dbh->disconnect if ($dbh);
 				
 				exit;
 			}
 			else {
+				$dbh->do("UNLOCK TABLES");
+				$dbh->disconnect if ($dbh);
+				
 				restApiLog("ERROR :: $ticketNumber : Ticket number $json->{ticket}->{number} already exists. User: $input{user}");
 				print qq~{"Error":"Ticket number $json->{ticket}->{number} already exists"}~;
 				exit;
@@ -184,6 +206,7 @@ elsif ( $ENV{REQUEST_METHOD} eq 'PUT' ) {
 # }
 else {
 	print $q->header('application/json');
+	
 	restApiLog("ERROR :: $ticketNumber : Wrong METHOD: $ENV{REQUEST_METHOD}. User: $input{user}");
 	print qq~{"Error":"Wrong METHOD: $ENV{REQUEST_METHOD}"}~;
 }

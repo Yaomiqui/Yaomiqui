@@ -1,6 +1,3 @@
-## Heartbeat checks for listener be running
-* * * * * /var/www/yaomiqui/heartbeat.sh
-
 ## It reads database looking for new tickets
 * * * * * /var/www/yaomiqui/auto.sh
 

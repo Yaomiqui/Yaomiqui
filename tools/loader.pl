@@ -23,12 +23,12 @@
 use strict;
 use FindBin qw($RealBin);
 
-
 ####	THIS IS A TEMPLATE
 ####	HERE YOU CAN PUT HERE THE CODE FOR CONNECTOR TO YOUR SERVER OR TICKET SYSTEM MANAGEMENT
 
-system(qq~curl -H "Content-Type: application/json" -X POST -d \@$RealBin/ticketForm.json "http://127.0.0.1:2050"~);
+my $results = `curl -k -H "Content-Type: application/json" -X PUT -d \@$RealBin/ticketForm.json --url "https://127.0.0.1/generic-api.cgi/insertTicket/"`;
 
+print $results;
 
 # In the same way, you can use the REST API for insert tickets:
 # (You don't need user and password when uses localhost)

@@ -3,107 +3,61 @@
 my $html;
 $html .= qq~<div class="contentTitle">$MSG{Overview}</div>~ unless $input{'shtl'};
 
-my $queryLimit;
-
-
-
-unless ( $input{submod} ) {
-	$html .= qq~<script>setTimeout('document.location.reload()',$VAR{REFRESH_RATE});</script>~;
-	
-	$html .= paginator();
-	
-	$html .= qq~
-	<table cellpadding="0" cellspacing="0" border="0" width="100%" class="gridTable" style="padding-top: 30px">
-		<tr>
-			<td class="gridTitle" style="max-width:100px;">$MSG{Ticket_Number}</td>
-			<td class="gridTitle" style="max-width:100px;">$MSG{Subject}</td>
-			<td class="gridTitle" style="max-width:100px;">$MSG{Insert_Date}</td>
-			<td class="gridTitle" style="max-width:100px;">$MSG{Final_Date}</td>
-			<td class="gridTitle" style="max-width:50px;">$MSG{Final_State}</td>
-			<td class="gridTitle" style="max-width:100%">$MSG{Catched}</td>
-		</tr>
-	~;
-	
-	connected();
-	my $sth = $dbh->prepare("SELECT numberTicket, Subject, idAutoBotCatched, initialDate, finalDate, finalState FROM ticket ORDER BY initialDate DESC LIMIT $queryLimit");
-	$sth->execute();
-	my $TT = $sth->fetchall_arrayref;
-	$sth->finish;
-	$dbh->disconnect if ($dbh);
-	
-	for my $i ( 0 .. $#{$TT} ) {
-		
-		my $catched = qq~ <a href="launcher.cgi?mod=logs&submod=showJson&numberTicket=$TT->[$i][0]&shtl=1" target="logs">
-			<img src="images/json20.png" style="border: 0; width: 18px; height: 14px;">
-			</a> &nbsp; &nbsp; $MSG{No} ~;
-		if ( $TT->[$i][2] ) {
-			# $catched = qq~<a href="launcher.cgi?mod=logs&submod=showLogs&numberTicket=$TT->[$i][0]&shtl=1" target="logs"><font color="#471F6E"><b>$MSG{Yes}</b></font></a>~;
-			$catched = qq~
-			<a href="launcher.cgi?mod=logs&submod=showJson&numberTicket=$TT->[$i][0]&shtl=1" target="logs">
-			<img src="images/json20.png" style="border: 0; width: 18px; height: 14px;">
-			</a>
-			&nbsp; &nbsp; ~;
-			
-			if ( $VAR{SHOW_LOGS_IN_FRAME} ) {
-				$catched .= qq~<a href="launcher.cgi?mod=logs&submod=showLogs&numberTicket=$TT->[$i][0]&shtl=1" target="logs">~;
-			} else {
-				$catched .= qq~<a href="index.cgi?mod=logs&submod=showLogs&numberTicket=$TT->[$i][0]" target="_parent">~;
-			}
-			
-			$catched .= qq~<img src="images/log20.png" style="border: 0; width: 18px; height: 14px;">
-			</a>
-			~;
-		}
-		
-		my $ST;
-		if ( $TT->[$i][5] eq 'Resolved' ) {
-			$ST = '#0000FF';
-		} elsif ( $TT->[$i][5] eq 'Rejected' ) {
-			$ST = '#BB0000';
-		} elsif ( $TT->[$i][5] eq 'Pending' ) {
-			$ST = '#9C7411';
-		} elsif ( $TT->[$i][5] eq 'Failed' ) {
-			$ST = '#FF0000';
-		}
-		
-		$html .= qq~
-		<tr class="gridRowContent">
-			<td class="gridContent" style="max-width:100px; color: #2121A1;"><b>$TT->[$i][0]</b></td>
-			<td class="gridContent" style="max-width:100px; color: $ST;" title="$TT->[$i][1]">$TT->[$i][1]</td>
-			<td class="gridContent" style="max-width:100px; color: $ST;">$TT->[$i][3]</td>
-			<td class="gridContent" style="max-width:100px; color: $ST;">$TT->[$i][4]</td>
-			<td class="gridContent" style="max-width:50px; color: $ST;">$TT->[$i][5]</td>
-			<td class="gridContent" style="max-width:100%;">$catched</td>
-		</tr>
-		~;
-	}
-	
-	$html .= qq~
-	</table>
-	~;
-}
-
-
 
 if ( $input{submod} eq 'findTicket' ) {
 	$html .= qq~
-	<table cellpadding="0" cellspacing="2" border="0" width="100%" class="gridTable">
+	<script>
+		function startRefresh() {
+		    \$.get('', function(data) {
+		        \$(document.body).html(data);    
+		    });
+		}
+		\$(function() {
+		    setTimeout(startRefresh,$VAR{REFRESH_RATE});
+		});
+	</script>
+	~;
+	
+	my $fromRec = ($input{page} - 1) * $VAR{SHOW_PER_PAGE};
+	my $queryLimit = "$fromRec, $VAR{SHOW_PER_PAGE}";
+	my $sqlWhere;
+	
+	connected();
+	my $sth;
+	if ( $input{ftt} ) {
+		$sth = $dbh->prepare("SELECT numberTicket, Subject, idAutoBotCatched, initialDate, finalDate, finalState FROM ticket WHERE numberTicket LIKE '%$input{ftt}%' ORDER BY initialDate DESC LIMIT $queryLimit");
+		$sqlWhere = qq~numberTicket LIKE '%$input{ftt}%'~;
+	
+	} elsif ( $input{year} and $input{month} ) {
+		my $finalState = '';
+		if ( $input{state} ) {
+			 $finalState = qq~AND finalState = '$input{state}'~;
+		}
+		$sth = $dbh->prepare("SELECT numberTicket, Subject, idAutoBotCatched, initialDate, finalDate, finalState FROM ticket WHERE initialDate BETWEEN '$input{year}-$input{month}-01 00:00:00' AND '$input{year}-$input{month}-31 23:59:59' $finalState ORDER BY initialDate DESC LIMIT $queryLimit");
+		$sqlWhere = qq~initialDate BETWEEN '$input{year}-$input{month}-01 00:00:00' AND '$input{year}-$input{month}-31 23:59:59' $finalState~;
+		
+		# $html .= qq~<br>$ENV{QUERY_STRING}<br>~;
+		# $html .= qq~<br>SELECT COUNT(idTicket) FROM ticket WHERE $sqlWhere<br>~;
+		# $html .= qq~<br>SELECT numberTicket, Subject, idAutoBotCatched, initialDate, finalDate, finalState FROM ticket WHERE initialDate BETWEEN '$input{year}-$input{month}-01 00:00:00' AND '$input{year}-$input{month}-31 23:59:59' $finalState ORDER BY initialDate DESC LIMIT $queryLimit<br>~;
+	}
+	$sth->execute();
+	my $TT = $sth->fetchall_arrayref;
+	$sth->finish;
+	$dbh->disconnect if ($dbh);
+	
+	$html .= paginator($sqlWhere);
+	# style="position: fixed; width: 100%"
+	$html .= qq~
+	<table cellpadding="0" cellspacing="2" border="0" width="100%" class="gridTable" style="padding-top: 30px">
 		<tr>
 			<td class="gridTitle" style="max-width:100px;">$MSG{Ticket_Number}</td>
 			<td class="gridTitle" style="max-width:100px;">$MSG{Subject}</td>
 			<td class="gridTitle" style="max-width:100px;">$MSG{Insert_Date}</td>
 			<td class="gridTitle" style="max-width:100px;">$MSG{Final_Date}</td>
 			<td class="gridTitle" style="max-width:50px;">$MSG{Final_State}</td>
-			<td class="gridTitle" style="max-width:100%">$MSG{Catched}</td>
+			<td class="gridTitle" style="max-width:100%;">$MSG{Catched}</td>
 		</tr>
 	~;
-	
-	connected();
-	my $sth = $dbh->prepare("SELECT numberTicket, Subject, idAutoBotCatched, initialDate, finalDate, finalState FROM ticket WHERE numberTicket LIKE '%$input{ftt}%' ORDER BY initialDate DESC");
-	$sth->execute();
-	my $TT = $sth->fetchall_arrayref;
-	$sth->finish;
-	$dbh->disconnect if ($dbh);
 	
 	for my $i ( 0 .. $#{$TT} ) {
 		
@@ -111,7 +65,6 @@ if ( $input{submod} eq 'findTicket' ) {
 			<img src="images/json20.png" style="border: 0; width: 18px; height: 14px;">
 			</a> &nbsp; &nbsp; $MSG{No} ~;
 		if ( $TT->[$i][2] ) {
-			# $catched = qq~<a href="launcher.cgi?mod=logs&submod=showLogs&numberTicket=$TT->[$i][0]&shtl=1" target="logs"><font color="#471F6E"><b>$MSG{Yes}</b></font></a>~;
 			$catched = qq~
 			<a href="launcher.cgi?mod=logs&submod=showJson&numberTicket=$TT->[$i][0]&shtl=1" target="logs">
 			<img src="images/json20.png" style="border: 0; width: 18px; height: 14px;">
@@ -159,8 +112,9 @@ if ( $input{submod} eq 'findTicket' ) {
 
 
 sub paginator {
+	my $sqlQuery = shift;
 	connected();
-	my $sth = $dbh->prepare("SELECT COUNT(idTicket) FROM ticket");
+	my $sth = $dbh->prepare("SELECT COUNT(idTicket) FROM ticket WHERE $sqlQuery");
 	$sth->execute();
 	my $totalTkt = $sth->fetchrow_array;
 	$sth->finish;
@@ -170,8 +124,6 @@ sub paginator {
 	
 	my $totPages = $totalTkt / $VAR{SHOW_PER_PAGE};
 	$totPages = int ($totPages + 1) if $totPages > int($totPages);
-	
-	my $fromRec = ($page - 1) * $VAR{SHOW_PER_PAGE};
 	
 	my $return = qq~<div style="padding: 4px 0 3px 8px; position: fixed; width: 100%; background-color: #F9F9F9; border-bottom: 1px solid #E5E5E5">
 	<table cellpadding="0" cellspacing="0" border="0" style=""><tr>~;
@@ -186,7 +138,7 @@ sub paginator {
 	} else {
 		$return .= qq~
 		<td style="padding-right: 10px">
-			<form><input class="blueLightButton" type="button" value=" << " onclick="window.location.href='launcher.cgi?mod=tickets&page=1&shtl=1'" /></form>
+			<form><input class="blueLightButton" type="button" value=" << " onclick="window.location.href='launcher.cgi?mod=tickets&submod=findTicket&year=$input{year}&month=$input{month}&state=$input{state}&ftt=$input{ftt}&page=1&shtl=1'" /></form>
 		</td>
 		~;
 	}
@@ -202,7 +154,7 @@ sub paginator {
 		my $beforePage = $page - 1;
 		$return .= qq~
 		<td style="padding-right: 10px">
-			<form><input class="blueLightButton" type="button" value=" $beforePage " onclick="window.location.href='launcher.cgi?mod=tickets&page=$beforePage&shtl=1'" /></form>
+			<form><input class="blueLightButton" type="button" value=" $beforePage " onclick="window.location.href='launcher.cgi?mod=tickets&submod=findTicket&year=$input{year}&month=$input{month}&state=$input{state}&ftt=$input{ftt}&page=$beforePage&shtl=1'" /></form>
 		</td>
 		~;
 	}
@@ -225,13 +177,10 @@ sub paginator {
 		my $afterPage = $page + 1;
 		$return .= qq~
 		<td style="padding-right: 10px">
-			<form><input class="blueLightButton" type="button" value=" $afterPage " onclick="window.location.href='launcher.cgi?mod=tickets&page=$afterPage&shtl=1'" /></form>
+			<form><input class="blueLightButton" type="button" value=" $afterPage " onclick="window.location.href='launcher.cgi?mod=tickets&submod=findTicket&year=$input{year}&month=$input{month}&state=$input{state}&ftt=$input{ftt}&page=$afterPage&shtl=1'" /></form>
 		</td>
 		~;
 	}
-	
-	
-	$queryLimit = "$fromRec, $VAR{SHOW_PER_PAGE}";
 	
 	## Very last ticket
 	if ( $page == $totPages or $totPages <= 1 ) {
@@ -243,12 +192,13 @@ sub paginator {
 	} else {
 		$return .= qq~
 		<td style="padding-right: 10px">
-			<form><input class="blueLightButton" type="button" value=" >> " onclick="window.location.href='launcher.cgi?mod=tickets&page=$totPages&shtl=1'" /></form>
+			<form><input class="blueLightButton" type="button" value=" >> " onclick="window.location.href='launcher.cgi?mod=tickets&submod=findTicket&year=$input{year}&month=$input{month}&state=$input{state}&ftt=$input{ftt}&page=$totPages&shtl=1'" /></form>
 		</td>
 		~;
 	}
 		
-	$return .= qq~<td>$MSG{Showing} $VAR{SHOW_PER_PAGE} $MSG{records_page_Total}: $totalTkt $MSG{records_in} $totPages $MSG{pages}</td></tr></table></div>~;
+	$return .= qq~<td>$MSG{Showing} $VAR{SHOW_PER_PAGE} $MSG{records_page_Total}: $totalTkt $MSG{records_in} $totPages $MSG{pages}</td></tr>
+	</table></div>~;
 	
 	return $return;
 	

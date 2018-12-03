@@ -34,6 +34,7 @@ our ($ticketNumber, $dbh, %VAR, $jsonCode, $AutoBot);
 our %VENV = get_vars();
 
 $VAR{TIMEOUT} = $VENV{TIMEOUT};
+$VAR{SSH_TIMEOUT} = $VENV{SSH_TIMEOUT};
 
 if ( $ARGV[0] ) {
 	$ticketNumber = $ARGV[0];
@@ -385,19 +386,30 @@ sub runDO {
 					$DO->{execRemoteLinuxCommand}->{remoteHost} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{remoteHost});
 					$DO->{execRemoteLinuxCommand}->{publicKey} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{publicKey});
 					
+					my $SACM = $VAR{SSH_TIMEOUT} / 60;
+					
+					$Net::OpenSSH::debug = -1;
 					my $ssh = Net::OpenSSH->new($DO->{execRemoteLinuxCommand}->{remoteHost},
-						user		=> $DO->{execRemoteLinuxCommand}->{remoteUser},
-						key_path	=> $DO->{execRemoteLinuxCommand}->{publicKey},
-						strict_mode	=> 0,
-						timeout		=> $VENV{SSH_TIMEOUT},
-						master_opts => [-o => 'StrictHostKeyChecking=no', -o => 'LogLevel=QUIET', -o => "ConnectTimeout=$VENV{CONNECTTIMEOUT}"]
+						user				=> $DO->{execRemoteLinuxCommand}->{remoteUser},
+						key_path			=> $DO->{execRemoteLinuxCommand}->{publicKey},
+						strict_mode			=> 0,
+						timeout				=> $VAR{SSH_TIMEOUT},
+						kill_ssh_on_timeout	=> 1,
+						master_opts 		=> [-o => 'StrictHostKeyChecking=no',
+												-o => 'LogLevel=QUIET',
+												-o => "ConnectTimeout=$VENV{CONNECTTIMEOUT}",
+												-o => 'ServerAliveInterval=60',
+												-o => "ServerAliveCountMax=$SACM",
+												-o => 'TCPKeepAlive=yes']
 					);
+					
 					$VAR{Error} = $ssh->error;
 					$VAR{Error} =~ s/^\n//g;
 					$VAR{Error} =~ s/\n$//g;
 					
 					$remoteLinuxCommand = replaceSpecChar($DO->{execRemoteLinuxCommand}->{command});
 					# $remoteLinuxCommand =~ s/'/'\\''/g;
+					$remoteLinuxCommand =~ s/\r?\n//g;
 					
 					unless ( $ssh->error ) {
 						$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } = $ssh->capture2("$remoteLinuxCommand 2>&1");
@@ -422,21 +434,31 @@ sub runDO {
 					}
 					
 					## print "PASSWORD: " . $DO->{execRemoteLinuxCommand}->{passwd} . "\n";
+					my $SACM = $VAR{SSH_TIMEOUT} / 60;
 					
+					$Net::OpenSSH::debug = -1;
 					my $ssh = Net::OpenSSH->new($DO->{execRemoteLinuxCommand}->{remoteHost},
-						user		=> $DO->{execRemoteLinuxCommand}->{remoteUser},
-						password	=> $DO->{execRemoteLinuxCommand}->{passwd},
-						strict_mode	=> 0,
-						timeout		=> $VENV{SSH_TIMEOUT},
-						master_opts => [-o => 'StrictHostKeyChecking=no', -o => 'LogLevel=QUIET', -o => "ConnectTimeout=$VENV{CONNECTTIMEOUT}"]
+						user				=> $DO->{execRemoteLinuxCommand}->{remoteUser},
+						password			=> $DO->{execRemoteLinuxCommand}->{passwd},
+						strict_mode			=> 0,
+						timeout				=> $VAR{SSH_TIMEOUT},
+						kill_ssh_on_timeout	=> 1,
+						master_opts 		=> [-o => 'StrictHostKeyChecking=no',
+												-o => 'LogLevel=QUIET',
+												-o => "ConnectTimeout=$VENV{CONNECTTIMEOUT}",
+												-o => 'ServerAliveInterval=60',
+												-o => "ServerAliveCountMax=$SACM",
+												-o => 'TCPKeepAlive=yes']
 						# master_opts => [-o => 'StrictHostKeyChecking=no', -o => 'LogLevel=QUIET']
 					);
+					
 					$VAR{Error} = $ssh->error;
 					$VAR{Error} =~ s/^\n//g;
 					$VAR{Error} =~ s/\n$//g;
 					
 					$remoteLinuxCommand = replaceSpecChar($DO->{execRemoteLinuxCommand}->{command});
 					# $remoteLinuxCommand =~ s/'/'\\''/g;
+					$remoteLinuxCommand =~ s/\r?\n//g;
 					
 					unless ( $VAR{Error} ) {
 						$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } = $ssh->capture2("$remoteLinuxCommand 2>&1");
@@ -534,7 +556,7 @@ sub runDO {
 			
 			
 			if ( $DO->{SetVar} ) {
-				$DO->{SetVar}->{value} = replaceSpecChar($DO->{SetVar}->{value});
+				# $DO->{SetVar}->{value} = replaceSpecChar($DO->{SetVar}->{value});
 				$VAR{ $DO->{SetVar}->{name} } = $DO->{SetVar}->{value};
 				
 				## debug
@@ -1019,7 +1041,7 @@ sub mlog {
 		connected();
 		my $insert_string = "INSERT INTO log (numberTicket, insertDate, log) VALUES ('$ticketNumber', '$sysdate', ?)";
 		my $sth = $dbh->prepare("$insert_string");
-		$sth->execute($log);
+		$sth->execute($log) or return;
 		$sth->finish;
 		$dbh->disconnect if ($dbh);
 	}

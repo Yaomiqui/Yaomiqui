@@ -17,7 +17,8 @@ $html .= qq~<div class="contentTitle">$MSG{Logs}</div>~ unless $input{'shtl'};
 # ~;
 
 unless ( $input{submod} ) {
-	$html .= qq~<br>~;
+	$html .= qq~<br/>~;
+	# $html .= qq~<div class="timeline"><br/></div>~;
 }
 
 
@@ -30,6 +31,7 @@ if ( $input{submod} eq 'showLogs' ) {
 	$sth->finish;
 	$dbh->disconnect if ($dbh);
 	
+	#### TimeLine View
 	if ( $input{timeLine} eq 'true' ) {
 		$html .= qq~<div class="timeline">\n~;
 		$html .= qq~<p width="100%" align="right" style="padding: 20px 80px 0 0"><a href="javascript:document.location.reload(true)"><img src="images/refresh-32x35.png" style="width: 20px; position: fixed; z-index: 999;"></a></p>~;
@@ -91,11 +93,31 @@ if ( $input{submod} eq 'showLogs' ) {
 		}
 		
 		$html .= qq~<br><br></div>\n~;
-	} else {
-		$html .= qq~<p width="100%" align="right" style="padding: 20px 80px 0 0"><a href="javascript:document.location.reload(true)"><img src="images/refresh-32x35.png" style="width: 20px; position: fixed; z-index: 999;"></a></p>
 		
+	#### Standard View
+	} else {
+		my $displayTicket;
+		if ( $input{shtl} == 1 ) {
+			$displayTicket = qq~<a href="index.cgi?mod=logs&submod=showLogs&numberTicket=$TT[0]" target="_parent">$TT[0]</a>~;
+			$html .= qq~		<script>
+				function startRefresh() {
+				    \$.get('', function(data) {
+				        \$(document.body).html(data);    
+				    });
+				}
+				\$(function() {
+				    setTimeout(startRefresh,$VAR{REFRESH_RATE});
+				});
+			</script>~;
+		} else {
+			$displayTicket = $TT[0];
+			$html .= qq~<p width="100%" align="right" style="padding: 20px 80px 0 0"><a href="javascript:document.location.reload(true)"><img src="images/refresh-32x35.png" style="width: 20px; position: fixed; z-index: 999;"></a></p>~;
+			
+		}
+		
+		$html .= qq~
 		<table cellpadding="0" cellspacing="0" border="0" class="gridTable" style="height: 120px">
-			<tr><td class="gridTitle">$MSG{Ticket}</td><td class="gridContent"><b>$TT[0]</b></td></tr>
+			<tr><td class="gridTitle">$MSG{Ticket}</td><td class="gridContent"><b>$displayTicket</b></td></tr>
 			<tr><td class="gridTitle">$MSG{Subject}</td><td class="gridContent">$TT[1]</td></tr>
 			<tr><td class="gridTitle">$MSG{AutoBot_Name}</td><td class="gridContent"><a href="index.cgi?mod=design&submod=edit_autobot&autoBotId=$TT[4]" target="_blank">$TT[2]</a></td></tr>
 			<tr><td class="gridTitle">$MSG{Initial_Date}</td><td class="gridContent">$TT[3]</td></tr>
@@ -116,7 +138,7 @@ if ( $input{submod} eq 'showLogs' ) {
 		
 		for my $i ( 0 .. $#{$LOG} ) {
 			my $color = '#000000';
-			if ( $LOG->[$i][1] =~ /^Comparison\:|Array |Sleeping |Setting value \[|Remote Windows Command \[|Linux Command \[|SendEMAIL|Returned value\: \[|Starting to execute FOREACH|FOREACH.* executed|TIMEOUT REACHED|Ticket automatically closed/ ) {
+			if ( $LOG->[$i][1] =~ /^Comparison\:|Array |Sleeping |Setting value \[|Remote Windows Command \[|Linux Command \[|SendEMAIL|Returned value\: \[|Starting to execute FOREACH|FOREACH.* executed|TIMEOUT REACHED|Ticket automatically closed|Waking up/ ) {
 				$color = '#969696';
 			}
 			

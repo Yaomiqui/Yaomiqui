@@ -32,9 +32,24 @@ Encrypt_Password = Cifrar Password
 
 [overview]
 Overview = Vista General
-Search_Ticket = Buscar Ticket
+or_find_Ticket = o encontrar Ticket
 Type_a_ticket_Number = Intrduzca un número de ticket
 Search = Buscar
+January = Enero
+February = Febrero
+March = Marzo
+April = Abril
+May = Mayo
+June = Junio
+July = Julio
+August = Agosto
+September = Septiembre
+October = Octubre
+November = Noviembre
+December = Diciembre
+Date = Fecha
+All_States = Todos los Estados
+Filter = Filtrar
 
 
 [design]
@@ -114,6 +129,7 @@ All_changes_you_make_here = Todos los cambios que hagas serán guardados como te
 Alert = Alerta
 Sending_form = Enviando formulario
 Please_wait_a_while_and_dont_close_this_window = Por favor, espere un momento y no cierre esta ventana
+Execution_Results = Resultados de Ejecución
 
 
 [about]

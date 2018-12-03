@@ -32,9 +32,24 @@ Encrypt_Password = Encrypt Password
 
 [overview]
 Overview = Overview
-Search_Ticket = Search Ticket
+or_find_Ticket = or find Ticket
 Type_a_ticket_Number = Type a ticket Number
 Search = Search
+January = January
+February = February
+March = March
+April = April
+May = May
+June = June
+July = July
+August = August
+September = September
+October = October
+November = November
+December = December
+Date = Date
+All_States = All States
+Filter = Filter
 
 
 [design]
@@ -114,6 +129,7 @@ All_changes_you_make_here = All changes you make here would be saved in the temp
 Alert = Alert
 Sending_form = Sending form
 Please_wait_a_while_and_dont_close_this_window = Please wait a while and dont close this window
+Execution_Results = Execution Results
 
 
 [about]

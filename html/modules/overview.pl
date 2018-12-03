@@ -9,52 +9,72 @@ $html .= qq~<div class="contentTitle">$MSG{Overview}</div>~ unless $input{'shtl'
 # </div>
 # ~;
 
-# <script type="text/javascript">
-	# function loadPageContents() {
-		# var AJAX = getAJAX();
-		# AJAX.open('GET','./',true);
-		# AJAX.onreadystatechange = function() {
-			# if(this.readyState==4 && this.responseText) {
-				# document.getElementById('ticketList').innerHTML = this.responseText;
-				# loadingPage = setTimeout('loadPageContents()',1000);
-			# }
-		# }
-		# AJAX.send(null);
-	# }
-# </script>
+my %MON = (
+	'01'	=> $MSG{January},
+	'02'	=> $MSG{February},
+	'03'	=> $MSG{March},
+	'04'	=> $MSG{April},
+	'05'	=> $MSG{May},
+	'06'	=> $MSG{June},
+	'07'	=> $MSG{July},
+	'08'	=> $MSG{August},
+	'09'	=> $MSG{September},
+	'10'	=> $MSG{October},
+	'11'	=> $MSG{November},
+	'12'	=> $MSG{December}
+);
 
+my $year = $input{year} ? $input{year} : currentYear();
+my $month = $input{month} ? $input{month} : currentMonth();
+my $page = $input{page} || 1;
 
 $html .= qq~
-<script type="text/javascript">
-	setInterval(abc, 1000);
-	
-	function abc() {
-		var xhttp = new XMLHttpRequest();
-		xhttp.onreadystatechange = function() {
-			if (this.readyState == 4 && this.status == 200) {
-				document.getElementById("ticketList").innerHTML = this.responseText;
-			}
-		};
-		xhttp.open("GET", "launcher.cgi?mod=tickets&shtl=1", true);
-		xhttp.send();
-	}
-</script>
-
 <table cellpadding="0" cellspacing="2" border="0" width="100%" style="min-height: 400px; height: calc(100% - 62px);">
 	<tr>
 		<td width="65%" valign="top" style="height: calc(100% - 62px);">
-			<form method="post" action="launcher.cgi" target="ticket">
-			<input type="hidden" name="shtl" value="1">
+		~;
+
+$html .= qq~
+			<form method="get" action="launcher.cgi" target="ticket">
 			<input type="hidden" name="mod" value="tickets">
 			<input type="hidden" name="submod" value="findTicket">
-			$MSG{Search_Ticket}: &nbsp; <input type="text" name="ftt" maxlength="100" placeholder="$MSG{Type_a_ticket_Number}" required> &nbsp; 
+			<input type="hidden" name="page" value="$page">
+			<input type="hidden" name="shtl" value="1">
+			<input type="text" name="year" value="$year" style="width: 40px">
+			<select name="month" onChange="this.form.submit();">
+~;
+
+for my $monNum ( sort keys %MON ) {
+	if ( $monNum eq $month ) {
+		$html .= qq~<option value="$monNum" selected>$MON{$monNum}</option>~;
+	} else {
+		$html .= qq~<option value="$monNum">$MON{$monNum}</option>~;
+	}
+}
+
+$html .= qq~
+			</select>
+			<select name="state" onChange="this.form.submit();">
+			<option value="">$MSG{All_States}</option>
+			<option value="Resolved">Resolved</option>
+			<option value="Failed">Failed</option>
+			<option value="Rejected">Rejected</option>
+			<option value="Pending">Pending</option>
+			</select>
+~;
+$html .= qq~ &nbsp;  &nbsp;  &nbsp; 
+			$MSG{or_find_Ticket}: &nbsp;<input type="text" name="ftt" maxlength="100" style="width:100px" placeholder="$MSG{Type_a_ticket_Number}" > &nbsp;
 			<input class="blueLightButton" type="submit" value="$MSG{Search}">
 			</form>
-			<br>
+			~;
 			
-			<iframe name="ticket" id="ticketList" scrolling="auto" src="launcher.cgi?mod=tickets&shtl=1" frameborder="0" width="100%" height="100%"></iframe>
+			
+$html .= qq~
+			<br/>
+		<iframe name="ticket" id="ticketList" scrolling="auto" src="launcher.cgi?mod=tickets&submod=findTicket&year=$year&month=$month&state=&ftt=&page=$page&shtl=1" frameborder="0" width="100%" height="100%"></iframe>
 		</td>
-		<td width="35%" valign="top" style="height: calc(100% - 62px);">
+		
+		<td width="35%" valign="top" style="min-height: 400px; height: calc(100% - 62px);">
 			<iframe name="logs" scrolling="auto" frameborder="0" width="100%" style="height: calc(100% + 40px); background-color: #E0E0E0;"></iframe>
 		</td>
 	</tr>
@@ -63,3 +83,16 @@ $html .= qq~
 # src="launcher.cgi?mod=logs&shtl=1"
 return $html;
 1;
+
+sub currentMonth {
+	my @fecha = localtime(time); # sec,min,hour,mday,mon,year,wday,yday ,isdst
+	$fecha[4] ++;
+	if ( $fecha[4] < 10 ) { $fecha[4] = "0$fecha[4]" }
+	return $fecha[4];
+}
+
+sub currentYear {
+	my @fecha = localtime(time); # sec,min,hour,mday,mon,year,wday,yday ,isdst
+	$fecha[5] += 1900;
+	return $fecha[5];
+}

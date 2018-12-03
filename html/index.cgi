@@ -32,7 +32,7 @@ use lib $RealBin;
 our(%input, %VAR, %MSG, %PRM, $username, $html, $header, $footer, $module, $module_file, $theme, $dbh, $encKey);
 require 'common.pl';
 %VAR = get_vars();
-$VAR{Version} = '0.9.9.9-stress';
+$VAR{Version} = '1.0-candidate';
 $encKey = getEncKey();
 $username = get_session();
 $theme = get_theme();

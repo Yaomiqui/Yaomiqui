@@ -41,7 +41,6 @@ ln -s /usr/lib/x86_64-linux-gnu/samba/libdcerpc-samba.so.0 /usr/lib/x86_64-linux
 ln -s /usr/lib/x86_64-linux-gnu/samba/liberrors.so.0 /usr/lib/x86_64-linux-gnu/samba/liberrors-samba4.so.0
 
 dpkg -i winexe-1.1-20161124-0xenial1.deb
-### run wget -c https://app.box.com/s/3amquwkdlwjoxwmr7p3v2uurv6w6s4aj to get it if came corrupted
 
 /usr/bin/perl -pi -e 's/Timeout 300/Timeout 1200\nTimeout 1200\nLimitRequestLine 100000\nLimitRequestFieldSize 100000/' /etc/apache2/apache2.conf
 
