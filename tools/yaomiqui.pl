@@ -556,7 +556,7 @@ sub runDO {
 			
 			
 			if ( $DO->{SetVar} ) {
-				# $DO->{SetVar}->{value} = replaceSpecChar($DO->{SetVar}->{value});
+				$DO->{SetVar}->{value} = replaceSpecChar($DO->{SetVar}->{value});
 				$VAR{ $DO->{SetVar}->{name} } = $DO->{SetVar}->{value};
 				
 				## debug
