@@ -1,11 +1,11 @@
 #!/usr/bin/perl
 ########################################################################
-# Yaomiqui is a Web UI for Automation
+# Yaomiqui is Powerful tool for Automation + Easy to use Web UI
+# Written in freestyle Perl + CGI + Apache + MySQL + Javascript + CSS
 # This is the GENERIC REST API for Yaomiqui 1.0
 # 
-# Written in freestyle Perl-CGI + Apache + MySQL
-# 
-# Copyright (C) 2018 Hugo Maza Moreno
+# Yaomiqui and its logo are registered trademark by Hugo Maza Moreno
+# Copyright (C) 2019
 # 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

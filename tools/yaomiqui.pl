@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 ########################################################################
-# Yaomiqui is a Web UI for Automation
+# Yaomiqui is Powerful tool for Automation + Easy to use Web UI
+# Written in freestyle Perl + CGI + Apache + MySQL + Javascript + CSS
 # This is the Main ENGINE
-# The automation power for Yaomiqui RPA Orchestrator
+# The automation Power for Yaomiqui RPA Orchestrator
 # 
-# Written in freestyle Perl-CGI + Apache + MySQL + Javascript + CSS
-# 
-# Copyright (C) 2018 Hugo Maza Moreno
+# Yaomiqui and its logo are registered trademark by Hugo Maza Moreno
+# Copyright (C) 2019
 # 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -386,12 +386,14 @@ sub runDO {
 					$DO->{execRemoteLinuxCommand}->{remoteHost} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{remoteHost});
 					$DO->{execRemoteLinuxCommand}->{publicKey} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{publicKey});
 					
-					my $SACM = $VAR{SSH_TIMEOUT} / 60;
+					my $SACM = $VAR{TIMEOUT} / 60;
+					$DO->{execRemoteLinuxCommand}->{port} = 22 unless $DO->{execRemoteLinuxCommand}->{port};
 					
 					$Net::OpenSSH::debug = -1;
 					my $ssh = Net::OpenSSH->new($DO->{execRemoteLinuxCommand}->{remoteHost},
 						user				=> $DO->{execRemoteLinuxCommand}->{remoteUser},
 						key_path			=> $DO->{execRemoteLinuxCommand}->{publicKey},
+						port				=> $DO->{execRemoteLinuxCommand}->{port},
 						strict_mode			=> 0,
 						timeout				=> $VAR{SSH_TIMEOUT},
 						kill_ssh_on_timeout	=> 1,
@@ -434,12 +436,14 @@ sub runDO {
 					}
 					
 					## print "PASSWORD: " . $DO->{execRemoteLinuxCommand}->{passwd} . "\n";
-					my $SACM = $VAR{SSH_TIMEOUT} / 60;
+					my $SACM = $VAR{TIMEOUT} / 60;
+					$DO->{execRemoteLinuxCommand}->{port} = 22 unless $DO->{execRemoteLinuxCommand}->{port};
 					
 					$Net::OpenSSH::debug = -1;
 					my $ssh = Net::OpenSSH->new($DO->{execRemoteLinuxCommand}->{remoteHost},
 						user				=> $DO->{execRemoteLinuxCommand}->{remoteUser},
 						password			=> $DO->{execRemoteLinuxCommand}->{passwd},
+						port				=> $DO->{execRemoteLinuxCommand}->{port},
 						strict_mode			=> 0,
 						timeout				=> $VAR{SSH_TIMEOUT},
 						kill_ssh_on_timeout	=> 1,
@@ -557,6 +561,7 @@ sub runDO {
 			
 			if ( $DO->{SetVar} ) {
 				$DO->{SetVar}->{value} = replaceSpecChar($DO->{SetVar}->{value});
+				$DO->{SetVar}->{name} =~ s/\$|\{|\}|\s//g;
 				$VAR{ $DO->{SetVar}->{name} } = $DO->{SetVar}->{value};
 				
 				## debug
@@ -575,6 +580,7 @@ sub runDO {
 				$separator =~ s/pipe/\\|/;
 				$separator =~ s/nl/\\n/;
 				
+				$DO->{SplitVar}->{arrayName} =~ s/\$|\{|\}|\s//g;
 				@{ $VAR{ $DO->{SplitVar}->{arrayName} } } = split(/$separator/, replaceSpecChar($DO->{SplitVar}->{inputVarName}));
 				
 				# ## debug

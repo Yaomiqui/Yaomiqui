@@ -128,6 +128,3 @@ CREATE TABLE IF NOT EXISTS report (
 
 INSERT INTO report (typeTicket, averageAttTime, costPerHour, costPerTicket) VALUES ('INCIDENT', '2', '9', '1');
 INSERT INTO report (typeTicket, averageAttTime, costPerHour, costPerTicket) VALUES ('TASK', '3', '8', '1');
-
-
-

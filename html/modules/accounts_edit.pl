@@ -281,7 +281,5 @@ if ( $input{idUser} ) {
 
 
 
-
-
 return $html;
 1;

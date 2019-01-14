@@ -48,6 +48,7 @@ $MSG{All_changes_you_make_here}<br><br>
 <button class="blueLightButton" onClick="return openModal('myModalRedirectSave');">$MSG{Insert_New_Ticket}</button>
 
 </form>
+
 ~;
 
 

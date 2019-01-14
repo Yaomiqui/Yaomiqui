@@ -3,6 +3,7 @@
 my $html;
 $html .= qq~<div class="contentTitle">$MSG{Logs}</div>~ unless $input{'shtl'};
 
+
 # $html .= qq~
 # <table cellpadding="0" cellspacing="2" border="0" width="100%" height="100%">
 	# <tr>
@@ -15,6 +16,7 @@ $html .= qq~<div class="contentTitle">$MSG{Logs}</div>~ unless $input{'shtl'};
 	# </tr>
 # </table>
 # ~;
+
 
 unless ( $input{submod} ) {
 	$html .= qq~<br/>~;

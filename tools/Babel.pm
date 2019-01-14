@@ -1,15 +1,11 @@
 package Babel;
-$VERSION = 1.11;
-$MODULENAME = "Babel";
-$LASTEDIT = "04/08/05";
-
 ########################################################################
-# Yaomiqui is a Web UI for Automation
-# Encode and Decode tool for passwords and more
+# Yaomiqui is Powerful tool for Automation + Easy to use Web UI
+# Written in freestyle Perl + CGI + Apache + MySQL + Javascript + CSS
+# Encode and Decode module for passwords and more
 # 
-# Written in freestyle Perl
-
-# Copyright (C) 2018 Hugo Maza Moreno
+# Yaomiqui and its logo are registered trademark by Hugo Maza Moreno
+# Copyright (C) 2019
 # 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -23,6 +19,7 @@ $LASTEDIT = "04/08/05";
 # 
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+########################################################################
 #
 # USAGE
 # ______________________________________________________________________
@@ -41,6 +38,9 @@ $LASTEDIT = "04/08/05";
 # ______________________________________________________________________
 # 
 ########################################################################
+$VERSION = 1.11;
+$MODULENAME = "Babel";
+$LASTEDIT = "04/08/05";
 
 require Exporter;
 @ISA       = qw(Exporter);

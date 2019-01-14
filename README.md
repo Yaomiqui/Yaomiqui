@@ -46,8 +46,16 @@ Simple video demo of one of the most used use cases.
 [![AD user creation](https://img.youtube.com/vi/Qs0pRlhVSBE/0.jpg)](https://www.youtube.com/watch?v=Qs0pRlhVSBE "AD user creation")
 
 ------------
+------------
+
+Yaomiqui stress quick test.
+
+1000 tickets on bulk insertion. One of them is a Yaomiqui installation:
+
+[![Yaomiqui stress quick test](https://img.youtube.com/vi/7YuwK9W2CLA/0.jpg)](https://www.youtube.com/watch?v=7YuwK9W2CLA "Yaomiqui stress quick test")
+
+------------
 
 You can download the latest version here:
 
 ## [Download Yaomiqui](https://github.com/Yaomiqui/Yaomiqui/releases/latest "Download Yaomiqui")
-

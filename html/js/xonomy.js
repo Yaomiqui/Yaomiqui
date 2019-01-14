@@ -1,10 +1,10 @@
 //######################################################################
-// Yaomiqui is a Web UI for Automation
-// The Yaomiqui version for Xonomy library
+// Yaomiqui is Powerful tool for Automation + Easy to use Web UI
+// Written in freestyle Perl + CGI + Apache + MySQL + Javascript + CSS
+// The Yaomiqui version for Xonomy library. Main JS
 // 
-// Written in freestyle Perl-CGI + Apache + MySQL + Javascript + CSS
-// 
-// Copyright (C) 2018 Hugo Maza Moreno
+// Yaomiqui and its logo are registered trademark by Hugo Maza Moreno
+// Copyright (C) 2019
 // 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by

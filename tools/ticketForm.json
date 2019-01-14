@@ -1,7 +1,7 @@
 {
 	"ticket": {
-		"number": "",
-		"sys_id": "",
+		"number": "INC0000001",
+		"sys_id": "abcdef123456",
 		"subject": "MY SUBJECT TO BE FILTERED BY AUTOBOT",
 		"state": "new",
 		"type": "INCIDENT"

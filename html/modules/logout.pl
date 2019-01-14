@@ -1,8 +1,7 @@
 my $vendor = "yaomiqui";
 
 open(SESSION, "<$VAR{session_file}");
-	my @line = <SESSION>;
-	chomp (@line);
+my @line = <SESSION>;
 close SESSION;
 
 my $log = new Log::Man($VAR{log_dir}, $VAR{log_file}, $username);
@@ -10,9 +9,8 @@ $log->Log("Logout From IP " . $ENV{REMOTE_ADDR});
 
 open(SESSION, ">$VAR{session_file}");
 	foreach ( @line ) {
-		$_ =~ s/\n//;
-		unless ( $_ =~ /$username/ ) {
-			$html .= "$_ No contiene '|$username'. Se inserta...<br>";
+		$_ =~ s/\n//g;
+		unless ( $_ =~ /\|$username$/ ) {
 			print SESSION "$_\n";
 		}
 	}

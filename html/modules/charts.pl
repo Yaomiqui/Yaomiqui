@@ -153,7 +153,6 @@ $dbh->disconnect if ($dbh);
 
 $html .= qq~</table>~;
 
-
 return $html;
 1;
 

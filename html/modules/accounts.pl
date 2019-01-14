@@ -250,6 +250,5 @@ if ( $input{submod} eq 'new_record' ) {
 	<br /><br />
 	~;
 
-
 return $html;
 1;

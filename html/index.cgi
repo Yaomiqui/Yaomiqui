@@ -1,11 +1,11 @@
 #!/usr/bin/perl
 ########################################################################
-# Yaomiqui is a Web UI for Automation
+# Yaomiqui is Powerful tool for Automation + Easy to use Web UI
+# Written in freestyle Perl + CGI + Apache + MySQL + Javascript + CSS
 # This is the main index for Web UI of Yaomiqui 1.0
 # 
-# Written in freestyle Perl-CGI + Apache + MySQL + Javascript + CSS
-# 
-# Copyright (C) 2018 Hugo Maza Moreno
+# Yaomiqui and its logo are registered trademark by Hugo Maza Moreno
+# Copyright (C) 2019
 # 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@ use lib $RealBin;
 our(%input, %VAR, %MSG, %PRM, $username, $html, $header, $footer, $module, $module_file, $theme, $dbh, $encKey);
 require 'common.pl';
 %VAR = get_vars();
-$VAR{Version} = '1.0-candidate';
+$VAR{Version} = '1.0';
 $encKey = getEncKey();
 $username = get_session();
 $theme = get_theme();
@@ -40,6 +40,13 @@ $theme = get_theme();
 %MSG = loadLang('index');
 
 my $consulta = new CGI;
+
+if ( $ENV{HTTPS} ne 'on' ) {
+	print "Content-Type: text/html\n\n";
+	print qq~Error: HTTPS is not being used~;
+	exit;
+}
+
 my @pares = $consulta->param;
 foreach my $par ( @pares ){
 	$input{"$par"} = $consulta->param("$par");

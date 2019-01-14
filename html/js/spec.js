@@ -1,10 +1,10 @@
 //######################################################################
-// Yaomiqui is a Web UI for Automation
-// The Yaomiqui version for Xonomy library
+// Yaomiqui is Powerful tool for Automation + Easy to use Web UI
+// Written in freestyle Perl + CGI + Apache + MySQL + Javascript + CSS
+// The Yaomiqui version for Xonomy library. Document Specifications
 // 
-// Written in freestyle Perl-CGI + Apache + MySQL + Javascript + CSS
-// 
-// Copyright (C) 2018 Hugo Maza Moreno
+// Yaomiqui and its logo are registered trademark by Hugo Maza Moreno
+// Copyright (C) 2019
 // 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -212,7 +212,7 @@ var specifications={
 				{
 					caption: "Append a <execRemoteLinuxCommand>",
 					action: Xonomy.newElementChild,
-					actionParameter: "<execRemoteLinuxCommand catchVarName=\"\" remoteHost=\"\" remoteUser=\"\" passwd=\"\" publicKey=\"\" EncKey=\"\" EncPasswd=\"\"><command><![CDATA[]]></command></execRemoteLinuxCommand>"
+					actionParameter: "<execRemoteLinuxCommand catchVarName=\"\" remoteHost=\"\" remoteUser=\"\" passwd=\"\" port=\"22\" publicKey=\"\" EncKey=\"\" EncPasswd=\"\"><command><![CDATA[]]></command></execRemoteLinuxCommand>"
 				},
 				{
 					caption: "Append a <execRemoteWindowsCommand>",
@@ -365,12 +365,12 @@ var specifications={
 				{
 					caption: "New <execRemoteLinuxCommand> before this",
 					action: Xonomy.newElementBefore,
-					actionParameter: "<execRemoteLinuxCommand catchVarName=\"\" remoteHost=\"\" remoteUser=\"\" passwd=\"\" publicKey=\"\" EncKey=\"\" EncPasswd=\"\"><command><![CDATA[]]></command></execRemoteLinuxCommand>"
+					actionParameter: "<execRemoteLinuxCommand catchVarName=\"\" remoteHost=\"\" remoteUser=\"\" passwd=\"\" port=\"22\" publicKey=\"\" EncKey=\"\" EncPasswd=\"\"><command><![CDATA[]]></command></execRemoteLinuxCommand>"
 				},
 				{
 					caption: "New <execRemoteLinuxCommand> after this",
 					action: Xonomy.newElementAfter,
-					actionParameter: "<execRemoteLinuxCommand catchVarName=\"\" remoteHost=\"\" remoteUser=\"\" passwd=\"\" publicKey=\"\" EncKey=\"\" EncPasswd=\"\"><command><![CDATA[]]></command></execRemoteLinuxCommand>"
+					actionParameter: "<execRemoteLinuxCommand catchVarName=\"\" remoteHost=\"\" remoteUser=\"\" passwd=\"\" port=\"22\" publicKey=\"\" EncKey=\"\" EncPasswd=\"\"><command><![CDATA[]]></command></execRemoteLinuxCommand>"
 				}
 			],
 			canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "FOREACH_NUMBER", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand", "IntegerArray", "Sleep", "DecodePWDtoVar"],
@@ -385,6 +385,9 @@ var specifications={
 					asker: Xonomy.askString,
 				},
 				"passwd": {
+					asker: Xonomy.askString,
+				},
+				"port": {
 					asker: Xonomy.askString,
 				},
 				"publicKey": {

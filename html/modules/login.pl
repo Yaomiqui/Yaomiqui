@@ -1,7 +1,9 @@
 my $user = $input{user};
 my $pass = $input{pass};
 my $vendor = "yaomiqui";
-my $num_sesion = rand(10);
+my @chars = ('a'..'z','A'..'Z',0..9);
+my $num_sesion;
+$num_sesion .= $chars[int(rand(@chars))] for 1..32;
 
 print "Location: index.cgi\n\n" unless $user;
 print "Location: index.cgi?user=$user\n\n" unless $pass;
@@ -19,12 +21,19 @@ if ( $active ) {
 	
 	if ( $user_registred eq $user) {
 		if ( $crypt_passwd eq $crypt->encode($pass, $encKey) ) {
-			# print "Set-Cookie: $vendor=$num_sesion \n";
-			$cookie = new CGI::Cookie(
-				-name    => $vendor,
-				-value   => $num_sesion,
-				-expires =>  $VAR{COOKIE_TERM},
-			);
+			my $cookie;
+			if ( $VAR{COOKIE_TERM} ) {
+				$cookie = new CGI::Cookie(
+					-name    => $vendor,
+					-value   => $num_sesion,
+					-expires => $VAR{COOKIE_TERM}
+				);
+			} else {
+				$cookie = new CGI::Cookie(
+					-name    => $vendor,
+					-value   => $num_sesion
+				);
+			}
 			print "Set-Cookie: $cookie\n";
 			
 			set_session_in_file($user);
@@ -38,12 +47,20 @@ if ( $active ) {
 	}
 	
 	sub set_session_in_file {
-		# use Tie::File;
-		# tie @array, 'Tie::File', $VAR{session_file} or no_open_file();
-		# push @array, $num_sesion . '|' . shift . "\n";
-		# untie @array;
-		open(SESSION, ">>$VAR{session_file}") or no_open_file();
-			print SESSION $num_sesion . '|' . shift . "\n";
+		my $user = shift;
+		
+		open(SESSION, "<$VAR{session_file}") or no_open_file();
+		my @SESSION = <SESSION>;
+		close SESSION;
+		
+		open(SESSION, ">$VAR{session_file}") or no_open_file();
+		foreach my $e ( @SESSION ) {
+			chomp($e);
+			unless ( $e =~ /\|$user$/ ) {
+				print SESSION $e . "\n";
+			}
+		}
+		print SESSION $num_sesion . '|' . $user . "\n";
 		close SESSION;
 	}
 } else {

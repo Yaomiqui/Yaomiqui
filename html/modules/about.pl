@@ -310,8 +310,6 @@ The GNU General Public License does not permit incorporating your program into p
 
 
 
-
-
       </div>
     </div>
     <br/><br/>

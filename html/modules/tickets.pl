@@ -111,6 +111,7 @@ if ( $input{submod} eq 'findTicket' ) {
 }
 
 
+
 sub paginator {
 	my $sqlQuery = shift;
 	connected();

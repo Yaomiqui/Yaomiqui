@@ -52,6 +52,7 @@ $html .= qq~
 
 ~ if $theme eq 'desktop7';
 
+
 print "Location: index.cgi?mod=overview\n\n" if $theme ne 'desktop7';
 
 return $html;

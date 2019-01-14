@@ -1,10 +1,10 @@
 ########################################################################
-# Yaomiqui is a Web UI for Automation
+# Yaomiqui is Powerful tool for Automation + Easy to use Web UI
+# Written in freestyle Perl + CGI + Apache + MySQL + Javascript + CSS
 # Common libraries for Yaomiqui 1.0
 # 
-# Written in freestyle Perl-CGI + Apache + MySQL
-# 
-# Copyright (C) 2018 Hugo Maza Moreno
+# Yaomiqui and its logo are registered trademark by Hugo Maza Moreno
+# Copyright (C) 2019
 # 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -147,7 +147,7 @@ sub get_session {
 	
 	my @nvpairs=split(/; /, $ENV{HTTP_COOKIE});
 	foreach my $pair (@nvpairs) {
-		#yaomiqui=jk345k34h3l
+		#yaomiqui=jk345k34h3luQejcuwcy7r2F3D06b2lB
 		my ($cookie_vendor, $coockie_datos) = split(/=/, $pair);
 		if ($cookie_vendor eq $vendor)	{
 			$cookie_sesion = $coockie_datos;

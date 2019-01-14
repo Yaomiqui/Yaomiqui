@@ -1,9 +1,11 @@
 #!/bin/bash
 ########################################################################
-# Yaomiqui is a Web UI for AUTOMATION
-# Copyright (C) 2018  Hugo Maza M.
-# 
+# Yaomiqui is Powerful tool for Automation + Easy to use Web UI
+# Written in freestyle Perl + CGI + Apache + MySQL + Javascript + CSS
 # Automated installation script for Yaomiqui 1.0 on Ubuntu 16.04 Server
+# 
+# Yaomiqui and its logo are registered trademark by Hugo Maza Moreno
+# Copyright (C) 2019
 # 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

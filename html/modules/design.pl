@@ -529,7 +529,6 @@ if ( $input{submod} eq 'cryptPasswd' ) {
 	
 }
 
-
 return $html;
 
 sub generateRandomKey {
