@@ -22,10 +22,10 @@
 ########################################################################
 use CGI::Carp qw(fatalsToBrowser);
 use strict;
-use FindBin qw($RealBin);
 use CGI;
-# use Page::Paginator;
 use Tie::File;
+use FindBin qw($RealBin);
+use lib $RealBin;
 
 our(%input, %VAR, %MSG, %PRM, $username, $html, $header, $footer, $module, $module_file, $theme, $dbh, $encKey);
 my $VERSION = 0.1;

@@ -22,6 +22,7 @@
 ########################################################################
 use strict;
 use FindBin qw($RealBin);
+use lib $RealBin;
 
 ####	THIS IS A TEMPLATE
 ####	HERE YOU CAN PUT HERE THE CODE FOR CONNECTOR TO YOUR SERVER OR TICKET SYSTEM MANAGEMENT

@@ -21,9 +21,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ########################################################################
 use strict;
-use warnings;
-use FindBin qw($RealBin);
+# use warnings;
 use Parallel::ForkManager;
+use FindBin qw($RealBin);
+use lib $RealBin;
 
 our $dbh;
 our %VENV = get_vars();

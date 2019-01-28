@@ -1,4 +1,4 @@
-package Babel;
+package Crypt::Babel;
 ########################################################################
 # Yaomiqui is Powerful tool for Automation + Easy to use Web UI
 # Written in freestyle Perl + CGI + Apache + MySQL + Javascript + CSS

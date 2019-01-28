@@ -1,7 +1,9 @@
 #!/usr/bin/perl
 use strict;
-use Crypt::Babel;
 use Tie::File;
+use FindBin qw($RealBin);
+use lib $RealBin;
+use Crypt::Babel;
 
 my $o = tie my @array, 'Tie::File', '/var/www/yaomiqui/certs/yaomiquikey.enc' or die "I can't open yaomiqui key enc\n";
 my $encKey = $array[0];

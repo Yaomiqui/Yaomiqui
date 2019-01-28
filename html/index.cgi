@@ -22,17 +22,16 @@
 ########################################################################
 use CGI::Carp qw(fatalsToBrowser);
 use strict;
-use FindBin qw($RealBin);
 use CGI;
-# use Page::Paginator;
 use Tie::File;
+use FindBin qw($RealBin);
 use Log::Man;
 use lib $RealBin;
 
 our(%input, %VAR, %MSG, %PRM, $username, $html, $header, $footer, $module, $module_file, $theme, $dbh, $encKey);
 require 'common.pl';
 %VAR = get_vars();
-$VAR{Version} = '1.0';
+$VAR{Version} = '1.1';
 $encKey = getEncKey();
 $username = get_session();
 $theme = get_theme();

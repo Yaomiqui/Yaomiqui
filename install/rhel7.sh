@@ -37,7 +37,10 @@ yum install -y mysql-server perl-DBD-MySQL
 
 rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 
-yum --enablerepo=epel install -y sshpass perl-Parallel-ForkManager samba4-libs gnutls-devel perl-Net-OpenSSH perl-IO-Pty-Easy perl-MIME-Lite
+yum --enablerepo=epel install -y sshpass perl-Parallel-ForkManager samba4-libs gnutls-devel perl-Net-OpenSSH perl-MIME-Lite
+
+# perl-IO-Pty was removed from epel repos:
+# yum --enablerepo=epel install -y perl-IO-Pty-Easy
 
 ### Install winexe. You can comment the next two lines to enhance performance. Then you can run it later.
 yum remove libbsd-devel

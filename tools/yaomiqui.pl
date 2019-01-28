@@ -24,10 +24,10 @@
 # use warnings;
 use XML::Simple;
 use JSON;
-use FindBin qw($RealBin);
 use strict;
 use Net::OpenSSH;
 use Data::Dumper;
+use FindBin qw($RealBin);
 use lib $RealBin;
 
 our ($ticketNumber, $dbh, %VAR, $jsonCode, $AutoBot);
@@ -153,7 +153,7 @@ if ( $json ) {
 			unless ( $ARGV[1] ) {
 				connected();
 				
-				##### PARANOIAC!!! CHECK FOR id AutoBotCatched IF IS EMPTY (AGAIN) AND LOCK THE TABLE TO CATCH THIS
+				##### PARANOIAC!!! CHECK FOR id AutoBotCatched IF IS EMPTY (again I kow) AND LOCK THE TABLE TO CATCH THIS
 				$dbh->do("LOCK TABLES ticket WRITE, ticket AS ticketRead READ");
 				
 				my $chk = $dbh->prepare("SELECT idAutoBotCatched, finalState FROM ticket AS ticketRead WHERE numberTicket = '$ticketNumber'");
@@ -183,6 +183,10 @@ if ( $json ) {
 					engineLog(qq~INFO  :: $ticketNumber : Ticket was caught by Autobot ID $AB->[$i][0] ($AB->[$i][1])~);
 				}
 				
+			} else {
+				$AutoBot = $AB->[$i][0];
+				mlog($TTS[1], qq~Ticket was caught by Autobot ID: [<a href="index.cgi?mod=design&submod=edit_autobot&autoBotId=$AB->[$i][0]" target="_blank">$AB->[$i][0]</a>]~);
+				engineLog(qq~INFO  :: $ticketNumber : Ticket was caught by Autobot ID $AB->[$i][0] ($AB->[$i][1])~);
 			}
 			
 			####	waterfall depth
@@ -427,12 +431,12 @@ sub runDO {
 				else {
 					$DO->{execRemoteLinuxCommand}->{remoteUser} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{remoteUser});
 					$DO->{execRemoteLinuxCommand}->{remoteHost} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{remoteHost});
-					$DO->{execRemoteLinuxCommand}->{passwd} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{passwd});
+					my $linuxpasswd = replaceSpecChar($DO->{execRemoteLinuxCommand}->{passwd});
 					
 					if ( $DO->{execRemoteLinuxCommand}->{EncKey} and $DO->{execRemoteLinuxCommand}->{EncPasswd} ) {
 						use Babel;
 						my $crypt = new Babel;
-						$DO->{execRemoteLinuxCommand}->{passwd} = $crypt->decode($DO->{execRemoteLinuxCommand}->{EncPasswd}, $DO->{execRemoteLinuxCommand}->{EncKey});
+						$linuxpasswd = $crypt->decode($DO->{execRemoteLinuxCommand}->{EncPasswd}, $DO->{execRemoteLinuxCommand}->{EncKey});
 					}
 					
 					## print "PASSWORD: " . $DO->{execRemoteLinuxCommand}->{passwd} . "\n";
@@ -442,7 +446,7 @@ sub runDO {
 					$Net::OpenSSH::debug = -1;
 					my $ssh = Net::OpenSSH->new($DO->{execRemoteLinuxCommand}->{remoteHost},
 						user				=> $DO->{execRemoteLinuxCommand}->{remoteUser},
-						password			=> $DO->{execRemoteLinuxCommand}->{passwd},
+						password			=> $linuxpasswd,
 						port				=> $DO->{execRemoteLinuxCommand}->{port},
 						strict_mode			=> 0,
 						timeout				=> $VAR{SSH_TIMEOUT},
@@ -487,20 +491,20 @@ sub runDO {
 				
 				$DO->{execRemoteWindowsCommand}->{remoteUser} = replaceSpecChar($DO->{execRemoteWindowsCommand}->{remoteUser});
 				$DO->{execRemoteWindowsCommand}->{remoteHost} = replaceSpecChar($DO->{execRemoteWindowsCommand}->{remoteHost});
-				$DO->{execRemoteWindowsCommand}->{remotePasswd} = replaceSpecChar($DO->{execRemoteWindowsCommand}->{passwd});
+				my $winpasswd = replaceSpecChar($DO->{execRemoteWindowsCommand}->{passwd});
 				$DO->{execRemoteWindowsCommand}->{remoteDomain} = replaceSpecChar($DO->{execRemoteWindowsCommand}->{domain});
 				
 				if ( $DO->{execRemoteWindowsCommand}->{EncKey} and $DO->{execRemoteWindowsCommand}->{EncPasswd} ) {
 					use Babel;
 					my $crypt = new Babel;
-					$DO->{execRemoteWindowsCommand}->{passwd} = $crypt->decode($DO->{execRemoteWindowsCommand}->{EncPasswd}, $DO->{execRemoteWindowsCommand}->{EncKey});
+					$winpasswd = $crypt->decode($DO->{execRemoteWindowsCommand}->{EncPasswd}, $DO->{execRemoteWindowsCommand}->{EncKey});
 				}
 				
 				$DO->{execRemoteWindowsCommand}->{remoteDomain} = $DO->{execRemoteWindowsCommand}->{remoteDomain} . '/' if $DO->{execRemoteWindowsCommand}->{remoteDomain};
 				
 				my $winerrfile = '/tmp/' . $TT . '.err';
 				
-				$VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} } = `winexe -k $DO->{execRemoteWindowsCommand}->{useKerberos} -U '$DO->{execRemoteWindowsCommand}->{remoteDomain}$DO->{execRemoteWindowsCommand}->{remoteUser}\%$DO->{execRemoteWindowsCommand}->{remotePasswd}' //$DO->{execRemoteWindowsCommand}->{remoteHost} '$remoteWindowsCommand' 2>$winerrfile`;
+				$VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} } = `winexe -k $DO->{execRemoteWindowsCommand}->{useKerberos} -U '$DO->{execRemoteWindowsCommand}->{remoteDomain}$DO->{execRemoteWindowsCommand}->{remoteUser}\%$winpasswd' //$DO->{execRemoteWindowsCommand}->{remoteHost} '$remoteWindowsCommand' 2>$winerrfile`;
 				$VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} } =~ s/^\n//g;
 				$VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} } =~ s/\n$//g;
 				
