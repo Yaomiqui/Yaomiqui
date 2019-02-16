@@ -79,8 +79,8 @@ if ( $input{idUser} ) {
 		
 		<table cellpadding="0" cellspacing="0" class="form">
 		
-		<tr><td align="right" width="30%">$MSG{Password} <font color="BB0000"><b>*</b></font>: </td><td width="70%"><input type="password" name="pwd1" value="$data[2]" maxlength="16"></td></tr>
-		<tr><td align="right" width="30%">$MSG{Password_again} <font color="BB0000"><b>*</b></font>: </td><td width="70%"><input type="password" name="pwd2" value="$data[2]" maxlength="16"></td></tr>
+		<tr><td align="right" width="30%">$MSG{Password} <font color="BB0000"><b>*</b></font>: </td><td width="70%"><input type="password" name="pwd1" value="" maxlength="16" placeholder="****************"></td></tr>
+		<tr><td align="right" width="30%">$MSG{Password_again} <font color="BB0000"><b>*</b></font>: </td><td width="70%"><input type="password" name="pwd2" value="" maxlength="16" placeholder="****************"></td></tr>
 		<tr><td align="right" width="30%">$MSG{Name}: </td><td width="70%"><input type="text" name="name" value="$data[3]"></td></tr>
 		<tr><td align="right" width="30%">$MSG{Last_Name}: </td><td width="70%"><input type="text" name="lastName" value="$data[4]"></td></tr>
 		<tr><td align="right" width="30%">$MSG{Mothers_Last_Name}: </td><td width="70%"><input type="text" name="mothersLastName" value="$data[5]"></td></tr>

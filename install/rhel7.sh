@@ -37,7 +37,7 @@ yum install -y mysql-server perl-DBD-MySQL
 
 rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 
-yum --enablerepo=epel install -y sshpass perl-Parallel-ForkManager samba4-libs gnutls-devel perl-Net-OpenSSH perl-MIME-Lite
+yum --enablerepo=epel install -y sshpass perl-Parallel-ForkManager samba4-libs gnutls-devel perl-Net-OpenSSH perl-MIME-Lite perl-Math-Random-ISAAC
 
 # perl-IO-Pty was removed from epel repos:
 # yum --enablerepo=epel install -y perl-IO-Pty-Easy
@@ -90,7 +90,7 @@ mv /etc/httpd/conf.d/ssl.conf /etc/httpd/conf.d/ssl.conf.bk
 
 cp -r ../html/* /var/www/yaomiqui/html/
 
-cp -r ../tools/* /var/www/yaomiqui/
+cp -r ../root/* /var/www/yaomiqui/
 
 chown -R apache:apache /var/www/yaomiqui
 

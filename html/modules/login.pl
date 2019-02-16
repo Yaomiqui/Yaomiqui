@@ -1,7 +1,13 @@
 my $user = $input{user};
 my $pass = $input{pass};
 my $vendor = "yaomiqui";
-my @chars = ('a'..'z','A'..'Z',0..9);
+
+use Math::Random::ISAAC;
+my $rng = Math::Random::ISAAC->new(time());
+my $prnrand = $rng->irand();
+my @PRNG = split //, $prnrand;
+
+my @chars = ('a'..'z',@PRNG,'A'..'Z');
 my $num_sesion;
 $num_sesion .= $chars[int(rand(@chars))] for 1..32;
 
@@ -24,14 +30,18 @@ if ( $active ) {
 			my $cookie;
 			if ( $VAR{COOKIE_TERM} ) {
 				$cookie = new CGI::Cookie(
-					-name    => $vendor,
-					-value   => $num_sesion,
-					-expires => $VAR{COOKIE_TERM}
+					-name    	=> $vendor,
+					-value   	=> $num_sesion,
+					-httponly	=> true,
+					-secure		=>  1,
+					-expires 	=> $VAR{COOKIE_TERM}
 				);
 			} else {
 				$cookie = new CGI::Cookie(
-					-name    => $vendor,
-					-value   => $num_sesion
+					-name    	=> $vendor,
+					-value   	=> $num_sesion,
+					-httponly	=> true,
+					-secure		=>  1
 				);
 			}
 			print "Set-Cookie: $cookie\n";

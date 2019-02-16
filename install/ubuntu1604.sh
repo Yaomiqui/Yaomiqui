@@ -31,7 +31,9 @@ source ./keys_auto.conf
 
 apt-get update
 
-apt install -y apache2 curl mysql-server sshpass libnet-openssh-perl libdbi-perl libdbd-mysql-perl libjson-perl libtest-json-perl libxml-simple-perl libxml-validate-perl libparallel-forkmanager-perl libnet-openssh-perl libio-pty-perl sendmail libmime-lite-perl
+apt install -y apache2 curl mysql-server sshpass libnet-openssh-perl libdbi-perl libdbd-mysql-perl libjson-perl libtest-json-perl libxml-simple-perl libxml-validate-perl libparallel-forkmanager-perl libnet-openssh-perl sendmail libmime-lite-perl libmath-random-isaac-perl
+
+# apt install -y libio-pty-perl
 
 # Install winexe. You can comment the next five lines to enhance performance. Then you can run it later.
 apt-get -y install python2.7 gcc-mingw-w64 libtevent-dev samba-dev libsmbclient comerr-dev libc6-dev libpopt-dev --fix-missing
@@ -68,7 +70,7 @@ mv /etc/apache2/sites-available/default-ssl.conf /etc/apache2/sites-available/de
 
 cp -r ../html/* /var/www/yaomiqui/html/
 
-cp -r ../tools/* /var/www/yaomiqui/
+cp -r ../root/* /var/www/yaomiqui/
 
 chown -R www-data:www-data /var/www/yaomiqui
 

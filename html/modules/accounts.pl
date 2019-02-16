@@ -32,7 +32,7 @@ if ( $input{submod} eq 'delete_record' ) {
 if ( $input{submod} eq 'save_record' ) {
 	my $prepare;
 	
-	if ( $input{pwd1} ) {
+	# if ( $input{pwd1} ) {
 		if ( $input{pwd1} eq $input{pwd2} ) {
 			# $prepare = "UPDATE users SET name=?, lastName=?, maidenName=?, idEmployee=?, email=?, secondaryEmail=?, phone=?, secondaryPhone=?, costCenterId=?, groupId=?, secondaryGroupId=?, theme=?, language=?, active=?, password=? WHERE idUser=?";
 			use Crypt::Babel;
@@ -43,24 +43,58 @@ if ( $input{submod} eq 'save_record' ) {
 			$input{groupId} = '0' unless $input{groupId};
 			$input{secondaryGroupId} = '0' unless $input{secondaryGroupId};
 			
+			$input{name} =~ s/<|>|script|alert//gi;
+			$input{lastName} =~ s/<|>|script|alert//gi;
+			$input{mothersLastName} =~ s/<|>|script|alert//gi;
+			$input{email} =~ s/<|>|script|alert//gi;
+			$input{secondaryEmail} =~ s/<|>|script|alert//gi;
+			$input{phone} =~ s/<|>|script|alert//gi;
+			$input{secondaryPhone} =~ s/<|>|script|alert//gi;
+			$input{idEmployee} =~ s/<|>|script|alert//gi;
+			$input{costCenterId} =~ s/<|>|script|alert//gi;
+			$input{groupId} =~ s/<|>|script|alert//gi;
+			$input{secondaryGroupId} =~ s/<|>|script|alert//gi;
+			
 			connected();
-			my $sth = $dbh->prepare("UPDATE users SET 
-			password='$pwdEnc',
-			name='$input{name}',
-			lastName='$input{lastName}',
-			mothersLastName='$input{mothersLastName}',
-			idEmployee='$input{idEmployee}',
-			email='$input{email}',
-			secondaryEmail='$input{secondaryEmail}',
-			phone='$input{phone}',
-			secondaryPhone='$input{secondaryPhone}',
-			costCenterId='$input{costCenterId}',
-			groupId='$input{groupId}',
-			secondaryGroupId='$input{secondaryGroupId}',
-			theme='classic_cloud',
-			language='$input{language}',
-			active='$input{active}' 
-			WHERE idUser='$input{idUser}'");
+			
+			my $sth;
+			if ( $input{pwd1} ) {
+				$sth = $dbh->prepare("UPDATE users SET 
+				password='$pwdEnc',
+				name='$input{name}',
+				lastName='$input{lastName}',
+				mothersLastName='$input{mothersLastName}',
+				idEmployee='$input{idEmployee}',
+				email='$input{email}',
+				secondaryEmail='$input{secondaryEmail}',
+				phone='$input{phone}',
+				secondaryPhone='$input{secondaryPhone}',
+				costCenterId='$input{costCenterId}',
+				groupId='$input{groupId}',
+				secondaryGroupId='$input{secondaryGroupId}',
+				theme='classic_cloud',
+				language='$input{language}',
+				active='$input{active}' 
+				WHERE idUser='$input{idUser}'");
+			} else {
+				$sth = $dbh->prepare("UPDATE users SET 
+				name='$input{name}',
+				lastName='$input{lastName}',
+				mothersLastName='$input{mothersLastName}',
+				idEmployee='$input{idEmployee}',
+				email='$input{email}',
+				secondaryEmail='$input{secondaryEmail}',
+				phone='$input{phone}',
+				secondaryPhone='$input{secondaryPhone}',
+				costCenterId='$input{costCenterId}',
+				groupId='$input{groupId}',
+				secondaryGroupId='$input{secondaryGroupId}',
+				theme='classic_cloud',
+				language='$input{language}',
+				active='$input{active}' 
+				WHERE idUser='$input{idUser}'");
+			}
+			
 			$sth->execute();
 			$sth->finish;
 			
@@ -97,9 +131,9 @@ if ( $input{submod} eq 'save_record' ) {
 		} else {
 			$html .= qq~<font color="#BB0000">$MSG{Passwords_does_not_match}</font>~;
 		}
-	} else {
-		$html .= qq~<font color="#BB0000">$MSG{Passwords_are_mandatory}</font>~;
-	}
+	# } else {
+		# $html .= qq~<font color="#BB0000">$MSG{Passwords_are_mandatory}</font>~;
+	# }
 }
 
 
@@ -123,6 +157,19 @@ if ( $input{submod} eq 'new_record' ) {
 				$input{costCenterId} = '0' unless $input{costCenterId};
 				$input{groupId} = '0' unless $input{groupId};
 				$input{secondaryGroupId} = '0' unless $input{secondaryGroupId};
+				
+				$input{username} =~ s/<|>|script|alert//gi;
+				$input{name} =~ s/<|>|script|alert//gi;
+				$input{lastName} =~ s/<|>|script|alert//gi;
+				$input{mothersLastName} =~ s/<|>|script|alert//gi;
+				$input{email} =~ s/<|>|script|alert//gi;
+				$input{secondaryEmail} =~ s/<|>|script|alert//gi;
+				$input{phone} =~ s/<|>|script|alert//gi;
+				$input{secondaryPhone} =~ s/<|>|script|alert//gi;
+				$input{idEmployee} =~ s/<|>|script|alert//gi;
+				$input{costCenterId} =~ s/<|>|script|alert//gi;
+				$input{groupId} =~ s/<|>|script|alert//gi;
+				$input{secondaryGroupId} =~ s/<|>|script|alert//gi;
 				
 				# $dbh->do("LOCK TABLES users WRITE");
 				my $insert_string = qq~INSERT INTO users (

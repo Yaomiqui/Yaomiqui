@@ -2,7 +2,7 @@
 ########################################################################
 # Yaomiqui is Powerful tool for Automation + Easy to use Web UI
 # Written in freestyle Perl + CGI + Apache + MySQL + Javascript + CSS
-# Automated installation script for Yaomiqui 1.0 on CentOS 7.x
+# Automated installation script for Yaomiqui 1.0 on CentOS 6.x
 # 
 # Yaomiqui and its logo are registered trademark by Hugo Maza Moreno
 # Copyright (C) 2019
@@ -29,9 +29,9 @@ source ./keys_auto.conf
 
 yum install -y wget vim curl net-tools httpd perl perl-core perl-CGI perl-DBI mod_ssl perl-JSON perl-XML-Simple sendmail
 
-wget -c http://repo.mysql.com/mysql-community-release-el7-5.noarch.rpm
+wget -c http://repo.mysql.com/mysql-community-release-el6-7.noarch.rpm
 
-rpm -ivh mysql-community-release-el7-5.noarch.rpm
+rpm -ivh mysql-community-release-el6-7.noarch.rpm
 
 yum install -y mysql-server perl-DBD-MySQL epel-release
 
@@ -40,21 +40,20 @@ yum --enablerepo=epel install -y sshpass perl-Parallel-ForkManager samba4-libs g
 # yum --enablerepo=epel install -y perl-IO-Pty-Easy
 
 ### Install winexe. You can comment the next two lines to enhance performance. Then you can run it later.
-# yum install -y gcc perl mingw-binutils-generic mingw-filesystem-base mingw32-binutils mingw32-cpp mingw32-crt mingw32-filesystem mingw32-gcc mingw32-headers mingw64-binutils mingw64-cpp mingw64-crt mingw64-filesystem mingw64-gcc mingw64-headers libcom_err-devel popt-devel zlib-devel zlib-static glibc-devel glibc-static python-devel git gnutls-devel libacl-devel openldap-devel rpm-build pkgconfig samba4-libs
-yum remove libbsd-devel
-
-rpm -Uvh winexe-1.1-b787d2.el7.centos.x86_64.rpm
+# yum remove libbsd-devel
 ###### 
 
-chown apache:apache /usr/share/httpd
+rpm -Uvh winexe-1.1-b787d2.el6.x86_64.rpm
+
+# chown apache:apache /usr/share/httpd
 
 # service NetworkManager stop
 
 # chkconfig NetworkManager off
 
-service firewalld stop
+service iptables stop
 
-chkconfig firewalld off
+chkconfig iptables off
 
 service httpd start
 
@@ -64,11 +63,13 @@ chkconfig httpd on
 
 chkconfig mysqld on
 
+chkconfig sshd on
+
 perl -pi -e 's/SELINUX=enforcing/SELINUX=disabled/' /etc/selinux/config
 
 setenforce 0
 
-perl -pi -e 's/Listen 80/Listen 80\nListen 443\n\nTimeout 1200\nLimitRequestLine 100000\nLimitRequestFieldSize 100000/' /etc/httpd/conf/httpd.conf
+perl -pi -e 's/Listen 80/Listen 80\nListen 443\n\nTimeout 1200/' /etc/httpd/conf/httpd.conf
 
 mkdir /var/www/yaomiqui
 
@@ -81,6 +82,8 @@ mkdir /var/www/yaomiqui/certs
 mkdir /var/www/yaomiqui/logs
 
 perl -pi -e "s/SERVER_NAME/${COMMON_NAME}/g" yaomiqui_apache.conf
+
+perl -pi -e "s/\#LoadModule/LoadModule/" yaomiqui_apache.conf
 
 cat ./yaomiqui_apache.conf > /etc/httpd/conf.d/yaomiqui.conf
 

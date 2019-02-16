@@ -25,13 +25,13 @@ use strict;
 use CGI;
 use Tie::File;
 use FindBin qw($RealBin);
-use Log::Man;
 use lib $RealBin;
+use Log::Man;
 
 our(%input, %VAR, %MSG, %PRM, $username, $html, $header, $footer, $module, $module_file, $theme, $dbh, $encKey);
 require 'common.pl';
 %VAR = get_vars();
-$VAR{Version} = '1.1';
+$VAR{Version} = '1.2';
 $encKey = getEncKey();
 $username = get_session();
 $theme = get_theme();
@@ -106,7 +106,7 @@ sub common_header {
 	
 	<script type="text/javascript" src="js/xonomy.js"></script>
 	<script type="text/javascript" src="js/spec.js"></script>
-	<script type="text/javascript" src="js/loader.js"></script>
+	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 	<link rel="stylesheet" type="text/css" href="css/xonomy.css" />
 	
 	<link href="themes/$theme/css/style.css" rel="stylesheet">

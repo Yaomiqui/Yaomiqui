@@ -62,7 +62,7 @@ unless ( $input{submod} ) {
 			}
 		</script>
 		
-		<form method="get" action="index.cgi" target="_top">
+		<form method="POST" action="index.cgi" target="_top">
 		<input type="hidden" name="mod" value="settings">
 		<input type="hidden" name="submod" value="save_record">
 		<input type="hidden" name="idUser" value="$data[0]">
@@ -73,8 +73,8 @@ unless ( $input{submod} ) {
 		
 		<table cellpadding="0" cellspacing="0" class="form">
 		
-		<tr><td align="right" width="30%">$MSG{Password}: </td><td width="70%"><input type="password" name="pwd1" value="$data[2]" maxlength="16"></td></tr>
-		<tr><td align="right" width="30%">$MSG{Password_again}: </td><td width="70%"><input type="password" name="pwd2" value="$data[2]" maxlength="16"></td></tr>
+		<tr><td align="right" width="30%">$MSG{Password}: </td><td width="70%"><input type="password" name="pwd1" value="" maxlength="16" placeholder="****************"></td></tr>
+		<tr><td align="right" width="30%">$MSG{Password_again}: </td><td width="70%"><input type="password" name="pwd2" value="" maxlength="16" placeholder="****************"></td></tr>
 		<tr><td align="right" width="30%">$MSG{Name}: </td><td width="70%"><input type="text" name="name" value="$data[3]"></td></tr>
 		<tr><td align="right" width="30%">$MSG{Last_Name}: </td><td width="70%"><input type="text" name="lastName" value="$data[4]"></td></tr>
 		<tr><td align="right" width="30%">$MSG{Mothers_Last_Name}: </td><td width="70%"><input type="text" name="mothersLastName" value="$data[5]"></td></tr>
@@ -115,38 +115,70 @@ unless ( $input{submod} ) {
 if ( $input{submod} eq 'save_record' ) {
 	my $prepare;
 	
-	if ( $input{pwd1} and ($input{pwd1} eq $input{pwd2}) ) {
+	if ( $input{pwd1} eq $input{pwd2} ) {
 		# $prepare = "UPDATE users SET name=?, lastName=?, maidenName=?, idEmployee=?, email=?, secondaryEmail=?, phone=?, secondaryPhone=?, costCenterId=?, groupId=?, secondaryGroupId=?, theme=?, language=?, active=?, password=? WHERE idUser=?";
 		use Crypt::Babel;
 		my $crypt = new Babel;
 		my $pwdEnc = $crypt->encode($input{pwd1}, $encKey);
 		
 		connected();
-		my $sth = $dbh->prepare("UPDATE users SET 
-		password='$pwdEnc',
-		name='$input{name}',
-		lastName='$input{lastName}',
-		mothersLastName='$input{mothersLastName}',
-		email='$input{email}',
-		secondaryEmail='$input{secondaryEmail}',
-		phone='$input{phone}',
-		secondaryPhone='$input{secondaryPhone}',
 		
-		language='$input{language}'
-		WHERE idUser='$input{idUser}'");
-		$sth->execute();
-		$sth->finish;
-		$dbh->disconnect if $dbh;
-		#theme='$input{theme}',
+		my $sth1 = $dbh->prepare("SELECT username FROM users where username = '$username'");
+		$sth1->execute();
+		my ($userfromdb) = $sth1->fetchrow_array;
+		$sth1->finish;
 		
-		my $log = new Log::Man($VAR{log_dir}, $VAR{log_file}, $username);
-		$log->Log("UPDATE:MyAccount:name=$input{name};lastName=$input{lastName};mothersLastName=$input{mothersLastName};email=$input{email};secondaryEmail=$input{secondaryEmail};phone=$input{phone};secondaryPhone=$input{secondaryPhone};theme=$input{theme};language=$input{language}");
-		
-		print "Location: index.cgi?mod=settings\n\n";
-		
+		if ( $userfromdb eq $username ) {
+			
+			$input{name} =~ s/<|>|script|alert//gi;
+			$input{lastName} =~ s/<|>|script|alert//gi;
+			$input{mothersLastName} =~ s/<|>|script|alert//gi;
+			$input{email} =~ s/<|>|script|alert//gi;
+			$input{secondaryEmail} =~ s/<|>|script|alert//gi;
+			$input{phone} =~ s/<|>|script|alert//gi;
+			$input{secondaryPhone} =~ s/<|>|script|alert//gi;
+			
+			my $sth;
+			if ( $input{pwd1} ) {
+				$sth = $dbh->prepare("UPDATE users SET 
+				password='$pwdEnc',
+				name='$input{name}',
+				lastName='$input{lastName}',
+				mothersLastName='$input{mothersLastName}',
+				email='$input{email}',
+				secondaryEmail='$input{secondaryEmail}',
+				phone='$input{phone}',
+				secondaryPhone='$input{secondaryPhone}',
+				language='$input{language}'
+				WHERE idUser='$input{idUser}'");
+			} else {
+				$sth = $dbh->prepare("UPDATE users SET 
+				name='$input{name}',
+				lastName='$input{lastName}',
+				mothersLastName='$input{mothersLastName}',
+				email='$input{email}',
+				secondaryEmail='$input{secondaryEmail}',
+				phone='$input{phone}',
+				secondaryPhone='$input{secondaryPhone}',
+				language='$input{language}'
+				WHERE idUser='$input{idUser}'");
+			}
+			
+			$sth->execute();
+			$sth->finish;
+			$dbh->disconnect if $dbh;
+			#theme='$input{theme}',
+			
+			my $log = new Log::Man($VAR{log_dir}, $VAR{log_file}, $username);
+			$log->Log("UPDATE:MyAccount:name=$input{name};lastName=$input{lastName};mothersLastName=$input{mothersLastName};email=$input{email};secondaryEmail=$input{secondaryEmail};phone=$input{phone};secondaryPhone=$input{secondaryPhone};theme=$input{theme};language=$input{language}");
+			
+			print "Location: index.cgi?mod=settings\n\n";
+		} else {
+			print "Location: index.cgi\n\n";
+		}
 		
 	} else {
-		$html .= qq~<font color="#BB0000">Passwords does not match</font>~;
+		$html .= qq~<font color="#BB0000">Passwords does not match</font> &nbsp; &nbsp; <a href="javascript: window.history.back();">Go Back</a>~;
 	}
 }
 

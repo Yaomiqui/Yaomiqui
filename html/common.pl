@@ -297,7 +297,7 @@ sub login {
 				<input type="hidden" name="mod" value="login">
 				<table cellpadding="0" cellspacing="0" align="center" style="margin: auto;">
 					<tr><td align="left">$MSG{Username}</td></tr>
-					<tr><td align="left"><input type="text" name="user" value="$input{user}" class="LogIn" autofocus placeholder="Your username..."></td></tr>
+					<tr><td align="left"><input autocomplete="off" type="text" name="user" value="$input{user}" class="LogIn" autofocus placeholder="Your username..."></td></tr>
 					<tr><td align="left">&nbsp;</td></tr>
 					<tr><td align="left">$MSG{Password}</td></tr>
 					<tr><td align="left"><input type="password" name="pass" class="LogIn" placeholder="Your password..."></td></tr>
