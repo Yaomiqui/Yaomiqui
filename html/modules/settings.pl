@@ -123,7 +123,7 @@ if ( $input{submod} eq 'save_record' ) {
 		
 		connected();
 		
-		my $sth1 = $dbh->prepare("SELECT username FROM users where username = '$username'");
+		my $sth1 = $dbh->prepare("SELECT username FROM users where idUser = '$input{idUser}'");
 		$sth1->execute();
 		my ($userfromdb) = $sth1->fetchrow_array;
 		$sth1->finish;
@@ -174,7 +174,10 @@ if ( $input{submod} eq 'save_record' ) {
 			
 			print "Location: index.cgi?mod=settings\n\n";
 		} else {
-			print "Location: index.cgi\n\n";
+			my $log = new Log::Man($VAR{log_dir}, $VAR{log_file}, $username);
+			$log->Log("UPDATE:Account:idUser=$input{idUser};HACKING ATTEMPT! $username tried to modify the $input{idUser} idUser record.");
+			
+			$html .= qq~<font color="#BB0000">You cannot edit this record</font> &nbsp; &nbsp; <a href="javascript: window.history.back();">Go Back</a>~;
 		}
 		
 	} else {

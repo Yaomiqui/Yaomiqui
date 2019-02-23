@@ -30,110 +30,111 @@ if ( $input{submod} eq 'delete_record' ) {
 
 
 if ( $input{submod} eq 'save_record' ) {
-	my $prepare;
 	
-	# if ( $input{pwd1} ) {
-		if ( $input{pwd1} eq $input{pwd2} ) {
-			# $prepare = "UPDATE users SET name=?, lastName=?, maidenName=?, idEmployee=?, email=?, secondaryEmail=?, phone=?, secondaryPhone=?, costCenterId=?, groupId=?, secondaryGroupId=?, theme=?, language=?, active=?, password=? WHERE idUser=?";
-			use Crypt::Babel;
-			my $crypt = new Babel;
-			my $pwdEnc = $crypt->encode($input{pwd1}, $encKey);
-			
-			$input{costCenterId} = '0' unless $input{costCenterId};
-			$input{groupId} = '0' unless $input{groupId};
-			$input{secondaryGroupId} = '0' unless $input{secondaryGroupId};
-			
-			$input{name} =~ s/<|>|script|alert//gi;
-			$input{lastName} =~ s/<|>|script|alert//gi;
-			$input{mothersLastName} =~ s/<|>|script|alert//gi;
-			$input{email} =~ s/<|>|script|alert//gi;
-			$input{secondaryEmail} =~ s/<|>|script|alert//gi;
-			$input{phone} =~ s/<|>|script|alert//gi;
-			$input{secondaryPhone} =~ s/<|>|script|alert//gi;
-			$input{idEmployee} =~ s/<|>|script|alert//gi;
-			$input{costCenterId} =~ s/<|>|script|alert//gi;
-			$input{groupId} =~ s/<|>|script|alert//gi;
-			$input{secondaryGroupId} =~ s/<|>|script|alert//gi;
-			
-			connected();
-			
-			my $sth;
-			if ( $input{pwd1} ) {
-				$sth = $dbh->prepare("UPDATE users SET 
-				password='$pwdEnc',
-				name='$input{name}',
-				lastName='$input{lastName}',
-				mothersLastName='$input{mothersLastName}',
-				idEmployee='$input{idEmployee}',
-				email='$input{email}',
-				secondaryEmail='$input{secondaryEmail}',
-				phone='$input{phone}',
-				secondaryPhone='$input{secondaryPhone}',
-				costCenterId='$input{costCenterId}',
-				groupId='$input{groupId}',
-				secondaryGroupId='$input{secondaryGroupId}',
-				theme='classic_cloud',
-				language='$input{language}',
-				active='$input{active}' 
-				WHERE idUser='$input{idUser}'");
-			} else {
-				$sth = $dbh->prepare("UPDATE users SET 
-				name='$input{name}',
-				lastName='$input{lastName}',
-				mothersLastName='$input{mothersLastName}',
-				idEmployee='$input{idEmployee}',
-				email='$input{email}',
-				secondaryEmail='$input{secondaryEmail}',
-				phone='$input{phone}',
-				secondaryPhone='$input{secondaryPhone}',
-				costCenterId='$input{costCenterId}',
-				groupId='$input{groupId}',
-				secondaryGroupId='$input{secondaryGroupId}',
-				theme='classic_cloud',
-				language='$input{language}',
-				active='$input{active}' 
-				WHERE idUser='$input{idUser}'");
-			}
-			
-			$sth->execute();
-			$sth->finish;
-			
-			$input{design} = '0' unless $input{design};
-			$input{accounts} = '0' unless $input{accounts};
-			$input{accounts_edit} = '0' unless $input{accounts_edit};
-			$input{tickets} = '0' unless $input{tickets};
-			$input{tickets_form} = '0' unless $input{tickets_form};
-			$input{logs} = '0' unless $input{logs};
-			$input{charts} = '0' unless $input{charts};
-			$input{reports} = '0' unless $input{reports};
-			
-			my $sth1 = $dbh->prepare("UPDATE permissions SET 
-			design='$input{design}',
-			accounts='$input{accounts}',
-			accounts_edit='$input{accounts_edit}',
-			tickets='$input{tickets}',
-			tickets_form='$input{tickets_form}',
-			logs='$input{logs}',
-			charts='$input{charts}',
-			reports='$input{reports}'
+	if ( $username ne 'admin' and $input{idUser} eq '1' ) {
+		my $log = new Log::Man($VAR{log_dir}, $VAR{log_file}, $username);
+		$log->Log("UPDATE:Account:idUser=$input{idUser};HACKING ATTEMPT! $username tried to modify the admin user record!");
+		
+		$html .= qq~<font color="#BB0000">You cannot edit admin record</font> &nbsp; &nbsp; <a href="javascript: window.history.back();">Go Back</a>~;
+	}
+	elsif ( $input{pwd1} eq $input{pwd2} ) {
+		
+		use Crypt::Babel;
+		my $crypt = new Babel;
+		my $pwdEnc = $crypt->encode($input{pwd1}, $encKey);
+		
+		$input{costCenterId} = '0' unless $input{costCenterId};
+		$input{groupId} = '0' unless $input{groupId};
+		$input{secondaryGroupId} = '0' unless $input{secondaryGroupId};
+		
+		$input{name} =~ s/<|>|script|alert//gi;
+		$input{lastName} =~ s/<|>|script|alert//gi;
+		$input{mothersLastName} =~ s/<|>|script|alert//gi;
+		$input{email} =~ s/<|>|script|alert//gi;
+		$input{secondaryEmail} =~ s/<|>|script|alert//gi;
+		$input{phone} =~ s/<|>|script|alert//gi;
+		$input{secondaryPhone} =~ s/<|>|script|alert//gi;
+		$input{idEmployee} =~ s/<|>|script|alert//gi;
+		$input{costCenterId} =~ s/<|>|script|alert//gi;
+		$input{groupId} =~ s/<|>|script|alert//gi;
+		$input{secondaryGroupId} =~ s/<|>|script|alert//gi;
+		
+		connected();
+		
+		my $sth;
+		if ( $input{pwd1} ) {
+			$sth = $dbh->prepare("UPDATE users SET 
+			password='$pwdEnc',
+			name='$input{name}',
+			lastName='$input{lastName}',
+			mothersLastName='$input{mothersLastName}',
+			idEmployee='$input{idEmployee}',
+			email='$input{email}',
+			secondaryEmail='$input{secondaryEmail}',
+			phone='$input{phone}',
+			secondaryPhone='$input{secondaryPhone}',
+			costCenterId='$input{costCenterId}',
+			groupId='$input{groupId}',
+			secondaryGroupId='$input{secondaryGroupId}',
+			theme='classic_cloud',
+			language='$input{language}',
+			active='$input{active}' 
 			WHERE idUser='$input{idUser}'");
-			$sth1->execute();
-			$sth1->finish;
-			
-			$dbh->disconnect if $dbh;
-			
-			my $log = new Log::Man($VAR{log_dir}, $VAR{log_file}, $username);
-			$log->Log("UPDATE:Account:idUser=$input{idUser};name=$input{name};lastName=$input{lastName};mothersLastName=$input{mothersLastName};idEmployee=$input{idEmployee};email=$input{email};secondaryEmail=$input{secondaryEmail};phone=$input{phone};secondaryPhone=$input{secondaryPhone};costCenterId=$input{costCenterId};groupId=$input{groupId};secondaryGroupId=$input{secondaryGroupId};theme=$input{theme};language=$input{language};active=$input{active};lxcservers=$input{lxcservers};lxcservers_edit=$input{lxcservers_edit};provisioning=$input{provisioning};accounts=$input{accounts};accounts_edit=$input{accounts_edit};containers=$input{containers};containers_edit=$input{containers_edit};sectors=$input{sectors};migration=$input{migration};keypairs=$input{keypairs};distros=$input{distros}");
-			
-			print "Location: index.cgi?mod=accounts&idUser=$input{idUser}\n\n";
-			
-			
 		} else {
-			$html .= qq~<font color="#BB0000">$MSG{Passwords_does_not_match}</font>~;
+			$sth = $dbh->prepare("UPDATE users SET 
+			name='$input{name}',
+			lastName='$input{lastName}',
+			mothersLastName='$input{mothersLastName}',
+			idEmployee='$input{idEmployee}',
+			email='$input{email}',
+			secondaryEmail='$input{secondaryEmail}',
+			phone='$input{phone}',
+			secondaryPhone='$input{secondaryPhone}',
+			costCenterId='$input{costCenterId}',
+			groupId='$input{groupId}',
+			secondaryGroupId='$input{secondaryGroupId}',
+			theme='classic_cloud',
+			language='$input{language}',
+			active='$input{active}' 
+			WHERE idUser='$input{idUser}'");
 		}
-	# } else {
-		# $html .= qq~<font color="#BB0000">$MSG{Passwords_are_mandatory}</font>~;
-	# }
+		
+		$sth->execute();
+		$sth->finish;
+		
+		$input{design} = '0' unless $input{design};
+		$input{accounts} = '0' unless $input{accounts};
+		$input{accounts_edit} = '0' unless $input{accounts_edit};
+		$input{tickets} = '0' unless $input{tickets};
+		$input{tickets_form} = '0' unless $input{tickets_form};
+		$input{logs} = '0' unless $input{logs};
+		$input{charts} = '0' unless $input{charts};
+		$input{reports} = '0' unless $input{reports};
+		
+		my $sth1 = $dbh->prepare("UPDATE permissions SET 
+		design='$input{design}',
+		accounts='$input{accounts}',
+		accounts_edit='$input{accounts_edit}',
+		tickets='$input{tickets}',
+		tickets_form='$input{tickets_form}',
+		logs='$input{logs}',
+		charts='$input{charts}',
+		reports='$input{reports}'
+		WHERE idUser='$input{idUser}'");
+		$sth1->execute();
+		$sth1->finish;
+		
+		$dbh->disconnect if $dbh;
+		
+		my $log = new Log::Man($VAR{log_dir}, $VAR{log_file}, $username);
+		$log->Log("UPDATE:Account:idUser=$input{idUser};name=$input{name};lastName=$input{lastName};mothersLastName=$input{mothersLastName};idEmployee=$input{idEmployee};email=$input{email};secondaryEmail=$input{secondaryEmail};phone=$input{phone};secondaryPhone=$input{secondaryPhone};costCenterId=$input{costCenterId};groupId=$input{groupId};secondaryGroupId=$input{secondaryGroupId};theme=$input{theme};language=$input{language};active=$input{active};lxcservers=$input{lxcservers};lxcservers_edit=$input{lxcservers_edit};provisioning=$input{provisioning};accounts=$input{accounts};accounts_edit=$input{accounts_edit};containers=$input{containers};containers_edit=$input{containers_edit};sectors=$input{sectors};migration=$input{migration};keypairs=$input{keypairs};distros=$input{distros}");
+		
+		print "Location: index.cgi?mod=accounts&idUser=$input{idUser}\n\n";
+		
+		
+	} else {
+		$html .= qq~<font color="#BB0000">$MSG{Passwords_does_not_match}</font> &nbsp; &nbsp; <a href="javascript: window.history.back();">Go Back</a>~;
+	}
 }
 
 
@@ -247,7 +248,7 @@ if ( $input{submod} eq 'new_record' ) {
 }
 
 
-
+unless ( $input{submod} ) {
 	connected();
 	$sth = $dbh->prepare("SELECT * FROM users WHERE username NOT IN ('Guest', 'admin') ORDER BY username");
 	# $sth = $dbh->prepare("SELECT * FROM users ORDER BY username");
@@ -296,6 +297,7 @@ if ( $input{submod} eq 'new_record' ) {
 	</table>
 	<br /><br />
 	~;
+}
 
 return $html;
 1;
