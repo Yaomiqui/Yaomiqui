@@ -9,6 +9,14 @@ $html .= qq~<div class="contentTitle">$MSG{Overview}</div>~ unless $input{'shtl'
 # </div>
 # ~;
 
+connected();
+my $sth = $dbh->prepare("SELECT DISTINCT(typeTicket) FROM ticket");
+$sth->execute();
+my $STS = $sth->fetchall_arrayref;
+$sth->finish;
+$dbh->disconnect if ($dbh);
+
+
 my %MON = (
 	'01'	=> $MSG{January},
 	'02'	=> $MSG{February},
@@ -61,9 +69,25 @@ $html .= qq~
 			<option value="Rejected">Rejected</option>
 			<option value="Pending">Pending</option>
 			</select>
+			
+			<select name="typeTicket" onChange="this.form.submit();">
+			<option value="">$MSG{All_Types}</option>
 ~;
-$html .= qq~ &nbsp;  &nbsp;  &nbsp; 
-			$MSG{or_find_Ticket}: &nbsp;<input type="text" name="ftt" maxlength="100" style="width:100px" placeholder="$MSG{Type_a_ticket_Number}" > &nbsp;
+
+
+for my $i ( 0 .. $#{$STS} ) {
+	if ( $STS->[$i][0] eq $input{typeTicket} ) {
+		$html .= qq~<option value="$STS->[$i][0]" selected>$STS->[$i][0]</option>~;
+	} else {
+		$html .= qq~<option value="$STS->[$i][0]">$STS->[$i][0]</option>~;
+	}
+}
+
+
+$html .= qq~
+			</select>
+			&nbsp;  &nbsp;  &nbsp; 
+			$MSG{or_find_Ticket}: <input type="text" name="ftt" maxlength="100" style="width:100px" placeholder="$MSG{Type_a_ticket_Number}" > &nbsp;
 			<input class="blueLightButton" type="submit" value="$MSG{Search}">
 			</form>
 			~;

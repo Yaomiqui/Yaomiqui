@@ -66,8 +66,7 @@ $TTS[1] = $ticketNumber unless $TTS[1];
 
 my $jsonCode = $ARGV[2] ? $ARGV[2] : $TTS[10];
 $jsonCode =~ s/\\/\\\\/g;
-$jsonCode =~ s/\r//g;
-$jsonCode =~ s/\n//g;
+$jsonCode =~ s/\r?\n//g;
 
 # ## debug
 # print "JSONCODE:\n" . $jsonCode . "\n";
@@ -531,8 +530,8 @@ sub runDO {
 				if ( $DO->{DecodePWDtoVar}->{EncKey} and $DO->{DecodePWDtoVar}->{EncPasswd} ) {
 					use Babel;
 					my $crypt = new Babel;
-					$DO->{DecodePWDtoVar}->{name} = $crypt->decode($DO->{DecodePWDtoVar}->{EncPasswd}, $DO->{DecodePWDtoVar}->{EncKey});
-					mlog($TT, qq~Encrypted Password was decode using EncKey and assigned to variable~);
+					$VAR{ $DO->{DecodePWDtoVar}->{name} } = $crypt->decode($DO->{DecodePWDtoVar}->{EncPasswd}, $DO->{DecodePWDtoVar}->{EncKey});
+					mlog($TT, 'Encrypted Password was decode using EncKey and assigned to "${' . $DO->{DecodePWDtoVar}->{name} . '}" variable');
 				} else {
 					$VAR{Error} = 'Encrypted Password or EncKey is missing';
 					mlog($TT, qq~Error: Encrypted Password or EncKey is missing~);
@@ -633,7 +632,7 @@ sub runDO {
 				$JsonVars =~ s/\r/ /g;
 				$JsonVars =~ s/\n/ /g;
 				
-				$VAR{ $DO->{AUTOBOT}->{catchVarName} } = `$RealBin/yaomiqui.pl '$TT' '$DO->{AUTOBOT}->{idAutoBot}' '$JsonVars' 2>&1`;
+				$VAR{ $DO->{AUTOBOT}->{catchVarName} } = `$RealBin/yaomiqui.pl '$TT' '$DO->{AUTOBOT}->{idAutoBot}' '$JsonVars' 2>/dev/null`;
 				$VAR{ $DO->{AUTOBOT}->{catchVarName} } =~ s/^\n//g;
 				$VAR{ $DO->{AUTOBOT}->{catchVarName} } =~ s/\n$//g;
 				
@@ -1024,6 +1023,8 @@ sub forceDOarray {
 	$string =~ s/<\/JSONtoVar>/<\/JSONtoVar><\/DO>/g;
 	$string =~ s/<SetVar/<DO><SetVar/g;
 	$string =~ s/<\/SetVar>/<\/SetVar><\/DO>/g;
+	$string =~ s/<DecodePWDtoVar/<DO><DecodePWDtoVar/g;
+	$string =~ s/<\/DecodePWDtoVar>/<\/DecodePWDtoVar><\/DO>/g;
 	$string =~ s/<SplitVar /<DO><SplitVar /g;
 	$string =~ s/<FOREACH/<DO><FOREACH/g;
 	$string =~ s/<\/FOREACH>/<\/FOREACH><\/DO>/g;

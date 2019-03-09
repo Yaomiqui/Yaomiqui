@@ -33,8 +33,12 @@ if ( $input{submod} eq 'findTicket' ) {
 		if ( $input{state} ) {
 			 $finalState = qq~AND finalState = '$input{state}'~;
 		}
-		$sth = $dbh->prepare("SELECT numberTicket, Subject, idAutoBotCatched, initialDate, finalDate, finalState FROM ticket WHERE initialDate BETWEEN '$input{year}-$input{month}-01 00:00:00' AND '$input{year}-$input{month}-31 23:59:59' $finalState ORDER BY initialDate DESC LIMIT $queryLimit");
-		$sqlWhere = qq~initialDate BETWEEN '$input{year}-$input{month}-01 00:00:00' AND '$input{year}-$input{month}-31 23:59:59' $finalState~;
+		my $typeTicket = '';
+		if ( $input{typeTicket} ) {
+			 $typeTicket = qq~AND typeTicket = '$input{typeTicket}'~;
+		}
+		$sth = $dbh->prepare("SELECT numberTicket, Subject, idAutoBotCatched, initialDate, finalDate, finalState FROM ticket WHERE initialDate BETWEEN '$input{year}-$input{month}-01 00:00:00' AND '$input{year}-$input{month}-31 23:59:59' $finalState $typeTicket ORDER BY initialDate DESC LIMIT $queryLimit");
+		$sqlWhere = qq~initialDate BETWEEN '$input{year}-$input{month}-01 00:00:00' AND '$input{year}-$input{month}-31 23:59:59' $finalState $typeTicket~;
 		
 		# $html .= qq~<br>$ENV{QUERY_STRING}<br>~;
 		# $html .= qq~<br>SELECT COUNT(idTicket) FROM ticket WHERE $sqlWhere<br>~;
@@ -139,7 +143,7 @@ sub paginator {
 	} else {
 		$return .= qq~
 		<td style="padding-right: 10px">
-			<form><input class="blueLightButton" type="button" value=" << " onclick="window.location.href='launcher.cgi?mod=tickets&submod=findTicket&year=$input{year}&month=$input{month}&state=$input{state}&ftt=$input{ftt}&page=1&shtl=1'" /></form>
+			<form><input class="blueLightButton" type="button" value=" << " onclick="window.location.href='launcher.cgi?mod=tickets&submod=findTicket&year=$input{year}&month=$input{month}&state=$input{state}&typeTicket=$input{typeTicket}&ftt=$input{ftt}&page=1&shtl=1'" /></form>
 		</td>
 		~;
 	}
@@ -155,7 +159,7 @@ sub paginator {
 		my $beforePage = $page - 1;
 		$return .= qq~
 		<td style="padding-right: 10px">
-			<form><input class="blueLightButton" type="button" value=" $beforePage " onclick="window.location.href='launcher.cgi?mod=tickets&submod=findTicket&year=$input{year}&month=$input{month}&state=$input{state}&ftt=$input{ftt}&page=$beforePage&shtl=1'" /></form>
+			<form><input class="blueLightButton" type="button" value=" $beforePage " onclick="window.location.href='launcher.cgi?mod=tickets&submod=findTicket&year=$input{year}&month=$input{month}&state=$input{state}&typeTicket=$input{typeTicket}&ftt=$input{ftt}&page=$beforePage&shtl=1'" /></form>
 		</td>
 		~;
 	}
@@ -178,7 +182,7 @@ sub paginator {
 		my $afterPage = $page + 1;
 		$return .= qq~
 		<td style="padding-right: 10px">
-			<form><input class="blueLightButton" type="button" value=" $afterPage " onclick="window.location.href='launcher.cgi?mod=tickets&submod=findTicket&year=$input{year}&month=$input{month}&state=$input{state}&ftt=$input{ftt}&page=$afterPage&shtl=1'" /></form>
+			<form><input class="blueLightButton" type="button" value=" $afterPage " onclick="window.location.href='launcher.cgi?mod=tickets&submod=findTicket&year=$input{year}&month=$input{month}&state=$input{state}&typeTicket=$input{typeTicket}&ftt=$input{ftt}&page=$afterPage&shtl=1'" /></form>
 		</td>
 		~;
 	}
@@ -193,7 +197,7 @@ sub paginator {
 	} else {
 		$return .= qq~
 		<td style="padding-right: 10px">
-			<form><input class="blueLightButton" type="button" value=" >> " onclick="window.location.href='launcher.cgi?mod=tickets&submod=findTicket&year=$input{year}&month=$input{month}&state=$input{state}&ftt=$input{ftt}&page=$totPages&shtl=1'" /></form>
+			<form><input class="blueLightButton" type="button" value=" >> " onclick="window.location.href='launcher.cgi?mod=tickets&submod=findTicket&year=$input{year}&month=$input{month}&state=$input{state}&typeTicket=$input{typeTicket}&ftt=$input{ftt}&page=$totPages&shtl=1'" /></form>
 		</td>
 		~;
 	}

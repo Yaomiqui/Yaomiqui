@@ -532,7 +532,7 @@ if ( $input{submod} eq 'cryptPasswd' ) {
 return $html;
 
 sub generateRandomKey {
-	my @chars = ('a'..'z','A'..'Z',0..9);
+	my @chars = ('a'..'z',0..9,'A'..'Z',0..9);
 	my $long = shift;
 	my $key;
 	for ( 1 .. $long ) {
