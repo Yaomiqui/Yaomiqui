@@ -254,7 +254,7 @@ sub runLOGING {
 	my ($comment, $TT) = @_;
 	$comment = replaceSpecChar($comment);
 	
-	# print $comment . "\n";
+	# print $comment."\n" if $TT eq 'NDF00000001';
 	
 	mlog($TT, qq~NOTE: [$comment]~);
 }
@@ -614,7 +614,7 @@ sub runDO {
 				mlog($TT, qq~Starting to execute FOREACH_NUMBER~);
 				
 				foreach my $i ( $DO->{FOREACH_NUMBER}->{initRange} .. $DO->{FOREACH_NUMBER}->{endRange} ) {
-					$VAR{i} = $i;
+					$VAR{n} = $i;
 					
 					# ## debug
 					# print $VAR{i}, "\n";

@@ -253,7 +253,7 @@ var specifications={
 				{
 					caption: "Append a <FOREACH_NUMBER>",
 					action: Xonomy.newElementChild,
-					actionParameter: "<FOREACH_NUMBER element=\"i\" initRange=\"\" endRange=\"\"><DO/></FOREACH_NUMBER>"
+					actionParameter: "<FOREACH_NUMBER element=\"n\" initRange=\"\" endRange=\"\"><DO/></FOREACH_NUMBER>"
 				},
 				{
 					caption: "Append a <AUTOBOT>",

@@ -27,7 +27,7 @@ use lib $RealBin;
 ####	THIS IS A TEMPLATE
 ####	HERE YOU CAN PUT HERE THE CODE FOR CONNECTOR TO YOUR SERVER OR TICKET SYSTEM MANAGEMENT
 
-my $results = `curl -k -H "Content-Type: application/json" -X PUT -d \@$RealBin/ticketForm.json --url "https://127.0.0.1/generic-api.cgi/insertTicket/"`;
+my $results = `curl -k -H "Content-Type: application/json" -X PUT -d \@$RealBin/ticketForm.json --url "https://127.0.0.1/yaomiqui/generic-api.cgi/insertTicket/"`;
 
 print $results;
 

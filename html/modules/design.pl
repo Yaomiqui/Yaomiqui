@@ -546,7 +546,6 @@ sub sysdate {
 	$fecha[5] += 1900;
 	$fecha[4] ++;
 	@fecha = map { if ($_ < 10) { $_ = "0$_"; }else{ $_ } } @fecha;
-						#year	mon		 mday		hour	min		sec
 	return my $sysdate = "$fecha[5]-$fecha[4]-$fecha[3] $fecha[2]:$fecha[1]:$fecha[0]";
 }
 
