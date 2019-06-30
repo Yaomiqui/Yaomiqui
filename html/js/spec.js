@@ -248,12 +248,12 @@ var specifications={
 				{
 					caption: "Append a <FOREACH>",
 					action: Xonomy.newElementChild,
-					actionParameter: "<FOREACH element=\"i\" arrayName=\"\"><DO/></FOREACH>"
+					actionParameter: "<FOREACH element=\"i\" arrayName=\"\" lastIfi=\"\"><DO/></FOREACH>"
 				},
 				{
 					caption: "Append a <FOREACH_NUMBER>",
 					action: Xonomy.newElementChild,
-					actionParameter: "<FOREACH_NUMBER element=\"n\" initRange=\"\" endRange=\"\"><DO/></FOREACH_NUMBER>"
+					actionParameter: "<FOREACH_NUMBER element=\"n\" initRange=\"\" endRange=\"\" lastIfn=\"\"><DO/></FOREACH_NUMBER>"
 				},
 				{
 					caption: "Append a <AUTOBOT>",
@@ -311,7 +311,7 @@ var specifications={
 					action: Xonomy.deleteElement
 				},
 			],
-			canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "FOREACH_NUMBER", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand", "IntegerArray", "Sleep"]
+			canDropTo: ["AUTO", "JSONtoVar", "IF", "DO", "VAR", "FOREACH", "FOREACH_NUMBER", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand", "IntegerArray", "Sleep"]
 			// attributes: {
 				// "id": {
 					// asker: Xonomy.askString,
@@ -653,6 +653,9 @@ var specifications={
 				"arrayName": {
 					asker: Xonomy.askString,
 				},
+				"lastIfi": {
+					asker: Xonomy.askString,
+				},
 				"element": {
 					isReadOnly: true
 				},
@@ -688,6 +691,9 @@ var specifications={
 					asker: Xonomy.askString,
 				},
 				"endRange": {
+					asker: Xonomy.askString,
+				},
+				"lastIfn": {
 					asker: Xonomy.askString,
 				},
 			}

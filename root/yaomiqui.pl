@@ -433,6 +433,9 @@ sub runDO {
 					my $linuxpasswd = replaceSpecChar($DO->{execRemoteLinuxCommand}->{passwd});
 					
 					if ( $DO->{execRemoteLinuxCommand}->{EncKey} and $DO->{execRemoteLinuxCommand}->{EncPasswd} ) {
+						$DO->{execRemoteLinuxCommand}->{EncKey} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{EncKey});
+						$DO->{execRemoteLinuxCommand}->{EncPasswd} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{EncPasswd});
+
 						use Babel;
 						my $crypt = new Babel;
 						$linuxpasswd = $crypt->decode($DO->{execRemoteLinuxCommand}->{EncPasswd}, $DO->{execRemoteLinuxCommand}->{EncKey});
@@ -484,7 +487,7 @@ sub runDO {
 			if ( $DO->{execRemoteWindowsCommand} ) {
 				$VAR{Error} = '';
 				my $remoteWindowsCommand = replaceSpecChar($DO->{execRemoteWindowsCommand}->{command});
-				$remoteWindowsCommand =~ s/\'/\\\'/g;
+				# $remoteWindowsCommand =~ s/\'/\\\'/g;
 				$remoteWindowsCommand =~ s/\r//g;
 				$remoteWindowsCommand =~ s/\n//g;
 				
@@ -492,6 +495,9 @@ sub runDO {
 				$DO->{execRemoteWindowsCommand}->{remoteHost} = replaceSpecChar($DO->{execRemoteWindowsCommand}->{remoteHost});
 				my $winpasswd = replaceSpecChar($DO->{execRemoteWindowsCommand}->{passwd});
 				$DO->{execRemoteWindowsCommand}->{remoteDomain} = replaceSpecChar($DO->{execRemoteWindowsCommand}->{domain});
+
+				$DO->{execRemoteWindowsCommand}->{EncPasswd} = replaceSpecChar($DO->{execRemoteWindowsCommand}->{EncPasswd});
+				$DO->{execRemoteWindowsCommand}->{EncKey} = replaceSpecChar($DO->{execRemoteWindowsCommand}->{EncKey});
 				
 				if ( $DO->{execRemoteWindowsCommand}->{EncKey} and $DO->{execRemoteWindowsCommand}->{EncPasswd} ) {
 					use Babel;
@@ -528,6 +534,9 @@ sub runDO {
 			if ( $DO->{DecodePWDtoVar} ) {
 				$VAR{Error} = '';
 				if ( $DO->{DecodePWDtoVar}->{EncKey} and $DO->{DecodePWDtoVar}->{EncPasswd} ) {
+					$DO->{DecodePWDtoVar}->{EncKey} = replaceSpecChar($DO->{DecodePWDtoVar}->{EncKey});
+					$DO->{DecodePWDtoVar}->{EncPasswd} = replaceSpecChar($DO->{DecodePWDtoVar}->{EncPasswd});
+					
 					use Babel;
 					my $crypt = new Babel;
 					$VAR{ $DO->{DecodePWDtoVar}->{name} } = $crypt->decode($DO->{DecodePWDtoVar}->{EncPasswd}, $DO->{DecodePWDtoVar}->{EncKey});
@@ -604,6 +613,9 @@ sub runDO {
 					# print $VAR{i}, "\n";
 					
 					runDO($DO->{FOREACH}->{DO}, $TT);
+					if ( $DO->{FOREACH}->{lastIfi} ) {
+						last if $VAR{i} =~ /$DO->{FOREACH}->{lastIfi}/;
+					}
 				}
 				
 				mlog($TT, qq~FOREACH executed. Results: [Ok]~);
@@ -617,9 +629,12 @@ sub runDO {
 					$VAR{n} = $i;
 					
 					# ## debug
-					# print $VAR{i}, "\n";
+					# print $VAR{n}, "\n";
 					
 					runDO($DO->{FOREACH_NUMBER}->{DO}, $TT);
+					if ( $DO->{FOREACH_NUMBER}->{lastIfn} ) {
+						last if $VAR{n} =~ /$DO->{FOREACH_NUMBER}->{lastIfn}/;
+					}
 				}
 				
 				mlog($TT, qq~FOREACH_NUMBER executed. Results: [Ok]~);

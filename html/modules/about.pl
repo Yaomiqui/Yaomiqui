@@ -10,7 +10,7 @@ unless ( $input{submod} ) {
 	<br/>
 	<font style="font-size: 180%">Yaomiqui</font>
 	<br/>
-	Automation Tool for repetitive tasks
+	<font style="font-size: 120%">Automation Platform for Business Repetitive Tasks</font>
 	<br/>
 	$MSG{Version}: <a href="https://github.com/Yaomiqui/Yaomiqui/releases/latest" target="_blank">$VAR{Version}</a>
 	<br/>

@@ -28,6 +28,7 @@ sub header {
 	<script type="text/javascript">if (top != self) top.location.href = location.href;</script>
 	<script type="text/javascript" src="js/miquiloniToolTip.js"></script>
 	<script type="text/javascript" src="js/jquery-1.10.2.min.js"></script>
+	<script type="text/javascript" src="js/sorTable.js"></script>
 	</head>
 <body>
 	~;
@@ -121,7 +122,7 @@ sub header {
 		<li class="leftnavbar" style="opacity: 0.25; filter: alpha(opacity=25)">
 		<p align="center" style="font-size: 110%; font-weight: bold; color: #000;">
 		<img src="themes/$theme/images/YaomiquiLogoTransparent.png" style="padding-top:80px;"><br/>YAOMIQUI</p>
-		<p align="center" style="font-size: 100%; color: #000;">RPA Orchestrator</p>
+		<p align="center" style="font-size: 100%; color: #000;">Automation Platform</p>
 		</li>
 		~;
 		$header .= qq~

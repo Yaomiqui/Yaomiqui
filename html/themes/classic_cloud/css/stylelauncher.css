@@ -703,8 +703,48 @@ a:hover {
 }
 
 
-table.gridTable {
+table.sortable {
+	border-top: 1px solid #AFAFAF;
+	overflow: auto;
 	border-top: 1px solid #DCDCDC;
+	border-collapse: collapse;
+    border-spacing: 0;
+}
+
+table.sortable thead tr  .order-asc {
+    background-image: url("../../../images/asc.png");
+}
+
+table.sortable thead tr .order-desc {
+    background-image: url("../../../images/desc.png");
+}
+
+table.sortable thead tr th {
+    background-repeat: no-repeat;
+    background-position: center right;
+    cursor: pointer;
+    background-image: url("../../../images/bg.png");
+    border-bottom: 1px solid #DCDCDC;
+}
+
+th {
+    border-bottom: 1px solid #E5E5E5;
+    padding: 4px 18px 4px 6px;
+    height: 30px;
+    margin: 0px;
+	font-family: verdana, sans, sans-serif, helvetica;
+	font-weight: bold;
+	font-size: 105%;
+	color: #4D4D4D;
+	text-align: left;
+}
+
+
+
+
+table.gridTable {
+	border-top: 1px solid #AFAFAF;
+	overflow: auto;
 }
 
 td.gridTitle {

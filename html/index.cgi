@@ -31,7 +31,7 @@ use Log::Man;
 our(%input, %VAR, %MSG, %PRM, $username, $html, $header, $footer, $module, $module_file, $theme, $dbh, $encKey);
 require 'common.pl';
 %VAR = get_vars();
-$VAR{Version} = '1.3';
+$VAR{Version} = '1.4';
 $encKey = getEncKey();
 $username = get_session();
 $theme = get_theme();
@@ -98,9 +98,9 @@ sub common_header {
 	my $header = qq~<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-	<title>YAOMIQUI :: RPA Orchestrator :: Automation tool for repetitive tasks</title>
+	<title>YAOMIQUI :: Automation Platform for Business Repetitive Tasks</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<meta name="keywords" content="automation,tasks,repetitive" />
+	<meta name="keywords" content="automation,tasks,repetitive,rpa" />
 	<meta name="description" content="Automation for repetitive task" />
 	<link rel="icon" type="image/png" href="images/favicon.ico" />
 	

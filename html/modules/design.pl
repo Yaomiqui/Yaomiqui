@@ -22,15 +22,27 @@ unless ( $input{submod} ) {
 	my $autoBot = $sth1->fetchall_arrayref;
 	$sth1->finish;
 	
+	# $html .= qq~
+	# <table cellpadding="0" cellspacing="0" class="gridTable" style="background-color: #FFFFFF;">
+	# <tr>
+	# <td class="gridTitle">$MSG{Name}</td>
+	# <td class="gridTitle">$MSG{Description}</td>
+	# <td class="gridTitle">$MSG{Deployed_Date}</td>
+	# <td class="gridTitle">$MSG{Deployed_by}</td>
+	# <td class="gridTitle">$MSG{Active}</td>
+	# </tr>
+	# ~;
 	$html .= qq~
-	<table cellpadding="0" cellspacing="0" class="gridTable" style="background-color: #FFFFFF;">
-	<tr>
-	<td class="gridTitle">$MSG{Name}</td>
-	<td class="gridTitle">$MSG{Description}</td>
-	<td class="gridTitle">$MSG{Deployed_Date}</td>
-	<td class="gridTitle">$MSG{Deployed_by}</td>
-	<td class="gridTitle">$MSG{Active}</td>
-	</tr>
+	<table cellpadding="0" cellspacing="0" class="sortable">
+	<thead>
+		<tr style="background-color: #E5E5E5; border-bottom: #4D4D4D">
+		<th>$MSG{Name}</th>
+		<th>$MSG{Description}</th>
+		<th>$MSG{Deployed_Date}</th>
+		<th>$MSG{Deployed_by}</th>
+		<th>$MSG{Active}</th>
+		</tr>
+	</thead>
 	~;
 	
 	if ( $autoBot ) {
@@ -40,12 +52,19 @@ unless ( $input{submod} ) {
 			my ($userDeploy) = $sth->fetchrow_array;
 			$sth->finish;
 			
-			my $active = '<font color="#4D4D4D">No</font>';
+			my $active = '<font color="#A52A2A">No</font>';	#4D4D4D
 			if ( $autoBot->[$i][5] eq '1' ) {
 				$active = qq~<font color="#008000">$MSG{Active}</font>~;
 			}
+			# $html .= qq~<tr class="gridRowContent">
+			# <td class="gridContent" style="overflow: hidden; text-overflow: ellipsis"><a href="index.cgi?mod=design&submod=edit_autobot&autoBotId=$autoBot->[$i][0]">$autoBot->[$i][1]</a></td>
+			# <td class="gridContent" style="overflow: hidden; text-overflow: ellipsis">$autoBot->[$i][2]</td>
+			# <td class="gridContent">$autoBot->[$i][3]</td>
+			# <td class="gridContent">$userDeploy</td>
+			# <td class="gridContent">$active</td>
+			# </tr>~;
 			$html .= qq~<tr class="gridRowContent">
-			<td class="gridContent" style="overflow: hidden; text-overflow: ellipsis"><a href="index.cgi?mod=design&submod=edit_autobot&autoBotId=$autoBot->[$i][0]">$autoBot->[$i][1]</a></td>
+			<th style="overflow: hidden; text-overflow: ellipsis"><a href="index.cgi?mod=design&submod=edit_autobot&autoBotId=$autoBot->[$i][0]">$autoBot->[$i][1]</a></th>
 			<td class="gridContent" style="overflow: hidden; text-overflow: ellipsis">$autoBot->[$i][2]</td>
 			<td class="gridContent">$autoBot->[$i][3]</td>
 			<td class="gridContent">$userDeploy</td>
