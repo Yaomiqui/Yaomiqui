@@ -64,7 +64,7 @@ unless ( $input{submod} ) {
 			# <td class="gridContent">$active</td>
 			# </tr>~;
 			$html .= qq~<tr class="gridRowContent">
-			<th style="overflow: hidden; text-overflow: ellipsis"><a href="index.cgi?mod=design&submod=edit_autobot&autoBotId=$autoBot->[$i][0]">$autoBot->[$i][1]</a></th>
+			<td class="gridContent" style="overflow: hidden; text-overflow: ellipsis"><a href="index.cgi?mod=design&submod=edit_autobot&autoBotId=$autoBot->[$i][0]">$autoBot->[$i][1]</a></th>
 			<td class="gridContent" style="overflow: hidden; text-overflow: ellipsis">$autoBot->[$i][2]</td>
 			<td class="gridContent">$autoBot->[$i][3]</td>
 			<td class="gridContent">$userDeploy</td>
@@ -74,7 +74,7 @@ unless ( $input{submod} ) {
 	}
 	
 	$dbh->disconnect if ($dbh);
-	$html .= qq~</table>~;
+	$html .= qq~</table><br>~;
 }
 
 

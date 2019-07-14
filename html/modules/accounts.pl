@@ -267,16 +267,32 @@ unless ( $input{submod} ) {
 	# <p align="right" style="padding: 0 50px 8px 0;">
 	# <button class="blueLightButton" onclick="javascript:popUpUserEdition('launcher.cgi?mod=accounts_edit&idUser=&shtl=1')">$MSG{New_user}</button>
 	# </p>
+	
+	
+	
+	# $html .= qq~
+	# <table cellpadding="0" cellspacing="0" border="0" width="100%" class="gridTable" style="width: 100%; background-color: #FFFFFF">
+		# <tr>
+			# <td class="gridTitle">$MSG{User_Name}</td>
+			# <td class="gridTitle">$MSG{Name}</td>
+			# <td class="gridTitle">$MSG{Last_Name}</td>
+			# <td class="gridTitle">$MSG{Mothers_Last_Name}</td>
+			# <td class="gridTitle">$MSG{Email}</td>
+			# <td class="gridTitle">$MSG{Active}</td>
+		# </tr>
+	# ~;
 	$html .= qq~
-	<table cellpadding="0" cellspacing="0" border="0" width="100%" class="gridTable" style="width: 100%; background-color: #FFFFFF">
-		<tr>
-			<td class="gridTitle">$MSG{User_Name}</td>
-			<td class="gridTitle">$MSG{Name}</td>
-			<td class="gridTitle">$MSG{Last_Name}</td>
-			<td class="gridTitle">$MSG{Mothers_Last_Name}</td>
-			<td class="gridTitle">$MSG{Email}</td>
-			<td class="gridTitle">$MSG{Active}</td>
-		</tr>
+	<table cellpadding="0" cellspacing="0" border="0" class="sortable">
+		<thead>
+			<tr>
+			<th>$MSG{User_Name}</th>
+			<th>$MSG{Name}</th>
+			<th>$MSG{Last_Name}</th>
+			<th>$MSG{Mothers_Last_Name}</th>
+			<th>$MSG{Email}</th>
+			<th>$MSG{Active}</th>
+			</tr>
+		</thead>
 	~;
 
 	for my $i ( 0 .. $#{$users} ) {
