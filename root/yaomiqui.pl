@@ -353,7 +353,7 @@ sub runDO {
 				$VAR{Error} = '';
 				
 				my $linuxCommand = replaceSpecChar($DO->{execLinuxCommand}->{command});
-				# $linuxCommand =~ s/\\/\\\\/g;
+				$linuxCommand =~ s/\r?\n//g;
 				
 				my $linerrfile = '/tmp/' . $TT . '.err';
 				
@@ -413,7 +413,7 @@ sub runDO {
 					$VAR{Error} =~ s/\n$//g;
 					
 					$remoteLinuxCommand = replaceSpecChar($DO->{execRemoteLinuxCommand}->{command});
-					# $remoteLinuxCommand =~ s/'/'\\''/g;
+					$remoteLinuxCommand =~ s/'/'\\''/g;
 					$remoteLinuxCommand =~ s/\r?\n//g;
 					
 					unless ( $ssh->error ) {
@@ -467,7 +467,7 @@ sub runDO {
 					$VAR{Error} =~ s/\n$//g;
 					
 					$remoteLinuxCommand = replaceSpecChar($DO->{execRemoteLinuxCommand}->{command});
-					# $remoteLinuxCommand =~ s/'/'\\''/g;
+					$remoteLinuxCommand =~ s/'/'\\''/g;
 					$remoteLinuxCommand =~ s/\r?\n//g;
 					
 					unless ( $VAR{Error} ) {
@@ -487,7 +487,7 @@ sub runDO {
 			if ( $DO->{execRemoteWindowsCommand} ) {
 				$VAR{Error} = '';
 				my $remoteWindowsCommand = replaceSpecChar($DO->{execRemoteWindowsCommand}->{command});
-				# $remoteWindowsCommand =~ s/\'/\\\'/g;
+				$remoteWindowsCommand =~ s/'/'\\''/g;
 				$remoteWindowsCommand =~ s/\r//g;
 				$remoteWindowsCommand =~ s/\n//g;
 				
@@ -606,7 +606,7 @@ sub runDO {
 				mlog($TT, qq~Starting to execute FOREACH~);
 				
 				$DO->{FOREACH}->{arrayName} =~ s/\$|\{|\}|\s//g;
-				foreach my $i ( @{ $VAR{ $DO->{FOREACH}->{arrayName} } } ) {
+				FOREACH_LOOP: foreach my $i ( @{ $VAR{ $DO->{FOREACH}->{arrayName} } } ) {
 					$VAR{i} = $i;
 					
 					# ## debug
@@ -614,9 +614,13 @@ sub runDO {
 					
 					runDO($DO->{FOREACH}->{DO}, $TT);
 					if ( $DO->{FOREACH}->{lastIfi} ) {
-						last if $VAR{i} =~ /$DO->{FOREACH}->{lastIfi}/;
+						if ( $VAR{i} eq $DO->{FOREACH}->{lastIfi} ) {
+							mlog($TT, qq~Coming out of the loop: \${i} eq $DO->{FOREACH}->{lastIfi}~);
+							last FOREACH_LOOP;
+						}
 					}
 				}
+				$VAR{i} = '';
 				
 				mlog($TT, qq~FOREACH executed. Results: [Ok]~);
 			}
@@ -625,7 +629,7 @@ sub runDO {
 			if ( $DO->{FOREACH_NUMBER} ) {
 				mlog($TT, qq~Starting to execute FOREACH_NUMBER~);
 				
-				foreach my $i ( $DO->{FOREACH_NUMBER}->{initRange} .. $DO->{FOREACH_NUMBER}->{endRange} ) {
+				FOREACH_LOOP: foreach my $i ( $DO->{FOREACH_NUMBER}->{initRange} .. $DO->{FOREACH_NUMBER}->{endRange} ) {
 					$VAR{n} = $i;
 					
 					# ## debug
@@ -633,9 +637,13 @@ sub runDO {
 					
 					runDO($DO->{FOREACH_NUMBER}->{DO}, $TT);
 					if ( $DO->{FOREACH_NUMBER}->{lastIfn} ) {
-						last if $VAR{n} =~ /$DO->{FOREACH_NUMBER}->{lastIfn}/;
+						if ( $VAR{n} eq $DO->{FOREACH_NUMBER}->{lastIfn} ) {
+							mlog($TT, qq~Coming out of the loop: \${n} eq $DO->{FOREACH_NUMBER}->{lastIfn}~);
+							last FOREACH_LOOP;
+						}
 					}
 				}
+				$VAR{n} = '';
 				
 				mlog($TT, qq~FOREACH_NUMBER executed. Results: [Ok]~);
 			}
