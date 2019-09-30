@@ -118,6 +118,7 @@ if ( $input{idUser} ) {
 		my $chk_logs = $PRM[10] ? 'checked' : '';
 		my $chk_charts = $PRM[11] == 1 ? 'checked' : '';
 		my $chk_reports = $PRM[12] ? 'checked' : '';
+		my $chk_config = $PRM[14] ? 'checked' : '';
 		
 		$html .= qq~
 		<tr><td align="right" width="30%"><br />$MSG{PERMISIONS}:<br /><br /></td><td width="70%">&nbsp;</td></tr>
@@ -129,6 +130,7 @@ if ( $input{idUser} ) {
 		<tr><td align="right" width="30%">$MSG{Logs}: </td><td width="70%"><input type="checkbox" name="logs" style="margin: 6px 4px;" value="1" $chk_logs></td></tr>
 		<tr><td align="right" width="30%">$MSG{Charts}: </td><td width="70%"><input type="checkbox" name="charts" style="margin: 6px 4px;" value="1" $chk_charts></td></tr>
 		<tr><td align="right" width="30%">$MSG{Reports}: </td><td width="70%"><input type="checkbox" name="reports" style="margin: 6px 4px;" value="1" $chk_reports></td></tr>
+		<tr><td align="right" width="30%">$MSG{Config}: </td><td width="70%"><input type="checkbox" name="config" style="margin: 6px 4px;" value="1" $chk_config></td></tr>
 		
 		</table>
 		
@@ -226,14 +228,15 @@ if ( $input{idUser} ) {
 		</td></tr>
 		
 		<tr><td align="right" width="30%"><br />$MSG{PERMISIONS}:<br /><br /></td><td width="70%">&nbsp;</td></tr>
-		<tr><td align="right" width="30%">$MSG{Design}: </td><td width="70%"><input type="checkbox" name="design" style="margin: 6px 4px;" value="1" checked></td></tr>
-		<tr><td align="right" width="30%">$MSG{Accounts}: </td><td width="70%"><input type="checkbox" name="accounts" style="margin: 6px 4px;" value="1" checked></td></tr>
-		<tr><td align="right" width="30%">$MSG{Accounts_Edition}: </td><td width="70%"><input type="checkbox" name="accounts_edit" style="margin: 6px 4px;" value="1" checked></td></tr>
+		<tr><td align="right" width="30%">$MSG{Design}: </td><td width="70%"><input type="checkbox" name="design" style="margin: 6px 4px;" value="1"></td></tr>
+		<tr><td align="right" width="30%">$MSG{Accounts}: </td><td width="70%"><input type="checkbox" name="accounts" style="margin: 6px 4px;" value="1"></td></tr>
+		<tr><td align="right" width="30%">$MSG{Accounts_Edition}: </td><td width="70%"><input type="checkbox" name="accounts_edit" style="margin: 6px 4px;" value="1"></td></tr>
 		<tr><td align="right" width="30%">$MSG{Tickets}: </td><td width="70%"><input type="checkbox" name="tickets" style="margin: 6px 4px;" value="1" checked></td></tr>
 		<tr><td align="right" width="30%">$MSG{Tickets_Form}: </td><td width="70%"><input type="checkbox" name="tickets_form" style="margin: 6px 4px;" value="1" checked></td></tr>
 		<tr><td align="right" width="30%">$MSG{Logs}: </td><td width="70%"><input type="checkbox" name="logs" style="margin: 6px 4px;" value="1" checked></td></tr>
-		<tr><td align="right" width="30%">$MSG{Charts}: </td><td width="70%"><input type="checkbox" name="charts" style="margin: 6px 4px;" value="1"></td></tr>
-		<tr><td align="right" width="30%">$MSG{Reports}: </td><td width="70%"><input type="checkbox" name="reports" style="margin: 6px 4px;" value="1"></td></tr>
+		<tr><td align="right" width="30%">$MSG{Charts}: </td><td width="70%"><input type="checkbox" name="charts" style="margin: 6px 4px;" value="1" checked></td></tr>
+		<tr><td align="right" width="30%">$MSG{Reports}: </td><td width="70%"><input type="checkbox" name="reports" style="margin: 6px 4px;" value="1" checked></td></tr>
+		<tr><td align="right" width="30%">$MSG{Config}: </td><td width="70%"><input type="checkbox" name="config" style="margin: 6px 4px;" value="1"></td></tr>
 		
 		</table>
 		

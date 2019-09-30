@@ -30,11 +30,14 @@ use Data::Dumper;
 use FindBin qw($RealBin);
 use lib $RealBin;
 
-our ($ticketNumber, $dbh, %VAR, $jsonCode, $AutoBot);
-our %VENV = get_vars();
+our ($ticketNumber, $dbh, %VAR, %VENV, $jsonCode, $AutoBot);
+# our ($ticketNumber, $dbh, $jsonCode, $AutoBot);
+%VENV = get_vars();
+%VAR = get_add_env_vars();
 
 $VAR{TIMEOUT} = $VENV{TIMEOUT};
 $VAR{SSH_TIMEOUT} = $VENV{SSH_TIMEOUT};
+$VAR{ENVIRONMENT} = $VENV{ENVIRONMENT};
 
 if ( $ARGV[0] ) {
 	$ticketNumber = $ARGV[0];
@@ -123,6 +126,7 @@ if ( $json ) {
 			ContentKey => '-content' 
 		)};
 		unless ( $aBot ) {
+			# engineLog(qq~ERROR :: $ticketNumber : $@ : Not Valid XML for AutoBot when trying to parser the string '$AB->[$i][6]'. Trying with next AutoBot~);
 			engineLog(qq~ERROR :: $ticketNumber : Not Valid XML for AutoBot when trying to parser the string '$AB->[$i][6]'. Trying with next AutoBot~);
 			next;
 		};
@@ -134,7 +138,7 @@ if ( $json ) {
 		
 		foreach my $i ( 0 .. $#{$aBot->{ON}->{VAR}} ) {
 			
-			## debug
+			# ## debug
 			# print Dumper($aBot->{ON}->{VAR}->[$i]) . "\n";
 			
 			my $name = $aBot->{ON}->{VAR}->[$i]->{name}; # to be frienldy next line
@@ -353,6 +357,7 @@ sub runDO {
 				$VAR{Error} = '';
 				
 				my $linuxCommand = replaceSpecChar($DO->{execLinuxCommand}->{command});
+				# $linuxCommand =~ s/'/'\\''/g;
 				$linuxCommand =~ s/\r?\n//g;
 				
 				my $linerrfile = '/tmp/' . $TT . '.err';
@@ -490,6 +495,9 @@ sub runDO {
 				$remoteWindowsCommand =~ s/'/'\\''/g;
 				$remoteWindowsCommand =~ s/\r//g;
 				$remoteWindowsCommand =~ s/\n//g;
+				
+				$remoteWindowsCommand =~ s/\\"/"/g;
+				$remoteWindowsCommand =~ s/"/\\"/g;
 				
 				$DO->{execRemoteWindowsCommand}->{remoteUser} = replaceSpecChar($DO->{execRemoteWindowsCommand}->{remoteUser});
 				$DO->{execRemoteWindowsCommand}->{remoteHost} = replaceSpecChar($DO->{execRemoteWindowsCommand}->{remoteHost});
@@ -1111,6 +1119,7 @@ sub connected {
 
 sub get_vars {
 	my %VARS;
+	
 	open my $file, "<$RealBin/yaomiqui.conf";
 	while ( <$file> ) {
 		$_ =~ s/\n$//;
@@ -1122,6 +1131,36 @@ sub get_vars {
 		}
 	}
 	close $file;
+	
+	use DBI;
+	my $dbh = DBI->connect("DBI:mysql:$VARS{'DB'}:$VARS{'DBHOST'}", $VARS{'DBUSER'}, $VARS{'DBPASSWD'}) or die "Error... $DBI::errstr mysql_error()<br>";
+	my $sth = $dbh->prepare("SELECT varName, varValue FROM configVars");
+	$sth->execute();
+	my $cnfVar = $sth->fetchall_arrayref;
+	$sth->finish;
+	$dbh->disconnect if ($dbh);
+	
+	for my $i ( 0 .. $#{$cnfVar} ) {
+		$VARS{ $cnfVar->[$i][0] } = $cnfVar->[$i][1] if $cnfVar->[$i][1];
+	}
+	
+	return %VARS;
+}
+
+sub get_add_env_vars {
+	my %VARS;
+	
+	connected();
+	my $sth = $dbh->prepare("SELECT varName, varValue FROM environmentVars");
+	$sth->execute();
+	my $cnfVar = $sth->fetchall_arrayref;
+	$sth->finish;
+	$dbh->disconnect if ($dbh);
+	
+	for my $i ( 0 .. $#{$cnfVar} ) {
+		$VARS{ $cnfVar->[$i][0] } = $cnfVar->[$i][1] if $cnfVar->[$i][1];
+	}
+	
 	return %VARS;
 }
 

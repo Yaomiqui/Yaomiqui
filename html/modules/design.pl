@@ -82,7 +82,10 @@ unless ( $input{submod} ) {
 if ( $input{submod} eq 'new_autoBot_from_xml' ) {
 	$html .= qq~<div class="contentTitle">$MSG{Create_New_from_XML}</div>~ unless $input{'shtl'};
 	
-	$html .= qq~<table cellpadding="0" cellspacing="0"><tr><td align="right">
+	$html .= qq~<div id="miquiloniToolTip"></div>
+	<img style="margin-left: 400px" src="../images/help_blue.png" width="28" onMouseOver="showToolTip('$MSG{MIGRATE_HELP}', '#111165', '', '300px');" onMouseout="hideToolTip();" /><br><br>
+	
+	<table cellpadding="0" cellspacing="0"><tr><td align="right">
 	
 	<form method="post" action="index.cgi">
 	<input type="hidden" name="mod" value="design">
@@ -306,6 +309,7 @@ if ( $input{submod} eq 'edit_autobot' ) {
 	$sth->finish;
 	$dbh->disconnect if ($dbh);
 	
+	$ABOT[6] =~ s/\\/\\\\/g;
 	$ABOT[6] =~ s/\'/\\'/g;
 	$ABOT[6] =~ s/\"/\\"/g;
 	$ABOT[6] =~ s/\n/\\n/g;
@@ -504,6 +508,34 @@ if ( $input{submod} eq 'edit_autobot' ) {
 	$html .= qq~
 	</div>
 	</td></tr></table>
+	
+	
+	<script>
+		  var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+		    lineNumbers: false,
+		    styleActiveLine: true,
+		    matchBrackets: true
+		  });
+		  var input = document.getElementById("select");
+		  function selectTheme() {
+		    var theme = input.options[input.selectedIndex].textContent;
+		    editor.setOption("theme", theme);
+		    location.hash = "#" + theme;
+		  }
+		  var choice = (location.hash && location.hash.slice(1)) ||
+		               (document.location.search &&
+		                decodeURIComponent(document.location.search.slice(1)));
+		  if (choice) {
+		    input.value = choice;
+		    editor.setOption("theme", choice);
+		  }
+		  CodeMirror.on(window, "hashchange", function() {
+		    var theme = location.hash.slice(1);
+		    if (theme) { input.value = theme; selectTheme(); }
+		  });
+		</script>
+	
+	
 	~;
 }
 #<button class="blueLightButton" onclick="alert(Xonomy.harvest())"> $MSG{Get_XML} </button>
@@ -511,7 +543,12 @@ if ( $input{submod} eq 'edit_autobot' ) {
 
 
 if ( $input{submod} eq 'cryptPasswd' ) {
-	$html .= qq~<div class="contentTitle">$MSG{Encrypt_Password}</div>~ unless $input{'shtl'};
+	$html .= qq~
+	<div class="contentTitle">$MSG{Encrypt_Password}</div>~ unless $input{'shtl'};
+	
+	$html .= qq~
+	<div id="miquiloniToolTip"></div>
+	<img style="margin-left: 400px" src="../images/help_blue.png" width="28" onMouseOver="showToolTip('$MSG{CRYPT_HELP}', '#111165', '', '300px');" onMouseout="hideToolTip();" /><br><br>~;
 	
 	my $longKey = $input{longKey} || 24;
 	my $passwd = $input{passwd};
@@ -537,6 +574,9 @@ if ( $input{submod} eq 'cryptPasswd' ) {
 	<input class="blueLightButton" type="submit" value="$MSG{Generate}">
 	<br />
 	<br />
+	<br />
+	<br />
+	<img align="right" src="../images/help_blue.png" width="20" onMouseOver="showToolTip('$MSG{KEYPAIR_HELP}', '#111165', '', '300px');" onMouseout="hideToolTip();" /><br>
 	<br />
 	$MSG{Encryption_Key}: &nbsp; <input type="text" value="$encKey"> <br />
 	$MSG{Encrypted_Password}: &nbsp; <input type="text" value="$encryptedPass">  <br />

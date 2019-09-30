@@ -110,6 +110,7 @@ if ( $input{submod} eq 'save_record' ) {
 		$input{logs} = '0' unless $input{logs};
 		$input{charts} = '0' unless $input{charts};
 		$input{reports} = '0' unless $input{reports};
+		$input{config} = '0' unless $input{config};
 		
 		my $sth1 = $dbh->prepare("UPDATE permissions SET 
 		design='$input{design}',
@@ -119,7 +120,8 @@ if ( $input{submod} eq 'save_record' ) {
 		tickets_form='$input{tickets_form}',
 		logs='$input{logs}',
 		charts='$input{charts}',
-		reports='$input{reports}'
+		reports='$input{reports}',
+		config='$input{config}'
 		WHERE idUser='$input{idUser}'");
 		$sth1->execute();
 		$sth1->finish;
@@ -211,6 +213,7 @@ if ( $input{submod} eq 'new_record' ) {
 				$input{logs} = '0' unless $input{logs};
 				$input{charts} = '0' unless $input{charts};
 				$input{reports} = '0' unless $input{reports};
+				$input{config} = '0' unless $input{config};
 				
 				$insert_string = qq~INSERT INTO permissions (
 				idUser, design, accounts, accounts_edit, tickets, tickets_form, logs, charts, reports
@@ -223,7 +226,8 @@ if ( $input{submod} eq 'new_record' ) {
 				'$input{tickets_form}',
 				'$input{logs}',
 				'$input{charts}',
-				'$input{reports}')~;
+				'$input{reports}',
+				'$input{config}')~;
 				$sth = $dbh->prepare("$insert_string");
 				$sth->execute();
 				$sth->finish;

@@ -28,6 +28,32 @@ New_User = New User
 About_Yaomiqui = About Yaomiqui
 License = License
 Encrypt_Password = Encrypt Password
+Environment = Environment
+Config_Variables = Config Variables
+Environment_Variables = Environment Variables
+Autobot_Migration = Autobot Migration
+
+
+[config]
+Configuration_Variables = Configuration Variables
+Environment_Variables = Environment Variables
+Save = Save
+Delete = Delete
+Create_New = Create New
+Create_New_Variable = Create a New Variable
+Are_you_sure_you_want_to_continue_deleting_this_record = Are you sure you want to continue deleting this record
+PROC_MAX_PARALLEL = Max quantity of tickets in process at same time.<br>Default: 30
+SHOW_LOGS_IN_FRAME = If you want to show logs in the right frame or full screen.<br>1=right frame<br>0=top
+SHOW_PER_PAGE = How many records do you want per page
+REFRESH_RATE = Refresh rate for the ticket list in milliseconds<br>Default: 3000
+DESIGNER_SET_MODE = Mode for AutoBot designer.<br>Values: laic or nerd.<br>Default = nerd
+CRITICAL_PROC = Quantity of AutoBots with long duration tasks
+COOKIE_TERM = cookie term<br>+1h = 1 hours from now<br>+1d = 1 day from now<br>+1M = 1 months from now<br>+1y = 1 year from now<br>Empty = When the browsing session ends
+STATUS_AFTER_TIMEOUT = This is related to the TIMEOUT variable ( ${TIMEOUT} into Yaomiqui ).<br>When some DO section is Timed out, this ticket will be closed with some status.<br>You can select that status when Timeout occurs.<br>Default: Rejected.
+CONNECTTIMEOUT = ConnectTimeout refers to the REMOTE SIDE SSH options and it means about the maximum timeout of some SSH ESTABLISHED connection.<br>Time given in seconds. Default is 43200 (12 hours)
+TIMEOUT = Timeout in seconds for each DO function.<br>(When some DO function is timed out, the Yaomiqui ${TIMEOUT} variable is filled with an error message starting with: TIMEOUT REACHED. ...)<br>Default value: 300 (5 minutes).<br><br>This variable is exported to Environment variables list. You can modify inside any AutoBot
+SSH_TIMEOUT = This is the timeout for SSH connections to establish some connection.<br>Default is 30 seconds.<br><br>This variable is exported to Environment variables list. You can modify inside any AutoBot
+ENVIRONMENT = Environment we are working on. Example: DEV, QA, UAT, STRESS or PROD. You decide what the use of the instance is.<br><br>This variable is exported to Environment variables list. You can modify inside any AutoBot
 
 
 [overview]
@@ -98,6 +124,9 @@ Encrypted_Password = Encrypted Password
 Enter_the_password_to_encrypt = Enter the password to encrypt
 Enter_long_of_Encryption_Key = Enter long of Encryption Key
 Generate = Generate
+CRYPT_HELP = Yaomiqui has a stronger encryption algorithm.<br>In this area you can create the encryption key, and you can decide the length of it.<br>Generally a length of 24 is safe enough.<br>It is very important that you always use this method so that you never have your passwords in clear text, neither in AutoBots, nor in logs.
+KEYPAIR_HELP = Copy both values to use into AutoBots with authentications requirements
+MIGRATE_HELP = Use this tool to migrate AutoBots from one environment to another (eg: Dev to Prod), keeping the IDs and names of originals.<br>You cannot create new AutoBots here
 
 
 [tickets]
@@ -214,6 +243,7 @@ Are_you_sure_you_want_to_continue_deleting_the_user = Are you sure you want to c
 Delete = Delete
 Create_new_user = Create new user
 Username = Username
+Config = Config
 
 
 [overview]

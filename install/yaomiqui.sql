@@ -50,10 +50,11 @@ CREATE TABLE IF NOT EXISTS permissions (
 	logs int(1) DEFAULT '0',
 	charts int(1) DEFAULT '0',
 	reports int(1) DEFAULT '0',
-	about int(1) DEFAULT '1'
+	about int(1) DEFAULT '1',
+	config int(1) DEFAULT '0'
 ) ENGINE=InnoDB;
 
-INSERT INTO permissions (idUser, init, overview, design, accounts, accounts_edit, settings, tickets, tickets_form, logs, charts, reports) VALUES ('1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1');
+INSERT INTO permissions (idUser, init, overview, design, accounts, accounts_edit, settings, tickets, tickets_form, logs, charts, reports, config) VALUES ('1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1');
 INSERT INTO permissions (idUser, init, overview, settings) VALUES ('2', '0', '0', '0');
 
 
@@ -128,3 +129,34 @@ CREATE TABLE IF NOT EXISTS report (
 
 INSERT INTO report (typeTicket, averageAttTime, costPerHour, costPerTicket) VALUES ('INCIDENT', '2', '9', '1');
 INSERT INTO report (typeTicket, averageAttTime, costPerHour, costPerTicket) VALUES ('TASK', '3', '8', '1');
+
+
+DROP TABLE IF EXISTS configVars;
+
+CREATE TABLE IF NOT EXISTS configVars (
+	idConfigVar int(40) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+	varName varchar(100) NOT NULL,
+	varValue varchar(100) NULL
+) ENGINE=InnoDB;
+
+INSERT INTO configVars (varName, varValue) VALUES ('PROC_MAX_PARALLEL', '30');
+INSERT INTO configVars (varName, varValue) VALUES ('SHOW_LOGS_IN_FRAME', '1');
+INSERT INTO configVars (varName, varValue) VALUES ('SHOW_PER_PAGE', '50');
+INSERT INTO configVars (varName, varValue) VALUES ('REFRESH_RATE', '3000');
+INSERT INTO configVars (varName, varValue) VALUES ('DESIGNER_SET_MODE', 'nerd');
+INSERT INTO configVars (varName, varValue) VALUES ('CRITICAL_PROC', '0');
+INSERT INTO configVars (varName, varValue) VALUES ('COOKIE_TERM', '');
+INSERT INTO configVars (varName, varValue) VALUES ('STATUS_AFTER_TIMEOUT', 'Rejected');
+INSERT INTO configVars (varName, varValue) VALUES ('CONNECTTIMEOUT', '43200');
+INSERT INTO configVars (varName, varValue) VALUES ('TIMEOUT', '300');
+INSERT INTO configVars (varName, varValue) VALUES ('SSH_TIMEOUT', '30');
+INSERT INTO configVars (varName, varValue) VALUES ('ENVIRONMENT', 'DEV');
+
+
+DROP TABLE IF EXISTS environmentVars;
+
+CREATE TABLE IF NOT EXISTS environmentVars (
+	idEnvVar int(40) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+	varName varchar(100) NOT NULL,
+	varValue varchar(255) NULL
+) ENGINE=InnoDB;

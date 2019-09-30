@@ -39,7 +39,7 @@ sub header {
 	~;
 	}
 	
-	my ($ahome, $aoverview, $adesign, $aaccounts, $asettings, $atktform, $aabout, $acharts, $areports);
+	my ($ahome, $aoverview, $adesign, $aaccounts, $asettings, $atktform, $aabout, $acharts, $areports, $aconfig);
 	unless ( $input{mod} ) { $ahome = 'active' }
 	if ( $input{mod} eq 'overview' ) { $aoverview = 'active' }
 	if ( $input{mod} eq 'design' ) { $adesign = 'active' }
@@ -48,6 +48,7 @@ sub header {
 	elsif ( $input{mod} eq 'tickets_form' ) { $atktform = 'active' }
 	elsif ( $input{mod} eq 'about' ) { $aabout = 'active' }
 	elsif ( $input{mod} =~ /^charts|reports$/ ) { $areports = 'active' }
+	elsif ( $input{mod} eq 'config' ) { $aconfig = 'active' }
 	# elsif ( $input{mod} eq 'reports' ) { $acharts = 'active' }
 	
 	if ( $username ne 'Guest' ) {
@@ -60,12 +61,13 @@ sub header {
 			$header .= qq~<li class="topnavbar"><a href="index.cgi?mod=tickets_form" class="$atktform">$MSG{Ticket_Form}</a></li>~ if $PRM{tickets_form};
 			# $header .= qq~<li class="topnavbar"><a href="index.cgi?mod=charts" class="$acharts">$MSG{Charts}</a></li>~ if $PRM{charts};
 			# $header .= qq~<li class="topnavbar"><a href="index.cgi?mod=reports" class="$areports">$MSG{Reports}</a></li>~ if $PRM{reports};
-			$header .= qq~<li class="topnavbar"><a href="index.cgi?mod=charts" class="$areports">$MSG{Reports}</a></li>~;
+			$header .= qq~<li class="topnavbar"><a href="index.cgi?mod=charts" class="$areports">$MSG{Reports}</a></li>~ if $PRM{charts};
 			$header .= qq~<li class="topnavbar"><a href="index.cgi?mod=accounts" class="$aaccounts">$MSG{Accounts}</a></li>~ if $PRM{accounts};
+			$header .= qq~<li class="topnavbar"><a href="index.cgi?mod=config" class="$aconfig">Config</a></li>~ if $PRM{config};
 			
 			$header .= qq~<li class="topnavbar"><a href="index.cgi?mod=settings" class="$asettings">$MSG{My_Account} [$username]</a></li>
 			<li class="topnavbar"><a href="index.cgi?mod=about" class="$aabout">$MSG{About}</a></li>
-			<li class="topnavbar" style="float:right"><a href="index.cgi?mod=logout" onclick="return confirm('$MSG{Are_you_sure_you_want_to_log_off} ?')">$MSG{Log_off}</a></li>
+			<li class="topnavbar" style="float:right"><font color="#FFFFCC" title="$MSG{Environment}">[$VAR{ENVIRONMENT}]</font> <a href="index.cgi?mod=logout" onclick="return confirm('$MSG{Are_you_sure_you_want_to_log_off} ?')">$MSG{Log_off}</a></li>
 		</ul>
 		
 		<ul class="leftnavbar">
@@ -83,12 +85,12 @@ sub header {
 			$cryPassabot = 'active' if $input{submod} eq 'cryptPasswd';
 			$header .= qq~
 			<li class="leftnavbar"><a href="index.cgi?mod=design" class="$list">$MSG{Autobots_List}</a></li>
-			<li class="leftnavbar"><a href="index.cgi?mod=design&submod=new_autoBot_from_xml" class="$crnewabot">$MSG{Create_New_Autobot}</a></li>~;
+			<li class="leftnavbar"><a href="index.cgi?mod=design&submod=new_autoBot_from_xml" class="$crnewabot">$MSG{Autobot_Migration}</a></li>~;
 			$header .= qq~<li class="leftnavbar"><a href="index.cgi?mod=design&submod=cryptPasswd" class="$cryPassabot">$MSG{Encrypt_Password}</a></li>~;
 		}
 		if ( $input{mod} eq 'tickets_form' ) {
 			$header .= qq~
-			<li class="leftnavbar"><a href="index.cgi?mod=tickets_form&submod=" class="$list">$MSG{Ticket_Form}</a></li>~;
+			<li class="leftnavbar"><a href="index.cgi?mod=tickets_form" class="$list">$MSG{Ticket_Form}</a></li>~;
 		}
 		if ( $input{mod} eq 'logs' ) {
 			unless ( $input{timeLine} ) { $list = 'active' }
@@ -117,11 +119,23 @@ sub header {
 			<li class="leftnavbar"><a href="index.cgi?mod=about" class="$list">$MSG{About_Yaomiqui}</a></li>
 			<li class="leftnavbar"><a href="index.cgi?mod=about&submod=license" class="$about">$MSG{License}</a></li>~;
 		}
+		if ( $input{mod} eq 'config' ) {
+			$configEnvVars = 'active' if $input{submod} eq 'configEnvVars';
+			$header .= qq~
+			<li class="leftnavbar"><a href="index.cgi?mod=config" class="$list">$MSG{Config_Variables}</a></li>
+			<li class="leftnavbar"><a href="index.cgi?mod=config&submod=configEnvVars" class="$configEnvVars">$MSG{Environment_Variables}</a></li>~;
+		}
 		
 		$header .= qq~
+		<li class="leftnavbar" style="opacity: 0.40; filter: alpha(opacity=40)">
+		<p align="center" style="font-size: 110%; font-weight: bold; color: #000;">
+		<img src="images/logo.png" style="padding-top:80px; width: 150px">
+		<br><br><br><br>
+		</li>
 		<li class="leftnavbar" style="opacity: 0.25; filter: alpha(opacity=25)">
 		<p align="center" style="font-size: 110%; font-weight: bold; color: #000;">
-		<img src="themes/$theme/images/YaomiquiLogoTransparent.png" style="padding-top:80px;"><br/>YAOMIQUI</p>
+		Powered by:<br>
+		<img src="themes/$theme/images/YaomiquiLogoTransparent.png" style="padding-top:10px;"><br/>YAOMIQUI</p>
 		<p align="center" style="font-size: 100%; color: #000;">Automation Platform</p>
 		</li>
 		~;
