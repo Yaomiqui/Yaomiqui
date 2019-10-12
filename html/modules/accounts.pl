@@ -216,7 +216,7 @@ if ( $input{submod} eq 'new_record' ) {
 				$input{config} = '0' unless $input{config};
 				
 				$insert_string = qq~INSERT INTO permissions (
-				idUser, design, accounts, accounts_edit, tickets, tickets_form, logs, charts, reports
+				idUser, design, accounts, accounts_edit, tickets, tickets_form, logs, charts, reports, config
 				) VALUES (
 				'$idUserNew',
 				'$input{design}',

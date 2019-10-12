@@ -176,9 +176,9 @@
 #xonomyBubble.nerd #xonomyBubbleContent form.undermenu { margin-top: 5px; }
 #xonomyBubble.nerd #xonomyBubbleContent div.submitline { text-align: right; margin-top: 5px; }
 #xonomyBubble.nerd #xonomyBubbleContent input { border-width: 1px; padding: 3px; color: #333333; font: inherit; }
-#xonomyBubble.nerd #xonomyBubbleContent textarea { border-width: 1px; padding: 3px; color: #333333; font: inherit; }
-#xonomyBubble.nerd #xonomyBubbleContent input.textbox { font-family: monospace; font-size: 1rem; width: 250px; border: 1px solid #dddddd; }
-#xonomyBubble.nerd #xonomyBubbleContent textarea.textbox { font-family: monospace; font-size: 1rem; width: 400px; height: 100px; border: 1px solid #dddddd; }
+#xonomyBubble.nerd #xonomyBubbleContent textarea { color: #00006D; border-width: 1px; padding: 3px; color: #333333; font: inherit; }
+#xonomyBubble.nerd #xonomyBubbleContent input.textbox { color: #00006D; font-family: monospace; font-size: 1rem; width: 250px; border: 1px solid #dddddd; }
+#xonomyBubble.nerd #xonomyBubbleContent textarea.textbox { color: #00006D; font-family: monospace; font-size: 1rem; width: 400px; height: 100px; border: 1px solid #dddddd; }
 
 /*When the pop-up is a list of warnings*/
 #xonomyBubble.nerd #xonomyBubbleContent .warning { padding: 5px 10px; }

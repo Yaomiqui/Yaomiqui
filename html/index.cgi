@@ -31,7 +31,7 @@ use Log::Man;
 our(%input, %VAR, %MSG, %PRM, $username, $html, $header, $footer, $module, $module_file, $theme, $dbh, $encKey);
 require 'common.pl';
 %VAR = get_vars();
-$VAR{Version} = '1.6';
+$VAR{Version} = '1.6.1';
 $encKey = getEncKey();
 $username = get_session();
 $theme = get_theme();
