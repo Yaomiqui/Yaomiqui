@@ -637,6 +637,9 @@ sub runDO {
 			if ( $DO->{FOREACH_NUMBER} ) {
 				mlog($TT, qq~Starting to execute FOREACH_NUMBER~);
 				
+				$DO->{FOREACH_NUMBER}->{initRange} = replaceSpecChar($DO->{FOREACH_NUMBER}->{initRange});
+				$DO->{FOREACH_NUMBER}->{endRange} = replaceSpecChar($DO->{FOREACH_NUMBER}->{endRange});
+				
 				FOREACH_LOOP: foreach my $i ( $DO->{FOREACH_NUMBER}->{initRange} .. $DO->{FOREACH_NUMBER}->{endRange} ) {
 					$VAR{n} = $i;
 					

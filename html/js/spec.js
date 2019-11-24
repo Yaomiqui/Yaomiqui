@@ -819,6 +819,7 @@ var specifications={
 						{value: "Failed", caption: "Failed"},
 						{value: "Rejected", caption: "Rejected"},
 						{value: "Pending", caption: "Pending"},
+						{value: "Canceled", caption: "Canceled"},
 					]
 				},
 			},

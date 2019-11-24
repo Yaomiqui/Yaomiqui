@@ -97,13 +97,14 @@ for my $i ( 0 .. $#{$TypeTT} ) {
 	<td class="gridTitle">Rejected</td>
 	<td class="gridTitle">Failed</td>
 	<td class="gridTitle">Pending</td>
+	<td class="gridTitle">Canceled</td>
 	</tr>~;
 	
 	foreach my $day ( sort keys %{$CHRT} ) {
 		$dayNice = $day;
 		$dayNice =~ s/-/ /;
 		$grid .= qq~<tr><td class="gridContent">$dayNice</td>~;
-		foreach my $state ( 'Resolved', 'Rejected', 'Failed', 'Pending', ) {
+		foreach my $state ( 'Resolved', 'Rejected', 'Failed', 'Pending', 'Canceled' ) {
 			if ( $CHRT->{$day}->{$state} ) {
 				$grid .= qq~<td class="gridContent" style="text-align: center">$CHRT->{$day}->{$state}</td>~;
 			} else {

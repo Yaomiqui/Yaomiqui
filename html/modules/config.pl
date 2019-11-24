@@ -27,7 +27,7 @@ unless ( $input{submod} ) {
 		} elsif ( $conf->[$i][1] eq 'STATUS_AFTER_TIMEOUT' ) {
 			my $selected;
 			$inputVarValue = qq~<select name="varValue">~;
-			foreach my $status ( 'Rejected', 'Resolved', 'Failed', 'Pending' ) {
+			foreach my $status ( 'Rejected', 'Resolved', 'Failed', 'Pending', 'Canceled' ) {
 				$selected = 'selected' if $selected = $conf->[$i][2] eq $status;
 				$inputVarValue .= qq~<option value="$status" $selected>$status</option>~;
 			}
