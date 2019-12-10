@@ -517,16 +517,33 @@ sub runDO {
 				
 				my $winerrfile = '/tmp/' . $TT . '.err';
 				
-				$VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} } = `winexe -k $DO->{execRemoteWindowsCommand}->{useKerberos} -U '$DO->{execRemoteWindowsCommand}->{remoteDomain}$DO->{execRemoteWindowsCommand}->{remoteUser}\%$winpasswd' //$DO->{execRemoteWindowsCommand}->{remoteHost} '$remoteWindowsCommand' 2>$winerrfile`;
+				####	FOR UBUNTU 18.04
+				my $bionic;
+				my $ostype = `cat /etc/os-release | egrep -w 'ID|VERSION_ID' | sed 's/"//g' | awk -F"=" '{print \$2}'`;
+				$ostype =~ s/\n//g;
+				
+				if ( $ostype eq 'ubuntu18.04' ) {
+					$bionic = '-d 1';
+				}
+				####
+				
+				$VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} } = `winexe $bionic -k $DO->{execRemoteWindowsCommand}->{useKerberos} -U '$DO->{execRemoteWindowsCommand}->{remoteDomain}$DO->{execRemoteWindowsCommand}->{remoteUser}\%$winpasswd' //$DO->{execRemoteWindowsCommand}->{remoteHost} '$remoteWindowsCommand' 2>$winerrfile`;
 				$VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} } =~ s/^\n//g;
 				$VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} } =~ s/\n$//g;
 				
-				## debug
-				# print qq~COMMAND LINE:winexe -U '$DO->{execRemoteWindowsCommand}->{remoteDomain}$DO->{execRemoteWindowsCommand}->{remoteUser}\%$DO->{execRemoteWindowsCommand}->{remotePasswd}' //$DO->{execRemoteWindowsCommand}->{remoteHost} '$remoteWindowsCommand'\n~;
-				
-				$VAR{Error} = `cat $winerrfile 2>/dev/null`;
-				$VAR{Error} =~ s/^\n//g;
-				$VAR{Error} =~ s/\n$//g;
+				####	FOR UBUNTU 18.04
+				if ( ( $ostype eq 'ubuntu18.04' ) and ( $VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} } =~ /NT_STATUS/ ) ) {
+					$VAR{Error} = $VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} };
+					$VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} } = '';
+				} else {
+					## debug
+					# print qq~COMMAND LINE:winexe -U '$DO->{execRemoteWindowsCommand}->{remoteDomain}$DO->{execRemoteWindowsCommand}->{remoteUser}\%$DO->{execRemoteWindowsCommand}->{remotePasswd}' //$DO->{execRemoteWindowsCommand}->{remoteHost} '$remoteWindowsCommand'\n~;
+					
+					$VAR{Error} = `cat $winerrfile 2>/dev/null`;
+					$VAR{Error} =~ s/^\n//g;
+					$VAR{Error} =~ s/\n$//g;
+				}
+				####
 				
 				unless ( $VAR{Error} ) {
 					mlog($TT, qq~Remote Windows Command [$DO->{execRemoteWindowsCommand}->{command}] Executed on Remote Server [$DO->{execRemoteWindowsCommand}->{remoteHost}].\nResults: [$VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} }]~ . "\nError: []");
