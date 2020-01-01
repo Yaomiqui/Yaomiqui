@@ -68,6 +68,7 @@ $html .= qq~
 			<option value="Failed">Failed</option>
 			<option value="Rejected">Rejected</option>
 			<option value="Pending">Pending</option>
+			<option value="Canceled">Canceled</option>
 			</select>
 			
 			<select name="typeTicket" onChange="this.form.submit();">

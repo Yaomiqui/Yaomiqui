@@ -31,7 +31,7 @@ source ./keys_auto.conf
 
 apt-get update
 
-apt install -y apache2 curl mysql-server sshpass libnet-openssh-perl libdbi-perl libdbd-mysql-perl libjson-perl libtest-json-perl libxml-simple-perl libxml-validate-perl libparallel-forkmanager-perl libnet-openssh-perl sendmail libmime-lite-perl libmath-random-isaac-perl
+apt install -y apache2 curl mysql-server sshpass libnet-openssh-perl libdbi-perl libdbd-mysql-perl libjson-perl libtest-json-perl libxml-simple-perl libxml-validate-perl libparallel-forkmanager-perl libnet-openssh-perl sendmail libmime-lite-perl libmath-random-isaac-perl curl
 
 # apt install -y libio-pty-perl
 
@@ -77,6 +77,9 @@ chown -R www-data:www-data /var/www/yaomiqui
 mysqlPasswdAdmin=`./generateEncKey.pl 12`
 /usr/bin/perl -pi -e "s/DBPASSWD/DBPASSWD \= ${mysqlPasswdAdmin}/g" /var/www/yaomiqui/yaomiqui.conf
 /usr/bin/perl -pi -e "s/MYSQL_PASSWD/${mysqlPasswdAdmin}/g" yaomiqui.sql
+echo "" >> yaomiqui.sql
+echo "SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode, 'ONLY_FULL_GROUP_BY', ''));" >> yaomiqui.sql
+echo "" >> yaomiqui.sql
 
 encKey=`./generateEncKey.pl`;
 echo "${encKey}" > /var/www/yaomiqui/certs/yaomiquikey.enc

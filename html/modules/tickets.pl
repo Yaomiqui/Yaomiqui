@@ -95,6 +95,8 @@ if ( $input{submod} eq 'findTicket' ) {
 			$ST = '#9C7411';
 		} elsif ( $TT->[$i][5] eq 'Failed' ) {
 			$ST = '#FF0000';
+		} elsif ( $TT->[$i][5] eq 'Canceled' ) {
+			$ST = '#800080';
 		}
 		
 		$html .= qq~
