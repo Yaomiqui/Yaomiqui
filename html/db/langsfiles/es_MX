@@ -47,13 +47,15 @@ SHOW_LOGS_IN_FRAME = Si desea ver los logs en el marco derecho o en la página c
 SHOW_PER_PAGE = Cuantos registros desea por página
 REFRESH_RATE = Tasa de refresco de la lista de tickets en millisegundos<br>Default: 3000
 DESIGNER_SET_MODE = Modo del diseñador de AutoBots.<br>Valores: laic o nerd.<br>Default = nerd
-CRITICAL_PROC = Cantidad de AutoBots con tareas de larga duración
+CRITICAL_PROC = Cantidad de AutoBots con tareas de larga duración.<br><br>Si hay procesos que duran mas de 5 minutos por ejemplo, incremente en 1 por cada Autobot de larga duración
 COOKIE_TERM = cookie term<br>+1h = 1 hora desde ahora<br>+1d = 1 día desde ahora<br>+1M = 1 mes desde ahora<br>+1y = 1 año desde ahora<br>Vacío = Cuando se cierra el navegador
 STATUS_AFTER_TIMEOUT = Esto está relacionado con la variable TIMEOUT ( ${TIMEOUT} en Yaomiqui ).<br>Cuando se agota el tiempo de espera de alguna sección DO, este ticket se cerrará con algún estado.<br>Usted puede seleccionar ese estado cuando se agota el tiempo de espera.<br>Default: Rejected.
 CONNECTTIMEOUT = ConnectTimeout se refiere al LADO REMOTO de las opciones SSH y representa el tiempo máximo de alguna conexión SSH ESTABLECIDA.<br>Tiempo dado en segundos. Default es 43200 (12 horas)
 TIMEOUT = Timeout en segundos por cada función DO.<br>(Cuando una función DO se vence, la variable Yaomiqui ${TIMEOUT} es establecida con un mensaje de error que comienza con: TIMEOUT REACHED. ...)<br>Valor por Default: 300 (5 minutos).<br><br>Esta variable es exportada dentro de la lista de variables de Ambiente. Usted puede modificarla dentro de cualquier AutoBot
 SSH_TIMEOUT = This is the timeout for SSH connections to establish some connection.<br>Default es 30 segundos.<br><br>Esta variable es exportada dentro de la lista de variables de Ambiente. Usted puede modificarla dentro de cualquier AutoBot
-ENVIRONMENT = El ambiente en el que estamos trabajando. Ejemplo DEV, QA, UAT, STRESS o PROD. Usted decide cuál es el uso de la instancia.<br><br>Esta variable es exportada dentro de la lista de variables de Ambiente. Usted puede modificarla dentro de cualquier AutoBot
+ENVIRONMENT = El ambiente en el que estamos trabajando. Ejemplo DEV, QA, UAT, STRESS o PROD. Usted decide cuál es el uso de la instancia.<br><br>Esta variable es exportada dentro de la lista de variables de Ambiente. Usted puede leerla, incluso modificarla dentro de cualquier AutoBot
+WINRM_CONNECTOR = Puede elegir conectarse a ambientes Windows mediante WinRM o Winexe.<br><br>WinRM es el método clásico para ejecutar comandos remotos. Usa el puerto 5985 (HTTP) o 5986 (HTTPS).<br>Soporta Kerberos y Autenticación básica<br><br>Winexe necesita instalar winexesvc.exe en el server para poder ejecutar comandos remotos. Usa el puerto 445 (SMB y NetLogon). Mas estable del lado del Servidor, pero intrusivo.<br>Soporta Kerberos y NTLM.<br>No soporta HTTPS.<br><br>Default: WinRM
+WINRM_PROTOCOL = Puede usted instalar certificados SSL y encriptar todo lo que envíe y reciba usando HTTPS (5986), o bien sin certificados, por HTTP (5985).<br><br>Default: HTTPS (solo funciona con WinRM)
 
 
 [overview]

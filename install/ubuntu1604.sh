@@ -31,13 +31,15 @@ source ./keys_auto.conf
 
 apt-get update
 
-apt install -y apache2 curl mysql-server sshpass libnet-openssh-perl libdbi-perl libdbd-mysql-perl libjson-perl libtest-json-perl libxml-simple-perl libxml-validate-perl libparallel-forkmanager-perl libnet-openssh-perl sendmail libmime-lite-perl libmath-random-isaac-perl curl
+apt install -y libsoap-lite-perl
 
-# apt install -y libio-pty-perl
+apt install -y apache2 curl mysql-server sshpass libnet-openssh-perl libdbi-perl libdbd-mysql-perl libjson-perl libtest-json-perl libxml-simple-perl libxml-validate-perl libparallel-forkmanager-perl libnet-openssh-perl sendmail libmime-lite-perl libmath-random-isaac-perl curl libxml-simple-perl curl realmd libdata-uuid-perl liblwp-protocol-https-perl libauthen-simple-kerberos-perl krb5-kdc krb5-pkinit krb5-sync-tools krb5-user
 
 # Install winexe. You can comment the next five lines to enhance performance. Then you can run it later.
 apt-get -y install python2.7 gcc-mingw-w64 libtevent-dev samba-dev libsmbclient comerr-dev libc6-dev libpopt-dev --fix-missing
+
 sleep 2
+
 ln -s /usr/lib/x86_64-linux-gnu/samba/libcli-ldap.so.0 /usr/lib/x86_64-linux-gnu/samba/libcli-ldap-samba4.so.0
 
 ln -s /usr/lib/x86_64-linux-gnu/samba/libdcerpc-samba.so.0 /usr/lib/x86_64-linux-gnu/samba/libdcerpc-samba-samba4.so.0
@@ -63,6 +65,7 @@ mkdir /var/www/yaomiqui/certs
 mkdir /var/www/yaomiqui/logs
 
 /usr/bin/perl -pi -e "s/SERVER_NAME/${COMMON_NAME}/g" yaomiqui_apache.conf
+
 
 cat ./yaomiqui_apache.conf > /etc/apache2/sites-available/yaomiqui.conf
 

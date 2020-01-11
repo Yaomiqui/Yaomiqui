@@ -31,14 +31,14 @@ source ./keys_auto.conf
 
 apt-get update
 
-apt install -y apache2 mysql-server sshpass libnet-openssh-perl libdbi-perl libdbd-mysql-perl libjson-perl libtest-json-perl libxml-simple-perl libxml-validate-perl libparallel-forkmanager-perl libnet-openssh-perl sendmail libmime-lite-perl libmath-random-isaac-perl curl
+apt install -y libsoap-lite-perl
 
-# apt install -y libio-pty-perl
+apt install -y apache2 mysql-server sshpass libnet-openssh-perl libdbi-perl libdbd-mysql-perl libjson-perl libtest-json-perl libxml-simple-perl libxml-validate-perl libparallel-forkmanager-perl libnet-openssh-perl sendmail libmime-lite-perl libmath-random-isaac-perl curl realmd libdata-uuid-perl liblwp-protocol-https-perl libauthen-simple-kerberos-perl krb5-kdc krb5-pkinit krb5-sync-tools krb5-user
 
 # Install winexe. You can comment the next five lines to enhance performance. Then you can run it later.
 apt-get -y install python2.7 gcc-mingw-w64 libtevent-dev samba-dev libsmbclient comerr-dev libc6-dev libpopt-dev libsmbclient-dev samba-libs --fix-missing
+
 sleep 2
-# ln -s /usr/lib/x86_64-linux-gnu/libsmbclient-raw.so /usr/lib/x86_64-linux-gnu/libsmbclient-raw-samba4.so.0
 
 dpkg -i winexe_4.8.0.0-19_amd64-bionic.deb
 

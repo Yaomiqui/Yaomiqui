@@ -27,7 +27,7 @@ export LC_ALL=en_US.UTF-8
 
 source ./keys_auto.conf
 
-yum install -y wget vim curl net-tools httpd perl perl-core perl-CGI perl-DBI mod_ssl perl-JSON perl-XML-Simple sendmail
+yum install -y wget vim curl net-tools httpd perl perl-core perl-CGI perl-DBI mod_ssl perl-JSON perl-XML-Simple sendmail make gcc cpanminus realmd krb5*
 
 wget -c http://repo.mysql.com/mysql-community-release-el7-5.noarch.rpm
 
@@ -37,16 +37,11 @@ yum install -y mysql-server perl-DBD-MySQL
 
 rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 
-yum --enablerepo=epel install -y sshpass perl-Parallel-ForkManager samba4-libs gnutls-devel perl-Net-OpenSSH perl-MIME-Lite perl-Math-Random-ISAAC
-
-# perl-IO-Pty was removed from epel repos:
-# yum --enablerepo=epel install -y perl-IO-Pty-Easy
-
-### Install winexe. You can comment the next two lines to enhance performance. Then you can run it later.
-yum remove libbsd-devel
+yum --enablerepo=epel install -y sshpass perl-Parallel-ForkManager samba4-libs gnutls-devel perl-Net-OpenSSH perl-MIME-Lite perl-Math-Random-ISAAC perl-SOAP-Lite perl-Data-UUID perl-LWP-Protocol-https perl-Authen-Simple
 
 rpm -Uvh winexe-1.1-b787d2.el7.x86_64.rpm
-###### 
+######
+cpanm Authen::Simple::Kerberos
 
 chown apache:apache /usr/share/httpd
 

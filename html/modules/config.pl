@@ -14,17 +14,19 @@ unless ( $input{submod} ) {
 	my $conf = $sth->fetchall_arrayref;
 	$sth->finish;
 	
-	$html .= qq~<div id="miquiloniToolTip"></div><table cellpadding="0" cellspacing="0">~;
+	$html .= qq~<div id="miquiloniToolTip"></div><table cellpadding="0" cellspacing="0" style="padding-bottom: 200px">~;
 	for my $i ( 0 .. $#{$conf} ) {
 		my $inputVarValue;
 		
 		if ( $conf->[$i][1] eq 'SHOW_LOGS_IN_FRAME' ) {
 			my $selected = $conf->[$i][2] eq '0' ? 'selected' : '';
 			$inputVarValue = qq~<select name="varValue"><option value="1">1</option><option value="0" $selected>0</option></select>~;
-		} elsif ( $conf->[$i][1] eq 'DESIGNER_SET_MODE' ) {
+		}
+        elsif ( $conf->[$i][1] eq 'DESIGNER_SET_MODE' ) {
 			my $selected = $conf->[$i][2] eq 'laic' ? 'selected' : '';
 			$inputVarValue = qq~<select name="varValue"><option value="nerd">nerd</option><option value="laic" $selected>laic</option></select>~;
-		} elsif ( $conf->[$i][1] eq 'STATUS_AFTER_TIMEOUT' ) {
+		}
+        elsif ( $conf->[$i][1] eq 'STATUS_AFTER_TIMEOUT' ) {
 			my $selected;
 			$inputVarValue = qq~<select name="varValue">~;
 			foreach my $status ( 'Rejected', 'Resolved', 'Failed', 'Pending', 'Canceled' ) {
@@ -33,6 +35,14 @@ unless ( $input{submod} ) {
 			}
 			$inputVarValue .= qq~</select>~;
 		}
+        elsif ( $conf->[$i][1] eq 'WINRM_CONNECTOR' ) {
+            my $selected = $conf->[$i][2] eq 'Winexe' ? 'selected' : '';
+			$inputVarValue = qq~<select name="varValue"><option value="WinRM">WinRM</option><option value="Winexe" $selected>Winexe</option></select>~;
+        }
+        elsif ( $conf->[$i][1] eq 'WINRM_PROTOCOL' ) {
+            my $selected = $conf->[$i][2] eq 'HTTP' ? 'selected' : '';
+			$inputVarValue = qq~<select name="varValue"><option value="HTTPS">HTTPS</option><option value="HTTP" $selected>HTTP</option></select>~;
+        }
 		else {
 			$inputVarValue .= qq~<input type="text" name="varValue" value="$conf->[$i][2]">~;
 		}
@@ -43,7 +53,7 @@ unless ( $input{submod} ) {
 			<input type="hidden" name="mod" value="config">
 			<input type="hidden" name="submod" value="save_config">
 			<input type="hidden" name="idConfigVar" value="$conf->[$i][0]">
-			<img src="../images/help_blue.png" width="16" onMouseOver="showToolTip('$MSG_CNF{$conf->[$i][1]}', '#111165', '', '300px');" onMouseout="hideToolTip();" />
+			<img src="../images/help_blue.png" width="16" onMouseOver="showToolTip('$MSG_CNF{$conf->[$i][1]}', '#111165', '#E8FCE8', '300px');" onMouseout="hideToolTip();" />
 			$inputVarValue
 		</td>
 		<td>
@@ -187,7 +197,9 @@ sub msg_config_vars {
 		'CONNECTTIMEOUT'		=> $MSG{CONNECTTIMEOUT},
 		'TIMEOUT'				=> $MSG{TIMEOUT},
 		'SSH_TIMEOUT'			=> $MSG{SSH_TIMEOUT},
-		'ENVIRONMENT'			=> $MSG{ENVIRONMENT}
+		'ENVIRONMENT'			=> $MSG{ENVIRONMENT},
+		'WINRM_CONNECTOR'		=> $MSG{WINRM_CONNECTOR},
+		'WINRM_PROTOCOL'		=> $MSG{WINRM_PROTOCOL}
 	);
 	
 	return %AS;

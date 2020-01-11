@@ -151,6 +151,8 @@ INSERT INTO configVars (varName, varValue) VALUES ('CONNECTTIMEOUT', '43200');
 INSERT INTO configVars (varName, varValue) VALUES ('TIMEOUT', '300');
 INSERT INTO configVars (varName, varValue) VALUES ('SSH_TIMEOUT', '30');
 INSERT INTO configVars (varName, varValue) VALUES ('ENVIRONMENT', 'DEV');
+INSERT INTO configVars (varName, varValue) VALUES ('WINRM_CONNECTOR', 'WinRM');
+INSERT INTO configVars (varName, varValue) VALUES ('WINRM_PROTOCOL', 'HTTPS');
 
 
 DROP TABLE IF EXISTS environmentVars;
@@ -160,3 +162,4 @@ CREATE TABLE IF NOT EXISTS environmentVars (
 	varName varchar(100) NOT NULL,
 	varValue varchar(255) NULL
 ) ENGINE=InnoDB;
+
