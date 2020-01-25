@@ -37,11 +37,12 @@ yum install -y mysql-server perl-DBD-MySQL
 
 rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 
-yum --enablerepo=epel install -y sshpass perl-Parallel-ForkManager samba4-libs gnutls-devel perl-Net-OpenSSH perl-MIME-Lite perl-Math-Random-ISAAC perl-SOAP-Lite perl-Data-UUID perl-LWP-Protocol-https perl-Authen-Simple
+yum --enablerepo=epel install -y sshpass perl-Parallel-ForkManager samba4-libs gnutls-devel perl-Net-OpenSSH perl-MIME-Lite perl-Math-Random-ISAAC
+
+# yum install -y perl-SOAP-Lite
 
 rpm -Uvh winexe-1.1-b787d2.el7.x86_64.rpm
 ######
-cpanm Authen::Simple::Kerberos
 
 chown apache:apache /usr/share/httpd
 

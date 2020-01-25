@@ -152,7 +152,7 @@ INSERT INTO configVars (varName, varValue) VALUES ('TIMEOUT', '300');
 INSERT INTO configVars (varName, varValue) VALUES ('SSH_TIMEOUT', '30');
 INSERT INTO configVars (varName, varValue) VALUES ('ENVIRONMENT', 'DEV');
 INSERT INTO configVars (varName, varValue) VALUES ('WINRM_CONNECTOR', 'WinRM');
-INSERT INTO configVars (varName, varValue) VALUES ('WINRM_PROTOCOL', 'HTTPS');
+INSERT INTO configVars (varName, varValue) VALUES ('WINRM_PROTOCOL', 'HTTP');
 
 
 DROP TABLE IF EXISTS environmentVars;

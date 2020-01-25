@@ -3,7 +3,7 @@
 # Yaomiqui is Powerful tool for Automation + Easy to use Web UI
 # Written in freestyle Perl + CGI + Apache + MySQL + Javascript + CSS
 # This is the Main ENGINE
-# The automation Power for Yaomiqui RPA Orchestrator
+# The automation Power for Yaomiqui Automation Platform
 # 
 # Yaomiqui and its logo are registered trademark by Hugo Maza Moreno
 # Copyright (C) 2019
@@ -517,11 +517,9 @@ sub runDO {
     				$winpasswd = $crypt->decode($DO->{execRemoteWindowsCommand}->{EncPasswd}, $DO->{execRemoteWindowsCommand}->{EncKey});
     			}
     			
-    			$DO->{execRemoteWindowsCommand}->{remoteDomain} = $DO->{execRemoteWindowsCommand}->{remoteDomain} . '/' if $DO->{execRemoteWindowsCommand}->{remoteDomain};
-    			
     			my $winerrfile = '/tmp/' . $TT . '.err';
                 
-                ## Added for SOAP::WinRM
+                ## Changed for WinRM::WinRSExec
                 my @execute;
                 
                 ########################################################
@@ -532,6 +530,8 @@ sub runDO {
                     engineLog($TT, qq~Using Domain $DO->{execRemoteWindowsCommand}->{remoteDomain}~) if $DO->{execRemoteWindowsCommand}->{remoteDomain};
                     mlog($TT, qq~Using Winexe as Windows connector~);
                     mlog($TT, qq~Using Domain $DO->{execRemoteWindowsCommand}->{remoteDomain}~) if $DO->{execRemoteWindowsCommand}->{remoteDomain};
+                    
+                    $DO->{execRemoteWindowsCommand}->{remoteDomain} = $DO->{execRemoteWindowsCommand}->{remoteDomain} . '/' if $DO->{execRemoteWindowsCommand}->{remoteDomain};
                     
                     $remoteWindowsCommand =~ s/\\"/"/g;
                     $remoteWindowsCommand =~ s/"/\\"/g;
@@ -565,20 +565,26 @@ sub runDO {
                     ####
                 }
                 ########################################################
-                ####    SOAP::WinRM
+                ####    WinRM::WinRSExec
                 ########################################################
                 elsif ( $VAR{WINRM_CONNECTOR} eq 'WinRM' ) {
-                    $DO->{execRemoteWindowsCommand}->{remoteDomain} =~ s/\/$//;
-                    # $DO->{execRemoteWindowsCommand}->{useKerberos} = 'yes' ? '1' : '0';
                     
                     engineLog($TT, qq~Using WinRM as Windows connector~);
                     engineLog($TT, qq~Using Domain $DO->{execRemoteWindowsCommand}->{remoteDomain}~) if $DO->{execRemoteWindowsCommand}->{remoteDomain};
                     engineLog($TT, qq~Using Kerberos: $DO->{execRemoteWindowsCommand}->{useKerberos}~) if $DO->{execRemoteWindowsCommand}->{useKerberos};
-                    mlog($TT, qq~Using WinRM as Windows connector~);
-                    mlog($TT, qq~Using Domain $DO->{execRemoteWindowsCommand}->{remoteDomain}~) if $DO->{execRemoteWindowsCommand}->{remoteDomain};
-                    mlog($TT, qq~Using Kerberos: $DO->{execRemoteWindowsCommand}->{useKerberos}~) if $DO->{execRemoteWindowsCommand}->{useKerberos};
                     
-                    $DO->{execRemoteWindowsCommand}->{useKerberos} = 'yes' ? '1' : '0';
+                    mlog($TT, qq~Using WinRM as Windows connector~);
+                    if ( $DO->{execRemoteWindowsCommand}->{remoteDomain} and ( $DO->{execRemoteWindowsCommand}->{useKerberos} eq 'yes' ) ) {
+                        mlog($TT, qq~Using Domain $DO->{execRemoteWindowsCommand}->{remoteDomain}~);
+                        mlog($TT, qq~Using Kerberos: $DO->{execRemoteWindowsCommand}->{useKerberos}~);
+                    }
+                    else {
+                        $DO->{execRemoteWindowsCommand}->{remoteDomain} = '';
+                        $DO->{execRemoteWindowsCommand}->{useKerberos} = 'no';
+                        mlog($TT, qq~Using Basic Authentication~);
+                    }
+                    
+                    $DO->{execRemoteWindowsCommand}->{useKerberos} = $DO->{execRemoteWindowsCommand}->{useKerberos} eq 'yes' ? '1' : '0';
                     
                     ## PowerShell-SOAP::WinRM to Winexe Microbots compatibility
                     $remoteWindowsCommand =~ s/^\n*//;
@@ -591,8 +597,8 @@ sub runDO {
                     # print $remoteWindowsCommand . "\n";
                     # print $DO->{execRemoteWindowsCommand}->{remoteDomain} . $DO->{execRemoteWindowsCommand}->{remoteUser} . "\n";
                     
-                    use SOAP::WinRM;
-                    my $winrm = SOAP::WinRM->new(
+                    use WinRM::WinRSExec;
+                    my $winrm = WinRM::WinRSExec->new({
                         host            => $DO->{execRemoteWindowsCommand}->{remoteHost},
                         protocol		=> $VAR{WINRM_PROTOCOL},
                         timeout			=> $VAR{WINRM_TIMEOUT},
@@ -600,23 +606,26 @@ sub runDO {
                         username        => $DO->{execRemoteWindowsCommand}->{remoteUser},
                         password        => $winpasswd,
                         kerberos        => $DO->{execRemoteWindowsCommand}->{useKerberos}
-                    );
+                    });
                     
                     unless ($winrm) {
-                        $VAR{Error} = $SOAP::WinRM::errstr;
+                        $VAR{Error} = 'Cannot create a "new" WinRM::WinRSExec object. ' . "$? : $!";
                     }
                     else {
-                        @execute = $winrm->execute( command => [ $remoteWindowsCommand ] );
+                        $winrm->execute({ command => $remoteWindowsCommand });
                         
-                        unless (defined($execute[0])) {
-                            $VAR{Error} = $winrm->errstr;
-                        } else {
-                            chomp @execute;
-                            $VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} } = $execute[1];
+                        if ( $winrm->response ) {
+                            $VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} } = $winrm->response;
+                        }
+                        elsif ( $winrm->error ) {
+                            $VAR{Error} = $winrm->error;
+                        }
+                        else {
+                            $VAR{Error} = 'Unknown error';
                         }
                     }
                 }
-                ## Added for SOAP::WinRM
+                ## Changed for WinRM::WinRSExec
                 
     			unless ( $VAR{Error} ) {
     				mlog($TT, qq~Remote Windows Command [$DO->{execRemoteWindowsCommand}->{command}] Executed on Remote Server [$DO->{execRemoteWindowsCommand}->{remoteHost}].\nResults: [$VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} }]~ . "\nError: []");
