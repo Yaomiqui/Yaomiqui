@@ -54,12 +54,11 @@ CONNECTTIMEOUT = ConnectTimeout se refiere al LADO REMOTO de las opciones SSH y 
 TIMEOUT = Timeout en segundos por cada función DO.<br>(Cuando una función DO se vence, la variable Yaomiqui ${TIMEOUT} es establecida con un mensaje de error que comienza con: TIMEOUT REACHED. ...)<br>Valor por Default: 300 (5 minutos).<br><br>Esta variable es exportada dentro de la lista de variables de Ambiente. Usted puede modificarla dentro de cualquier AutoBot
 SSH_TIMEOUT = This is the timeout for SSH connections to establish some connection.<br>Default es 30 segundos.<br><br>Esta variable es exportada dentro de la lista de variables de Ambiente. Usted puede modificarla dentro de cualquier AutoBot
 ENVIRONMENT = El ambiente en el que estamos trabajando. Ejemplo DEV, QA, UAT, STRESS o PROD. Usted decide cuál es el uso de la instancia.<br><br>Esta variable es exportada dentro de la lista de variables de Ambiente. Usted puede leerla, incluso modificarla dentro de cualquier AutoBot
-WINRM_CONNECTOR = Puede elegir conectarse a ambientes Windows mediante WinRM o Winexe.<br><br>WinRM es el método clásico para ejecutar comandos remotos. Usa el puerto 5985 (HTTP) o 5986 (HTTPS).<br>Soporta Kerberos y Autenticación básica<br><br>Winexe necesita instalar winexesvc.exe en el server para poder ejecutar comandos remotos. Usa el puerto 445 (SMB y NetLogon). Mas estable del lado del Servidor, pero intrusivo.<br>Soporta Kerberos y NTLM.<br>No soporta HTTPS.<br><br>Default: WinRM.<br><br>Esta variable es exportada dentro de la lista de variables de Ambiente. Usted puede modificarla dentro de cualquier AutoBot
-WINRM_PROTOCOL = Puede usted instalar certificados SSL y encriptar todo lo que envíe y reciba usando HTTPS (5986), o bien sin certificados, por HTTP (5985).<br><br>Default: HTTP.<br><br>Esta variable es exportada dentro de la lista de variables de Ambiente. Usted puede modificarla dentro de cualquier AutoBot
 
 
 [overview]
 Overview = Vista General
+Warning = Warning
 or_find_Ticket = o encontrar Ticket
 Type_a_ticket_Number = Intrduzca un número de ticket
 Search = Buscar
@@ -173,9 +172,8 @@ on_GitHub = en GitHub
 Version = Versión
 
 
-
-[settings]
-Settings_for_some_things = Configuración de algunas cosas
+[myaccount]
+My_Account_Settings = Configuración de mi cuenta
 Edit_my_record = Editar mi registro
 Password = Contraseña
 Password_again = Contraseña de nuevo
@@ -249,11 +247,6 @@ Username = Nombre de usuario
 Config = Config
 
 
-[overview]
-Overview = Overview
-Warning = Warning
-
-
 [charts]
 Report_Charts = Gráficas de informes
 Ticket_Type = Tipo de Ticket
@@ -270,6 +263,8 @@ October = Octubre
 November = Noviembre
 December = Diciembre
 Date = Fecha
+Show_Line_Charts = Ver Gráficas de Línea
+Show_as_Tables = Ver como Tablas
 
 
 [reports]

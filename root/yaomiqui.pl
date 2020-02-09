@@ -30,17 +30,17 @@ use Data::Dumper;
 use FindBin qw($RealBin);
 use lib $RealBin;
 
-our ($ticketNumber, $dbh, %VAR, %VENV, $jsonCode, $AutoBot);
+our ($ticketNumber, $dbh, %VAR, %VENV, $jsonCode, $AutoBot, $debug);
 # our ($ticketNumber, $dbh, $jsonCode, $AutoBot);
 %VENV = get_vars();
 %VAR = get_add_env_vars();
+
+$debug = $ARGV[0] eq 'debug'? 1 : undef;
 
 $VAR{TIMEOUT} = $VENV{TIMEOUT};
 $VAR{SSH_TIMEOUT} = $VENV{SSH_TIMEOUT};
 $VAR{ENVIRONMENT} = $VENV{ENVIRONMENT};
 ## For WinRM
-$VAR{WINRM_CONNECTOR} = $VENV{WINRM_CONNECTOR};
-$VAR{WINRM_PROTOCOL} = $VENV{WINRM_PROTOCOL};
 $VAR{WINRM_TIMEOUT} = 60;
 
 if ( $ARGV[0] ) {
@@ -60,7 +60,8 @@ $sth->finish;
 
 ## Adding a last Autobot for tickets without no one filter to catch it but
 my @a = ('','NO AUTOBOT NAME','','2018-10-07 00:00:00','1','1',"<AUTO><ON><VAR name='number' compare='exists'/></ON><DO><LOGING comment='No any Autobot caught this Ticket'/><SetVar name='TIMEOUT' value='1'></SetVar></DO></AUTO>");
-## push on references was actually removed entirely in Perl 5.24 or newer
+
+## push on references was actually removed entirely in Perl 5.24 or newer: "push $ref, [@array]" should be "push @$ref, [@array]" now
 push @$AB, [@a];
 
 my $sth = $dbh->prepare("SELECT * FROM ticket WHERE numberTicket = '$ticketNumber'") or engineLog("ERROR :: $ticketNumber : I cannot do Select on ticket table") and exit;
@@ -76,14 +77,14 @@ $jsonCode =~ s/\\/\\\\/g;
 $jsonCode =~ s/\r?\n//g;
 
 # ## debug
-# print "JSONCODE:\n" . $jsonCode . "\n";
+# print "JSONCODE:\n" . $jsonCode . "\n" if $debug;
 
 engineLog("INFO  :: $TTS[1] : Processing ticket with JSON: " . $jsonCode);
 
-my $json = eval { decode_json $jsonCode };		# my $json = eval { from_json($jsonCode) };
+my $json = eval { decode_json $jsonCode };		## my $json = eval { from_json($jsonCode) };
 
 # ## debug
-# print "JSON: " . Dumper($json) . "\n";
+# print "JSON: " . Dumper($json) . "\n" if $debug;
 
 chdir $RealBin;
 
@@ -96,10 +97,12 @@ if ( $json ) {
     	$VAR{$k} = $json->{data}->{$k};
     }
     
-    		# ## debug
-    		# foreach my $key ( sort keys %VAR ) {
-    			# print "$key = $VAR{$key}\n";
-    		# }
+    # ## debug
+    # if ( $debug ) {
+        # foreach my $key ( sort keys %VAR ) {
+            # print "$key = $VAR{$key}\n";
+        # }
+    # }
     	
     ####	CHECK FOR EACH AUTOBOT
     AUTOBOT: for my $i ( 0 .. $#{$AB} ) {
@@ -114,12 +117,12 @@ if ( $json ) {
     	$AB->[$i][6] =~ s/<\/AUTO>/<DO><Sleep seconds='$extendedTO'\/><\/DO><\/AUTO>/;
     	
     	# ## Debug
-    	# print "\nXML code:\n" . $AB->[$i][6] . "\n";
+    	# print "\nXML code:\n" . $AB->[$i][6] . "\n" if $debug;
     	
     	$AB->[$i][6] = forceDOarray($AB->[$i][6]);
     	
     	# ## debug
-    	# print "XML:\n" . qq~$AB->[$i][6]~ . "\n\n";
+    	# print "XML:\n" . qq~$AB->[$i][6]~ . "\n\n" if $debug;
     	
     	my $xml = XML::Simple->new;
     	
@@ -136,20 +139,20 @@ if ( $json ) {
     	};
     	
     		# ## debug
-    		# print Dumper($aBot->{ON}->{VAR}->[0], $aBot->{ON}->{VAR}->[1], $aBot->{ON}->{VAR}->[2]) . "\n";
+    		# print Dumper($aBot->{ON}->{VAR}->[0], $aBot->{ON}->{VAR}->[1], $aBot->{ON}->{VAR}->[2]) . "\n" if $debug;
     	
     	my $catch = 0;
     	
     	foreach my $i ( 0 .. $#{$aBot->{ON}->{VAR}} ) {
     		
     		# ## debug
-    		# print Dumper($aBot->{ON}->{VAR}->[$i]) . "\n";
+    		# print Dumper($aBot->{ON}->{VAR}->[$i]) . "\n" if $debug;
     		
     		my $name = $aBot->{ON}->{VAR}->[$i]->{name}; # to be frienldy next line
     		$catch = compareVAR($VAR{$name}, $aBot->{ON}->{VAR}->[$i]->{compare}, $aBot->{ON}->{VAR}->[$i]->{value}, $VAR{number}, 'no_log');
     		
     		# ## debug
-    		# print "\$catch = $catch\n";
+    		# print "\$catch = $catch\n" if $debug;
     		
     		next AUTOBOT unless $catch;		## 	THIS TICKET DOES NOT APPLIES FOR THIS AUTOBOT BECAUSE ONE OF THEM IS NOT TRUE
     	}
@@ -184,7 +187,7 @@ if ( $json ) {
     			
     			if ( $doLog ) {
     				## debug
-    				# print "GOTCHA!! I have ticket '$TTS[1]' to this Autobot\n\n";
+    				# print "GOTCHA!! I have ticket '$TTS[1]' to this Autobot\n\n" if $debug;
     				$AutoBot = $AB->[$i][0];
     				mlog($TTS[1], qq~Ticket was caught by Autobot ID: [<a href="index.cgi?mod=design&submod=edit_autobot&autoBotId=$AB->[$i][0]" target="_blank">$AB->[$i][0]</a>]~);
     				engineLog(qq~INFO  :: $ticketNumber : Ticket was caught by Autobot ID $AB->[$i][0] ($AB->[$i][1])~);
@@ -202,14 +205,14 @@ if ( $json ) {
     				my $catchInitIF = 0;
     				
     				# ## debug
-    				# print Dumper($aBot->{IF}->{VAR}->[$i]) . "\n";
+    				# print Dumper($aBot->{IF}->{VAR}->[$i]) . "\n"  if $debug;
     				
     				my $name = replaceSpecChar($aBot->{IF}->{VAR}->[$i]->{name}); # to be frienldy next line
     				my $value = replaceSpecChar($aBot->{IF}->{VAR}->[$i]->{value});
     				
     				# ## debug
-    				# print "RAW: $aBot->{IF}->{VAR}->[$i]->{name} <-> $aBot->{IF}->{VAR}->[$i]->{value}\n";
-    				# print "SUS: $name <-> $value\n";
+    				# print "RAW: $aBot->{IF}->{VAR}->[$i]->{name} <-> $aBot->{IF}->{VAR}->[$i]->{value}\n" if $debug;
+    				# ## print "SUS: $name <-> $value\n" if $debug;
     				
     				$catchInitIF = compareVAR($name, $aBot->{IF}->{VAR}->[$i]->{compare}, $value, $VAR{number});
     				
@@ -237,7 +240,7 @@ if ( $json ) {
     		elsif ( exists $aBot->{DO} ) {
     			
     			# ## debug
-    			# print "TICKET: " . $VAR{number} . "\nDUMPER:\n" . Dumper($aBot->{DO}) , "\n";
+    			# print "TICKET: " . $VAR{number} . "\nDUMPER:\n" . Dumper($aBot->{DO}) , "\n" if $debug;
     			
     			runDO($aBot->{DO}, $VAR{number});
     		}
@@ -262,7 +265,8 @@ sub runLOGING {
     my ($comment, $TT) = @_;
     $comment = replaceSpecChar($comment);
     
-    # print $comment."\n" if $TT eq 'NDF00000001';
+    # ## Debug
+    # print $comment."\n" if $TT eq 'NDF00000001' if $debug;
     
     mlog($TT, qq~NOTE: [$comment]~);
 }
@@ -367,7 +371,7 @@ sub runDO {
     			my $linerrfile = '/tmp/' . $TT . '.err';
     			
     			# ## debug
-    			# print "COMMAND:\n" . $linuxCommand . "\n\n";
+    			# print "COMMAND:\n" . $linuxCommand . "\n\n" if $debug;
     			
     			$VAR{ $DO->{execLinuxCommand}->{catchVarName} } = `$linuxCommand 2>$linerrfile`;
     			$VAR{ $DO->{execLinuxCommand}->{catchVarName} } =~ s/^\n//g;
@@ -378,7 +382,7 @@ sub runDO {
     			$VAR{Error} =~ s/\n$//g;
     			
     			# ## debug
-    			# print "RESULTS:\n" . $VAR{ $DO->{execLinuxCommand}->{catchVarName} } . "\n\n";
+    			# print "RESULTS:\n" . $VAR{ $DO->{execLinuxCommand}->{catchVarName} } . "\n\n" if $debug;
     			
     			unless ( $VAR{Error} ) {
     				mlog($TT, qq~Linux Command [$DO->{execLinuxCommand}->{command}] Executed on Local Server [localhost]. Results: [$VAR{ $DO->{execLinuxCommand}->{catchVarName} }]~ . "\nError: []");
@@ -393,6 +397,7 @@ sub runDO {
     		if ( $DO->{execRemoteLinuxCommand} ) {
     			$VAR{Error} = '';
     			my $remoteLinuxCommand;
+                
     			if ( $DO->{execRemoteLinuxCommand}->{publicKey} ) {
     				$DO->{execRemoteLinuxCommand}->{remoteUser} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{remoteUser});
     				$DO->{execRemoteLinuxCommand}->{remoteHost} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{remoteHost});
@@ -450,7 +455,7 @@ sub runDO {
     					$linuxpasswd = $crypt->decode($DO->{execRemoteLinuxCommand}->{EncPasswd}, $DO->{execRemoteLinuxCommand}->{EncKey});
     				}
     				
-    				## print "PASSWORD: " . $DO->{execRemoteLinuxCommand}->{passwd} . "\n";
+    				## print "PASSWORD: " . $DO->{execRemoteLinuxCommand}->{passwd} . "\n" if $debug;
     				my $SACM = $VAR{TIMEOUT} / 60;
     				$DO->{execRemoteLinuxCommand}->{port} = 22 unless $DO->{execRemoteLinuxCommand}->{port};
     				
@@ -468,7 +473,7 @@ sub runDO {
     											-o => 'ServerAliveInterval=60',
     											-o => "ServerAliveCountMax=$SACM",
     											-o => 'TCPKeepAlive=yes']
-    					# master_opts => [-o => 'StrictHostKeyChecking=no', -o => 'LogLevel=QUIET']
+    					## master_opts => [-o => 'StrictHostKeyChecking=no', -o => 'LogLevel=QUIET']
     				);
     				
     				$VAR{Error} = $ssh->error;
@@ -497,7 +502,7 @@ sub runDO {
     			$VAR{Error} = '';
                 
     			my $remoteWindowsCommand = replaceSpecChar($DO->{execRemoteWindowsCommand}->{command});
-    			$remoteWindowsCommand =~ s/'/'\\''/g;
+    			# $remoteWindowsCommand =~ s/'/'\\''/g;
     			$remoteWindowsCommand =~ s/\r//g;
     			$remoteWindowsCommand =~ s/\n//g;
                 # $remoteWindowsCommand =~ s/\\"/"/g;
@@ -517,115 +522,62 @@ sub runDO {
     				$winpasswd = $crypt->decode($DO->{execRemoteWindowsCommand}->{EncPasswd}, $DO->{execRemoteWindowsCommand}->{EncKey});
     			}
     			
-    			my $winerrfile = '/tmp/' . $TT . '.err';
+                engineLog($TT, qq~Using Domain $DO->{execRemoteWindowsCommand}->{remoteDomain}~) if $DO->{execRemoteWindowsCommand}->{remoteDomain};
+                engineLog($TT, qq~Using Kerberos: $DO->{execRemoteWindowsCommand}->{useKerberos}~) if $DO->{execRemoteWindowsCommand}->{useKerberos};
                 
-                ## Changed for WinRM::WinRSExec
-                my @execute;
-                
-                ########################################################
-                ####    WINEXE
-                ########################################################
-    			if ( $VAR{WINRM_CONNECTOR} eq 'Winexe' ) {
-                    engineLog($TT, qq~Using Winexe as Windows connector~);
-                    engineLog($TT, qq~Using Domain $DO->{execRemoteWindowsCommand}->{remoteDomain}~) if $DO->{execRemoteWindowsCommand}->{remoteDomain};
-                    mlog($TT, qq~Using Winexe as Windows connector~);
-                    mlog($TT, qq~Using Domain $DO->{execRemoteWindowsCommand}->{remoteDomain}~) if $DO->{execRemoteWindowsCommand}->{remoteDomain};
-                    
-                    $DO->{execRemoteWindowsCommand}->{remoteDomain} = $DO->{execRemoteWindowsCommand}->{remoteDomain} . '/' if $DO->{execRemoteWindowsCommand}->{remoteDomain};
-                    
-                    $remoteWindowsCommand =~ s/\\"/"/g;
-                    $remoteWindowsCommand =~ s/"/\\"/g;
-                    
-                    ####	FOR UBUNTU 18.04
-                    my $bionic;
-                    my $ostype = `cat /etc/os-release | egrep -w 'ID|VERSION_ID' | sed 's/"//g' | awk -F"=" '{print \$2}'`;
-                    $ostype =~ s/\n//g;
-                    
-                    if ( $ostype eq 'ubuntu18.04' ) {
-                        $bionic = '-d 1';
-                    }
-                    ####
-                    
-                    $VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} } = `winexe $bionic -k $DO->{execRemoteWindowsCommand}->{useKerberos} --uninstall -U '$DO->{execRemoteWindowsCommand}->{remoteDomain}$DO->{execRemoteWindowsCommand}->{remoteUser}\%$winpasswd' //$DO->{execRemoteWindowsCommand}->{remoteHost} '$remoteWindowsCommand' 2>$winerrfile`;
-                    $VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} } =~ s/^\n//g;
-                    $VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} } =~ s/\n$//g;
-                    
-                    ####	FOR UBUNTU 18.04
-                    if ( ( $ostype eq 'ubuntu18.04' ) and ( $VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} } =~ /NT_STATUS/ ) ) {
-                        $VAR{Error} = $VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} };
-                        $VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} } = '';
-                    } else {
-                        ## debug
-                        # print qq~COMMAND LINE:winexe -U '$DO->{execRemoteWindowsCommand}->{remoteDomain}$DO->{execRemoteWindowsCommand}->{remoteUser}\%$DO->{execRemoteWindowsCommand}->{remotePasswd}' //$DO->{execRemoteWindowsCommand}->{remoteHost} '$remoteWindowsCommand'\n~;
-                        
-                        $VAR{Error} = `cat $winerrfile 2>/dev/null`;
-                        $VAR{Error} =~ s/^\n//g;
-                        $VAR{Error} =~ s/\n$//g;
-                    }
-                    ####
+                if ( $DO->{execRemoteWindowsCommand}->{remoteDomain} and ( $DO->{execRemoteWindowsCommand}->{useKerberos} eq 'yes' ) ) {
+                    mlog($TT, qq~Using Domain $DO->{execRemoteWindowsCommand}->{remoteDomain}~);
+                    mlog($TT, qq~Using Kerberos: $DO->{execRemoteWindowsCommand}->{useKerberos}~);
                 }
-                ########################################################
-                ####    WinRM::WinRSExec
-                ########################################################
-                elsif ( $VAR{WINRM_CONNECTOR} eq 'WinRM' ) {
+                else {
+                    $DO->{execRemoteWindowsCommand}->{remoteDomain} = '';
+                    $DO->{execRemoteWindowsCommand}->{useKerberos} = 'no';
+                    mlog($TT, qq~No domain. Using Basic Authentication~);
+                    engineLog($TT, qq~No domain. Using Basic Authentication~);
+                }
+                
+                $DO->{execRemoteWindowsCommand}->{useKerberos} = $DO->{execRemoteWindowsCommand}->{useKerberos} eq 'yes' ? '1' : '0';
+                
+                ## PowerShell some old version compatibility. Some time I did use without double quotes but I can't remember which versions.
+                $remoteWindowsCommand =~ s/^\n*//;
+                $remoteWindowsCommand =~ s/\n*$//;
+                $remoteWindowsCommand =~ s/^powershell\s*\&\s*\{(.+)\}$/PowerShell \"\&{$1}\"/i;
+                $remoteWindowsCommand =~ s/^powershell\s*-command\s*\&\s*\{(.+)\}$/PowerShell -Command \"\&{$1}\"/i;
+                
+                ## Debug
+                # print $remoteWindowsCommand . "\n";
+                # print $DO->{execRemoteWindowsCommand}->{remoteDomain} . $DO->{execRemoteWindowsCommand}->{remoteUser} . "\n";
+                
+                use WinRM::WinRSExec;
+                my $winrm = WinRM::WinRSExec->new({
+                    host            => $DO->{execRemoteWindowsCommand}->{remoteHost},
+                    protocol		=> $DO->{execRemoteWindowsCommand}->{protocol},
+                    timeout			=> $VAR{WINRM_TIMEOUT},
+                    domain          => $DO->{execRemoteWindowsCommand}->{remoteDomain},
+                    username        => $DO->{execRemoteWindowsCommand}->{remoteUser},
+                    password        => $winpasswd,
+                    kerberos        => $DO->{execRemoteWindowsCommand}->{useKerberos}
+                });
+                
+                unless ( $winrm ) {
+                    $VAR{Error} = 'Cannot create a "new" WinRM::WinRSExec object. ' . "$? : $!";
+                }
+                else {
+                    $winrm->execute({ command => $remoteWindowsCommand });
                     
-                    engineLog($TT, qq~Using WinRM as Windows connector~);
-                    engineLog($TT, qq~Using Domain $DO->{execRemoteWindowsCommand}->{remoteDomain}~) if $DO->{execRemoteWindowsCommand}->{remoteDomain};
-                    engineLog($TT, qq~Using Kerberos: $DO->{execRemoteWindowsCommand}->{useKerberos}~) if $DO->{execRemoteWindowsCommand}->{useKerberos};
+                    # ## Debug
+                    # print "WinRM Logger:\n" . $winrm->logger . "\n" if $debug;
                     
-                    mlog($TT, qq~Using WinRM as Windows connector~);
-                    if ( $DO->{execRemoteWindowsCommand}->{remoteDomain} and ( $DO->{execRemoteWindowsCommand}->{useKerberos} eq 'yes' ) ) {
-                        mlog($TT, qq~Using Domain $DO->{execRemoteWindowsCommand}->{remoteDomain}~);
-                        mlog($TT, qq~Using Kerberos: $DO->{execRemoteWindowsCommand}->{useKerberos}~);
+                    if ( $winrm->response ) {
+                        $VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} } = $winrm->response;
+                    }
+                    elsif ( $winrm->error ) {
+                        $VAR{Error} = $winrm->error;
                     }
                     else {
-                        $DO->{execRemoteWindowsCommand}->{remoteDomain} = '';
-                        $DO->{execRemoteWindowsCommand}->{useKerberos} = 'no';
-                        mlog($TT, qq~Using Basic Authentication~);
-                    }
-                    
-                    $DO->{execRemoteWindowsCommand}->{useKerberos} = $DO->{execRemoteWindowsCommand}->{useKerberos} eq 'yes' ? '1' : '0';
-                    
-                    ## PowerShell-SOAP::WinRM to Winexe Microbots compatibility
-                    $remoteWindowsCommand =~ s/^\n*//;
-                    $remoteWindowsCommand =~ s/\n*$//;
-                    $remoteWindowsCommand =~ s/^powershell\s*\&\s*\{(.+)\}$/PowerShell \"\&{$1}\"/i;
-                    
-                    $VAR{WINRM_PROTOCOL} = lc $VAR{WINRM_PROTOCOL};
-                    
-                    ## Debug
-                    # print $remoteWindowsCommand . "\n";
-                    # print $DO->{execRemoteWindowsCommand}->{remoteDomain} . $DO->{execRemoteWindowsCommand}->{remoteUser} . "\n";
-                    
-                    use WinRM::WinRSExec;
-                    my $winrm = WinRM::WinRSExec->new({
-                        host            => $DO->{execRemoteWindowsCommand}->{remoteHost},
-                        protocol		=> $VAR{WINRM_PROTOCOL},
-                        timeout			=> $VAR{WINRM_TIMEOUT},
-                        domain          => $DO->{execRemoteWindowsCommand}->{remoteDomain},
-                        username        => $DO->{execRemoteWindowsCommand}->{remoteUser},
-                        password        => $winpasswd,
-                        kerberos        => $DO->{execRemoteWindowsCommand}->{useKerberos}
-                    });
-                    
-                    unless ($winrm) {
-                        $VAR{Error} = 'Cannot create a "new" WinRM::WinRSExec object. ' . "$? : $!";
-                    }
-                    else {
-                        $winrm->execute({ command => $remoteWindowsCommand });
-                        
-                        if ( $winrm->response ) {
-                            $VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} } = $winrm->response;
-                        }
-                        elsif ( $winrm->error ) {
-                            $VAR{Error} = $winrm->error;
-                        }
-                        else {
-                            $VAR{Error} = 'Unknown error';
-                        }
+                        $VAR{Error} = 'Unknown error';
                     }
                 }
-                ## Changed for WinRM::WinRSExec
                 
     			unless ( $VAR{Error} ) {
     				mlog($TT, qq~Remote Windows Command [$DO->{execRemoteWindowsCommand}->{command}] Executed on Remote Server [$DO->{execRemoteWindowsCommand}->{remoteHost}].\nResults: [$VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} }]~ . "\nError: []");
@@ -633,8 +585,6 @@ sub runDO {
     			else {
     				mlog($TT, qq~Remote Windows Command [$DO->{execRemoteWindowsCommand}->{command}] Executed on Remote Server [$DO->{execRemoteWindowsCommand}->{remoteHost}].\nResults: [$VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} }]~ . "\nError: [" . $VAR{Error} . "]");
     			}
-    			
-    			unlink "$winerrfile";
     		}
     		
     		
@@ -660,18 +610,20 @@ sub runDO {
     			$DO->{JSONtoVar}->{JsonSource} =~ s/\$|\{|\}|\s//g;
     			
     			my $json = eval { decode_json $VAR{ $DO->{JSONtoVar}->{JsonSource} } };
+                
     			## debug
-    			# print "VAR:\n" . Dumper(%{$VAR{$DO->{JSONtoVar}->{catchVarName}}}) . "\n";
+    			# print "VAR:\n" . Dumper(%{$VAR{$DO->{JSONtoVar}->{catchVarName}}}) . "\n" if $debug;
     			
     			if ( $json ) {
     				%{$VAR{$DO->{JSONtoVar}->{catchVarName}}} = %{$json};
+                    
     				## debug
-    				# print "VAR:\n" . Dumper(%{$VAR{$DO->{JSONtoVar}->{catchVarName}}}) . "\n";
+    				# print "VAR:\n" . Dumper(%{$VAR{$DO->{JSONtoVar}->{catchVarName}}}) . "\n" if $debug;
     				
     				mlog($TT, qq~JSONtoVar [$DO->{JSONtoVar}->{catchVarName}] Mapped. Results: [Ok]~);
     			} else {
     				# ## debug
-    				# print "Error: NOT VALID JSON\n";
+    				# print "Error: NOT VALID JSON\n" if $debug;
     				$VAR{Error} = 'NOT VALID JSON';
     				mlog($TT, qq~JSONtoVar [$DO->{JSONtoVar}->{catchVarName}] Not Mapped. Results: [Error: $VAR{Error}]~);
     			}
@@ -684,9 +636,9 @@ sub runDO {
     			$VAR{ $DO->{SetVar}->{name} } = $DO->{SetVar}->{value};
     			
     			## debug
-    			# print "NAME:" . $DO->{SetVar}->{name} . "\n";
-    			# print "VALUE: " . $DO->{SetVar}->{value} . "\n";
-    			# print "VALUE: " . $VAR{ $DO->{SetVar}->{name} } . "\n";
+    			# print "NAME:" . $DO->{SetVar}->{name} . "\n" if $debug;
+    			# print "VALUE: " . $DO->{SetVar}->{value} . "\n" if $debug;
+    			# print "VALUE: " . $VAR{ $DO->{SetVar}->{name} } . "\n" if $debug;
     			
     			mlog($TT, qq~Setting value [$DO->{SetVar}->{value}] to var [$DO->{SetVar}->{name}]. Results: [Ok]~);
     		}
@@ -703,7 +655,7 @@ sub runDO {
     			@{ $VAR{ $DO->{SplitVar}->{arrayName} } } = split(/$separator/, replaceSpecChar($DO->{SplitVar}->{inputVarName}));
     			
     			# ## debug
-    			# print "Split Dumper: \n" . Dumper($VAR{ $DO->{SplitVar}->{arrayName} }) . "\n";
+    			# print "Split Dumper: \n" . Dumper($VAR{ $DO->{SplitVar}->{arrayName} }) . "\n" if $debug;
     			
     			mlog($TT, qq~Splitting variable [$DO->{SplitVar}->{inputVarName}] to Array Variable [$DO->{SplitVar}->{arrayName}]. Results: [Ok]~);
     		}
@@ -717,7 +669,7 @@ sub runDO {
     				$VAR{i} = $i;
     				
     				# ## debug
-    				# print $VAR{i}, "\n";
+    				# print $VAR{i}, "\n" if $debug;
     				
     				runDO($DO->{FOREACH}->{DO}, $TT);
     				if ( $DO->{FOREACH}->{lastIfi} ) {
@@ -743,7 +695,7 @@ sub runDO {
     				$VAR{n} = $i;
     				
     				# ## debug
-    				# print $VAR{n}, "\n";
+    				# print $VAR{n}, "\n" if $debug;
     				
     				runDO($DO->{FOREACH_NUMBER}->{DO}, $TT);
     				if ( $DO->{FOREACH_NUMBER}->{lastIfn} ) {
@@ -781,8 +733,8 @@ sub runDO {
     				$DO->{SendEMAIL}->{From} = replaceSpecChar($DO->{SendEMAIL}->{From});
     				$DO->{SendEMAIL}->{To} = replaceSpecChar($DO->{SendEMAIL}->{To});
     				$DO->{SendEMAIL}->{Body} = replaceSpecChar($DO->{SendEMAIL}->{Body});
-    				# $DO->{SendEMAIL}->{Body} =~ s/\r//g;
-    				# $DO->{SendEMAIL}->{Body} =~ s/\n//g;
+    				## $DO->{SendEMAIL}->{Body} =~ s/\r//g;
+    				## $DO->{SendEMAIL}->{Body} =~ s/\n//g;
     				
     				$DO->{SendEMAIL}->{From} =~ s/\\//g;
     				$DO->{SendEMAIL}->{To} =~ s/\\//g;
@@ -799,7 +751,7 @@ sub runDO {
     							);
     					$msg->attr('content-type.charset' => 'UTF-8');
     					
-    					# $msg->send();
+    					## $msg->send();
     					eval { $msg->send() };
     					$VAR{Error} = "MIME::Lite->send failed: $@" if $@;
     					
@@ -836,7 +788,7 @@ sub runDO {
     		if ( $DO->{LOGING} ) {
     			
     			# ## debug
-    			# print "LOGIN:\n" . Dumper($DO->{LOGING}) . "\n";
+    			# print "LOGIN:\n" . Dumper($DO->{LOGING}) . "\n" if $debug;
     			
     			runLOGING($DO->{LOGING}->{comment}, $TT);
     		}
@@ -858,33 +810,33 @@ sub runDO {
     					my $catchInitIF = 0;
     					
     					# ## debug
-    					# print "Dumper DO-IF-VAR:\n" . Dumper($DO->{IF}->{VAR}->[$i]) . "\n";
-    					# print "Dumper DO-IF:\n" . Dumper($DO->{IF}->{VAR}) . "\n";
+    					# print "Dumper DO-IF-VAR:\n" . Dumper($DO->{IF}->{VAR}->[$i]) . "\n" if $debug;
+    					# print "Dumper DO-IF:\n" . Dumper($DO->{IF}->{VAR}) . "\n" if $debug;
     					
     					my $name = replaceSpecChar($DO->{IF}->{VAR}->[$i]->{name}); # to be frienldy next line
     					my $value = replaceSpecChar($DO->{IF}->{VAR}->[$i]->{value});
     					
     					# ## debug
-    					# print "RAW: $DO->{IF}->{VAR}->[$i]->{name} <-> $DO->{IF}->{VAR}->[$i]->{value}\n";
-    					# print "SUS: $name <-> $value\n";
+    					# print "RAW: $DO->{IF}->{VAR}->[$i]->{name} <-> $DO->{IF}->{VAR}->[$i]->{value}\n" if $debug;
+    					# print "SUS: $name <-> $value\n" if $debug;
     					
     					$catchInitIF = compareVAR($name, $DO->{IF}->{VAR}->[$i]->{compare}, $value, $TT);
     					
     					# ## debug
-    					# print "catchInitIF: " . $catchInitIF . "\n";
+    					# print "catchInitIF: " . $catchInitIF . "\n" if $debug;
     					
     					if ( $catchInitIF ) {
     						if ( $DO->{IF}->{VAR}->[$i]->{DO} ) {
     							
     							# ## debug
-    							# print "DO:\n" . Dumper($DO->{IF}->{VAR}->[$i]->{DO}) . "\n";
+    							# print "DO:\n" . Dumper($DO->{IF}->{VAR}->[$i]->{DO}) . "\n" if $debug;
     							
     							runDO($DO->{IF}->{VAR}->[$i]->{DO}, $TT);
     						}
     						else {
     							
     							# ## debug
-    							# print "IF:\n" . Dumper($DO->{IF}) . "\n";
+    							# print "IF:\n" . Dumper($DO->{IF}) . "\n" if $debug;
     							
     							if ( $DO->{IF}->{DO}->{LOGING} ) {
     								my $comment = replaceSpecChar($DO->{IF}->{DO}->{LOGING}->{comment});

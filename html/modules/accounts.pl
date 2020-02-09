@@ -119,9 +119,10 @@ if ( $input{submod} eq 'save_record' ) {
 		tickets='$input{tickets}',
 		tickets_form='$input{tickets_form}',
 		logs='$input{logs}',
-		charts='$input{charts}',
+		charts='1',
 		reports='$input{reports}',
-		config='$input{config}'
+		config='$input{config}',
+		my_account='1'
 		WHERE idUser='$input{idUser}'");
 		$sth1->execute();
 		$sth1->finish;
@@ -216,7 +217,7 @@ if ( $input{submod} eq 'new_record' ) {
 				$input{config} = '0' unless $input{config};
 				
 				$insert_string = qq~INSERT INTO permissions (
-				idUser, design, accounts, accounts_edit, tickets, tickets_form, logs, charts, reports, config
+				idUser, design, accounts, accounts_edit, tickets, tickets_form, logs, reports, config
 				) VALUES (
 				'$idUserNew',
 				'$input{design}',
@@ -225,7 +226,6 @@ if ( $input{submod} eq 'new_record' ) {
 				'$input{tickets}',
 				'$input{tickets_form}',
 				'$input{logs}',
-				'$input{charts}',
 				'$input{reports}',
 				'$input{config}')~;
 				$sth = $dbh->prepare("$insert_string");

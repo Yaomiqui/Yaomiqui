@@ -116,6 +116,7 @@ sub get_permissions {
 	$PERM{reports} = $perm[12];
 	$PERM{about} = $perm[13];
 	$PERM{config} = $perm[14];
+	$PERM{my_account} = $perm[15];
 	
 	return %PERM;
 }
@@ -237,10 +238,10 @@ sub login {
 	<html xmlns="http://www.w3.org/1999/xhtml">
 		<head>
 			<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-			<title>LogIn :: YAOMIQUI :: RPA Orchestrator :: Automation tool for repetitive tasks</title>
+			<title>LogIn :: YAOMIQUI :: Automation Platform :: For business repetitive tasks</title>
 			<link rel="icon" type="image/png" href="images/favicon.ico" />
 			<meta name="keywords" content="rpa,automation,tasks,repetitive" />
-			<meta name="description" content="RPA, Automation for repetitive task" />
+			<meta name="description" content="Automation for repetitive task,RPA" />
 		</head>
 		<style>
 			html {
@@ -257,35 +258,37 @@ sub login {
 				color: #292929;
 				margin: 0px;
 				padding: 0px;
-				background-color: #E9E9E9;
+				background-color: #FFFFFF;
 			}
 			.topContent {
 				border-radius: 10px 10px 0px 0px;
-				background: #25414E;
+				background: #407692;
 				width: 500px;
 				margin: auto;
 				margin-top: 150px;
-				color: #FFF;
+				color: #FFFFFF;
 				font-size: 14px;
 				font-weight: bold;
 				padding: 12px 20px;
-				border: 1px solid #417690;
+				border: 1px solid #407692;
 			}
 			.content {
 				border-radius: 0px 0px 10px 10px;
-				background: #417690;
+				background: #FBFBFB;
 				width: 500px;
 				margin: auto;
-				color: #FFF;
+				color: #4D4D4D;
 				padding: 70px 20px;
-				border: 1px solid #417690;	/*4183F4*/
+				border-right: 1px solid #407692;
+				border-bottom: 1px solid #407692;
+				border-left: 1px solid #407692;
 				/*min-height: 100px;*/
 				/*vertical-align: middle;*/
 				text-align: center;
 			}
 			input[type=text] {
-				padding: 8px 10px;
-				border: 1px solid #E5E5E5;
+				padding: 10px 10px;
+				border: 1px solid #DDE9EF;
 				border-radius: 4px;
 				width: 200px;
 				-webkit-transition: 0.5s;
@@ -297,8 +300,8 @@ sub login {
 				border: 1px solid #BDBDBD;
 			}
 			input[type=password] {
-				padding: 8px 10px;
-				border: 1px solid #E5E5E5;
+				padding: 10px 10px;
+				border: 1px solid #DDE9EF;
 				border-radius: 4px;
 				width: 200px;
 				-webkit-transition: 0.5s;
@@ -312,13 +315,14 @@ sub login {
 			input[type=button], input[type=submit], input[type=reset] {
 				padding: 6px 10px;
 				border-radius: 2px;
-				border: 1px solid #D3D3D3;
-				background-color: #E2E2E2;
+				border: 1px solid #46719B;
+				background-color: #1E90FF;
 				cursor: pointer;
+                color: #FFFFFF;
 			}
 		</style>
 		<body>
-			<div class="topContent">
+			<div class="topContent" title="Version $VAR{Version}">
 				$MSG{Yaomiqui_Login}
 			</div>
 			

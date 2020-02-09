@@ -43,37 +43,38 @@ sub header {
 	unless ( $input{mod} ) { $ahome = 'active' }
 	if ( $input{mod} eq 'overview' ) { $aoverview = 'active' }
 	if ( $input{mod} eq 'design' ) { $adesign = 'active' }
-	elsif ( $input{mod} =~ /^accounts|accounts_edit$/ ) { $aaccounts = 'active' }
+	elsif ( $input{mod} =~ /^accounts$|^accounts_edit$|^my_account$/ ) { $aaccounts = 'active' }
 	elsif ( $input{mod} eq 'settings' ) { $asettings = 'active' }
 	elsif ( $input{mod} eq 'tickets_form' ) { $atktform = 'active' }
 	elsif ( $input{mod} eq 'about' ) { $aabout = 'active' }
-	elsif ( $input{mod} =~ /^charts|reports$/ ) { $areports = 'active' }
+	elsif ( $input{mod} =~ /^charts|reports$/ ) { $acharts = 'active' }
 	elsif ( $input{mod} eq 'config' ) { $aconfig = 'active' }
-	# elsif ( $input{mod} eq 'reports' ) { $acharts = 'active' }
+	# elsif ( $input{mod} eq 'charts' ) { $acharts = 'active' }
 	
 	if ( $username ne 'Guest' ) {
 		$header .= qq~
 		<ul class="topnavbar">
-			<li class="topnavbar" style="margin-left: 40px"><a href="index.cgi" class="$aoverview">$MSG{Home}</a></li>
+			<li class="topnavbar" style="margin-left: 20px"><a href="index.cgi" class="$acharts">$MSG{Home}</a></li>
 			~;
 			
+            $header .= qq~<li class="topnavbar"><a href="index.cgi?mod=overview" class="$aoverview">$MSG{Overview}</a></li>~ if $PRM{overview};
 			$header .= qq~<li class="topnavbar"><a href="index.cgi?mod=design" class="$adesign">$MSG{AutoBot_Design}</a></li>~ if $PRM{design};
 			$header .= qq~<li class="topnavbar"><a href="index.cgi?mod=tickets_form" class="$atktform">$MSG{Ticket_Form}</a></li>~ if $PRM{tickets_form};
 			# $header .= qq~<li class="topnavbar"><a href="index.cgi?mod=charts" class="$acharts">$MSG{Charts}</a></li>~ if $PRM{charts};
 			# $header .= qq~<li class="topnavbar"><a href="index.cgi?mod=reports" class="$areports">$MSG{Reports}</a></li>~ if $PRM{reports};
-			$header .= qq~<li class="topnavbar"><a href="index.cgi?mod=charts" class="$areports">$MSG{Reports}</a></li>~ if $PRM{charts};
-			$header .= qq~<li class="topnavbar"><a href="index.cgi?mod=accounts" class="$aaccounts">$MSG{Accounts}</a></li>~ if $PRM{accounts};
+			$header .= qq~<li class="topnavbar"><a href="index.cgi?mod=my_account" class="$aaccounts">$MSG{Accounts}</a></li>~;
 			$header .= qq~<li class="topnavbar"><a href="index.cgi?mod=config" class="$aconfig">Config</a></li>~ if $PRM{config};
+			# $header .= qq~<li class="topnavbar"><a href="index.cgi?mod=settings" class="$asettings">$MSG{My_Account} [$username]</a></li>~};
 			
-			$header .= qq~<li class="topnavbar"><a href="index.cgi?mod=settings" class="$asettings">$MSG{My_Account} [$username]</a></li>
+			$header .= qq~
 			<li class="topnavbar"><a href="index.cgi?mod=about" class="$aabout">$MSG{About}</a></li>
-			<li class="topnavbar" style="float:right"><font color="#FFFFCC" title="$MSG{Environment}">[$VAR{ENVIRONMENT}]</font> <a href="index.cgi?mod=logout" onclick="return confirm('$MSG{Are_you_sure_you_want_to_log_off} ?')">$MSG{Log_off}</a></li>
+			<li class="topnavbar" style="float:right"><font color="#FFFFCC">[$username on $VAR{ENVIRONMENT}]</font> <a href="index.cgi?mod=logout" onclick="return confirm('$MSG{Are_you_sure_you_want_to_log_off} ?')">$MSG{Log_off}</a></li>
 		</ul>
 		
 		<ul class="leftnavbar">
 		~;
 		
-		my ($abotlist, $crnewabot, $timeline, $reports, $charts, $accounts, $accounts_edit, $about, $cryptPasswd);
+		my ($abotlist, $crnewabot, $timeline, $reports, $charts, $myaccount, $accounts, $accounts_edit, $about, $cryptPasswd);
 		unless ( $input{submod} ) { $list = 'active' }
 		
 		if ( $input{mod} eq 'overview' ) {
@@ -102,16 +103,17 @@ sub header {
 		if ( $input{mod} =~ /^charts|reports$/ ) {
 			if ( $input{mod} eq 'charts' ) { $charts = 'active' }
 			if ( $input{mod} eq 'reports' ) { $reports = 'active' }
-			$header .= qq~
-			<li class="leftnavbar"><a href="index.cgi?mod=charts" class="$charts">$MSG{Charts}</a></li>
-			<li class="leftnavbar"><a href="index.cgi?mod=reports" class="$reports">$MSG{Saving_Reports}</a></li>~;
+			$header .= qq~<li class="leftnavbar"><a href="index.cgi?mod=charts" class="$charts">$MSG{Charts}</a></li>~ if $PRM{charts};
+			$header .= qq~<li class="leftnavbar"><a href="index.cgi?mod=reports" class="$reports">$MSG{Saving_Reports}</a></li>~ if $PRM{reports};
 		}
-		if ( $input{mod} =~ /^accounts|accounts_edit$/ ) {
+		if ( $input{mod} =~ /^accounts$|^accounts_edit$|^my_account$/ ) {
+			if ( $input{mod} eq 'my_account' ) { $myaccount = 'active' }
 			if ( $input{mod} eq 'accounts' ) { $accounts = 'active' }
 			if ( $input{mod} eq 'accounts_edit' ) { $accounts_edit = 'active' unless $input{idUser} }
-			$header .= qq~
-			<li class="leftnavbar"><a href="index.cgi?mod=accounts" class="$accounts">$MSG{Accounts_List}</a></li>
-			<li class="leftnavbar"><a href="index.cgi?mod=accounts_edit" class="$accounts_edit">$MSG{New_User}</a></li>~;
+			$header .= qq~<li class="leftnavbar"><a href="index.cgi?mod=my_account" class="$myaccount">$MSG{My_Account}</a></li>~;
+            $header .= qq~<li class="leftnavbar"><a href="index.cgi?mod=accounts" class="$accounts">$MSG{Accounts_List}</a></li>~ if $PRM{accounts};
+			$header .= qq~<li class="leftnavbar"><a href="index.cgi?mod=accounts_edit" class="$accounts_edit">$MSG{New_User}</a></li>~ if $PRM{accounts_edit};
+            
 		}
 		if ( $input{mod} eq 'about' ) {
 			if ( $input{submod} eq 'license' ) { $about = 'active' }

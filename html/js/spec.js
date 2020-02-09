@@ -98,7 +98,7 @@ var specifications={
 					// actionParameter: "<IF/>"
 				// }
 			],
-			canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "FOREACH_NUMBER", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand", "IntegerArray", "Sleep"]
+			canDropTo: ["IF", "DO", "VAR", "FOREACH", "FOREACH_NUMBER", "AUTOBOT"]
 		},
 		"VAR": {
 			backgroundColour: '#F1F9FD',
@@ -143,11 +143,6 @@ var specifications={
 					actionParameter: { name: "value", value: "" },
 					hideIf: function(jsElement){ return jsElement.hasAttribute("value"); }
 				},
-				// Deletes VAR
-				{
-					caption: "Delete this <VAR>",
-					action: Xonomy.deleteElement
-				},
 				{
 					caption: "New <VAR> before this",
 					action: Xonomy.newElementBefore,
@@ -157,9 +152,14 @@ var specifications={
 					caption: "New <VAR> after this",
 					action: Xonomy.newElementAfter,
 					actionParameter: "<VAR name='' compare=''><DO/></VAR>"
+				},
+                // Deletes VAR
+				{
+					caption: "Delete this <VAR>",
+					action: Xonomy.deleteElement
 				}
 			],
-			canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "FOREACH_NUMBER", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand", "IntegerArray", "Sleep", "DecodePWDtoVar"],
+			canDropTo: ["ON", "IF", "DO", "VAR", "FOREACH", "FOREACH_NUMBER"],
 			attributes: {
 				"name": {
 					asker: Xonomy.askString,
@@ -217,7 +217,7 @@ var specifications={
 				{
 					caption: "Append a <execRemoteWindowsCommand>",
 					action: Xonomy.newElementChild,
-					actionParameter: "<execRemoteWindowsCommand catchVarName=\"\" remoteHost=\"\" domain=\"\" remoteUser=\"\" passwd=\"\" useKerberos=\"yes\" EncKey=\"\" EncPasswd=\"\"><command><![CDATA[]]></command></execRemoteWindowsCommand>"
+					actionParameter: "<execRemoteWindowsCommand catchVarName=\"\" remoteHost=\"\" domain=\"\" remoteUser=\"\" passwd=\"\" useKerberos=\"yes\" EncKey=\"\" EncPasswd=\"\" protocol=\"http\"><command><![CDATA[]]></command></execRemoteWindowsCommand>"
 				},
 				{
 					caption: "Append a <SetVar>",
@@ -295,23 +295,22 @@ var specifications={
 					action: Xonomy.newElementChild,
 					actionParameter: "<END value=\"Resolved\"/>"
 				},
-				// {
-					// caption: "New <DO> before this",
-					// action: Xonomy.newElementBefore,
-					// actionParameter: "<DO/>"
-				// },
-				// {
-					// caption: "New <DO> after this",
-					// action: Xonomy.newElementAfter,
-					// actionParameter: "<DO/>"
-				// },
-				// Deletes DO
+				{
+					caption: "New <DO> before this",
+					action: Xonomy.newElementBefore,
+					actionParameter: "<DO/>"
+				},
+				{
+					caption: "New <DO> after this",
+					action: Xonomy.newElementAfter,
+					actionParameter: "<DO/>"
+				},
 				{
 					caption: "Delete this <DO>",
 					action: Xonomy.deleteElement
 				},
 			],
-			canDropTo: ["AUTO", "JSONtoVar", "IF", "DO", "VAR", "FOREACH", "FOREACH_NUMBER", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand", "IntegerArray", "Sleep"]
+			canDropTo: ["AUTO", "DO", "VAR", "FOREACH", "FOREACH_NUMBER"]
 			// attributes: {
 				// "id": {
 					// asker: Xonomy.askString,
@@ -342,7 +341,7 @@ var specifications={
 					actionParameter: "<execLinuxCommand catchVarName=\"\"><command><![CDATA[]]></command></execLinuxCommand>"
 				}
 			],
-			canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "FOREACH_NUMBER", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand", "IntegerArray", "Sleep", "DecodePWDtoVar"],
+			canDropTo: ["DO"],
 			attributes: {
 				"catchVarName": {
 					asker: Xonomy.askString,
@@ -373,7 +372,7 @@ var specifications={
 					actionParameter: "<execRemoteLinuxCommand catchVarName=\"\" remoteHost=\"\" remoteUser=\"\" passwd=\"\" port=\"22\" publicKey=\"\" EncKey=\"\" EncPasswd=\"\"><command><![CDATA[]]></command></execRemoteLinuxCommand>"
 				}
 			],
-			canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "FOREACH_NUMBER", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand", "IntegerArray", "Sleep", "DecodePWDtoVar"],
+			canDropTo: ["DO"],
 			attributes: {
 				"catchVarName": {
 					asker: Xonomy.askString,
@@ -417,15 +416,15 @@ var specifications={
 				{
 					caption: "New <execRemoteWindowsCommand> before this",
 					action: Xonomy.newElementBefore,
-					actionParameter: "<execRemoteWindowsCommand catchVarName=\"\" remoteHost=\"\" domain=\"\" remoteUser=\"\" passwd=\"\" useKerberos=\"yes\" EncKey=\"\" EncPasswd=\"\"><command><![CDATA[]]></command></execRemoteWindowsCommand>"
+					actionParameter: "<execRemoteWindowsCommand catchVarName=\"\" remoteHost=\"\" domain=\"\" remoteUser=\"\" passwd=\"\" useKerberos=\"yes\" EncKey=\"\" EncPasswd=\"\" protocol=\"http\"><command><![CDATA[]]></command></execRemoteWindowsCommand>"
 				},
 				{
 					caption: "New <execRemoteWindowsCommand> after this",
 					action: Xonomy.newElementAfter,
-					actionParameter: "<execRemoteWindowsCommand catchVarName=\"\" remoteHost=\"\" domain=\"\" remoteUser=\"\" passwd=\"\" useKerberos=\"yes\" EncKey=\"\" EncPasswd=\"\"><command><![CDATA[]]></command></execRemoteWindowsCommand>"
+					actionParameter: "<execRemoteWindowsCommand catchVarName=\"\" remoteHost=\"\" domain=\"\" remoteUser=\"\" passwd=\"\" useKerberos=\"yes\" EncKey=\"\" EncPasswd=\"\" protocol=\"http\"><command><![CDATA[]]></command></execRemoteWindowsCommand>"
 				}
 			],
-			canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "FOREACH_NUMBER", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand", "IntegerArray", "Sleep", "DecodePWDtoVar"],
+			canDropTo: ["DO"],
 			attributes: {
 				"catchVarName": {
 					asker: Xonomy.askString,
@@ -458,6 +457,13 @@ var specifications={
 						{value: "no", caption: "No"},
 					]
 				},
+                "protocol": {
+					asker: Xonomy.askPicklist,
+					askerParameter: [
+						{value: "http", caption: "http"},
+						{value: "https", caption: "https"},
+					]
+				},
 			}
 		},
 		
@@ -480,7 +486,7 @@ var specifications={
 					actionParameter: "<JSONtoVar catchVarName=\"\"><JsonSource><![CDATA[]]></JsonSource></JSONtoVar>"
 				}
 			],
-			canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "FOREACH_NUMBER", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand", "IntegerArray", "Sleep", "DecodePWDtoVar"],
+			canDropTo: ["DO"],
 			attributes: {
 				"catchVarName": {
 					asker: Xonomy.askString,
@@ -510,7 +516,7 @@ var specifications={
 					actionParameter: "<SetVar name=\"\"><value><![CDATA[]]></value></SetVar>"
 				}
 			],
-			canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "FOREACH_NUMBER", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand", "IntegerArray", "Sleep", "DecodePWDtoVar"],
+			canDropTo: ["DO"],
 			attributes: {
 				"name": {
 					asker: Xonomy.askString,
@@ -530,7 +536,7 @@ var specifications={
 					action: Xonomy.deleteElement
 				}
 			],
-			canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "FOREACH_NUMBER", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand", "IntegerArray", "Sleep", "DecodePWDtoVar"],
+			canDropTo: ["DO"],
 			attributes: {
 				"arrayName": {
 					asker: Xonomy.askString,
@@ -563,7 +569,7 @@ var specifications={
 					// actionParameter: "<SplitVar arrayName=\"\" separator=\"\" inputVarName=\"\"/>"
 				// }
 			],
-			canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "FOREACH_NUMBER", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand", "IntegerArray", "Sleep", "DecodePWDtoVar"],
+			canDropTo: ["DO"],
 			attributes: {
 				"arrayName": {
 					asker: Xonomy.askString,
@@ -648,7 +654,7 @@ var specifications={
 					action: Xonomy.deleteElement
 				},
 			],
-			canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "FOREACH_NUMBER", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand", "IntegerArray", "Sleep", "DecodePWDtoVar"],
+			canDropTo: ["DO"],
 			attributes: {
 				"arrayName": {
 					asker: Xonomy.askString,
@@ -682,7 +688,7 @@ var specifications={
 					action: Xonomy.deleteElement
 				},
 			],
-			canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "FOREACH_NUMBER", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand", "IntegerArray", "Sleep", "DecodePWDtoVar"],
+			canDropTo: ["DO"],
 			attributes: {
 				"element": {
 					isReadOnly: true
@@ -718,7 +724,7 @@ var specifications={
 					actionParameter: "<AUTOBOT idAutoBot=\"\" catchVarName=\"\"><JsonVars><![CDATA[]]></JsonVars></AUTOBOT>"
 				}
 			],
-			canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "FOREACH_NUMBER", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand", "IntegerArray", "Sleep", "DecodePWDtoVar"],
+			canDropTo: ["DO"],
 			attributes: {
 				"idAutoBot": {
 					asker: Xonomy.askString,
@@ -786,7 +792,7 @@ var specifications={
 					action: Xonomy.deleteElement
 				},
 			],
-			canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "FOREACH_NUMBER", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand", "IntegerArray", "Sleep", "DecodePWDtoVar"],
+			canDropTo: ["IF", "DO", "VAR", "FOREACH", "FOREACH_NUMBER", "AUTOBOT", "execLinuxCommand", "execRemoteLinuxCommand", "execRemoteWindowsCommand"],
 			attributes: {
 				"name": {
 					asker: Xonomy.askString,
@@ -869,7 +875,7 @@ var specifications={
 					action: Xonomy.deleteElement
 				},
 			],
-			canDropTo: ["JSONtoVar", "IF", "DO", "VAR", "FOREACH", "FOREACH_NUMBER", "execLinuxCommand", "AUTOBOT", "RETURN", "END", "SetVar", "SplitFile", "SplitVar", "execRemoteLinuxCommand", "execRemoteWindowsCommand", "IntegerArray", "Sleep", "DecodePWDtoVar"],
+			canDropTo: ["DO"],
 			attributes: {
 				"From": {
 					asker: Xonomy.askString,

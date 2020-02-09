@@ -35,14 +35,6 @@ unless ( $input{submod} ) {
 			}
 			$inputVarValue .= qq~</select>~;
 		}
-        elsif ( $conf->[$i][1] eq 'WINRM_CONNECTOR' ) {
-            my $selected = $conf->[$i][2] eq 'Winexe' ? 'selected' : '';
-			$inputVarValue = qq~<select name="varValue"><option value="WinRM">WinRM</option><option value="Winexe" $selected>Winexe</option></select>~;
-        }
-        elsif ( $conf->[$i][1] eq 'WINRM_PROTOCOL' ) {
-            my $selected = $conf->[$i][2] eq 'HTTPS' ? 'selected' : '';
-			$inputVarValue = qq~<select name="varValue"><option value="HTTP">HTTP</option><option value="HTTPS" $selected>HTTPS</option></select>~;
-        }
 		else {
 			$inputVarValue .= qq~<input type="text" name="varValue" value="$conf->[$i][2]">~;
 		}

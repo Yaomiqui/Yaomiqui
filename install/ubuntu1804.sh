@@ -33,14 +33,10 @@ apt-get update
 
 apt install -y libsoap-lite-perl
 
-apt install -y apache2 mysql-server sshpass libnet-openssh-perl libdbi-perl libdbd-mysql-perl libjson-perl libtest-json-perl libxml-simple-perl libxml-validate-perl libparallel-forkmanager-perl libnet-openssh-perl sendmail libmime-lite-perl libmath-random-isaac-perl curl realmd krb5-kdc krb5-pkinit krb5-sync-tools krb5-user
+apt install -y curl apache2 mysql-server sshpass libnet-openssh-perl libdbi-perl libdbd-mysql-perl libjson-perl libtest-json-perl libxml-simple-perl libxml-validate-perl libparallel-forkmanager-perl libnet-openssh-perl sendmail libmime-lite-perl libmath-random-isaac-perl realmd krb5-kdc krb5-pkinit krb5-sync-tools krb5-user
 
 # Install winexe. You can comment the next five lines to enhance performance. Then you can run it later.
-apt-get -y install python2.7 gcc-mingw-w64 libtevent-dev samba-dev libsmbclient comerr-dev libc6-dev libpopt-dev libsmbclient-dev samba-libs --fix-missing
-
-sleep 2
-
-dpkg -i winexe_4.8.0.0-19_amd64-bionic.deb
+# apt-get -y install python2.7 gcc-mingw-w64 libtevent-dev samba-dev libsmbclient comerr-dev libc6-dev libpopt-dev libsmbclient-dev samba-libs --fix-missing
 
 /usr/bin/perl -pi -e 's/Timeout 300/Timeout 1200\nTimeout 1200\nLimitRequestLine 100000\nLimitRequestFieldSize 100000/' /etc/apache2/apache2.conf
 
@@ -73,6 +69,7 @@ chown -R www-data:www-data /var/www/yaomiqui
 mysqlPasswdAdmin=`./generateEncKey.pl 12`
 /usr/bin/perl -pi -e "s/DBPASSWD/DBPASSWD \= ${mysqlPasswdAdmin}/g" /var/www/yaomiqui/yaomiqui.conf
 /usr/bin/perl -pi -e "s/MYSQL_PASSWD/${mysqlPasswdAdmin}/g" yaomiqui.sql
+
 echo "" >> yaomiqui.sql
 echo "SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode, 'ONLY_FULL_GROUP_BY', ''));" >> yaomiqui.sql
 echo "" >> yaomiqui.sql

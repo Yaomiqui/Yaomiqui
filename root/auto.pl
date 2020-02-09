@@ -80,5 +80,18 @@ sub get_vars {
 		}
 	}
 	close $file;
+    
+    use DBI;
+    my $dbh = DBI->connect("DBI:mysql:$VARS{'DB'}:$VARS{'DBHOST'}", $VARS{'DBUSER'}, $VARS{'DBPASSWD'}) or die "Error... $DBI::errstr mysql_error()<br>";
+    my $sth = $dbh->prepare("SELECT varName, varValue FROM configVars");
+    $sth->execute();
+    my $cnfVar = $sth->fetchall_arrayref;
+    $sth->finish;
+    $dbh->disconnect if ($dbh);
+    
+    for my $i ( 0 .. $#{$cnfVar} ) {
+    	$VARS{ $cnfVar->[$i][0] } = $cnfVar->[$i][1] if $cnfVar->[$i][1];
+    }
+    
 	return %VARS;
 }

@@ -31,7 +31,7 @@ use Log::Man;
 our(%input, %VAR, %MSG, %PRM, $username, $html, $header, $footer, $module, $module_file, $theme, $dbh, $encKey);
 require 'common.pl';
 %VAR = get_vars();
-$VAR{Version} = '1.8';
+$VAR{Version} = '2.0';
 $encKey = getEncKey();
 $username = get_session();
 $theme = get_theme();
@@ -106,12 +106,39 @@ sub common_header {
 	
 	<script type="text/javascript" src="js/xonomy.js"></script>
 	<script type="text/javascript" src="js/spec.js"></script>
-	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 	<script type="text/javascript" src="js/miquiloniToolTip.js"></script>
 	<link rel="stylesheet" type="text/css" href="css/xonomy.css" />
-	
+    
 	<link href="themes/$theme/css/style.css" rel="stylesheet">
 	~;
+    
+    if ( $input{mod} =~ /^charts$|^reports$/ ) {
+        $header .= qq~
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    
+    <link href="js/charts/styles.css" rel="stylesheet">
+    
+    <!--
+    <script>
+      window.Promise ||
+        document.write(
+          '<script src="charts/polyfill.min.js"><\/script>'
+        )
+      window.Promise ||
+        document.write(
+          '<script src="charts/classList.min.js"><\/script>'
+        )
+      window.Promise ||
+        document.write(
+          '<script src="charts/findIndex.js"><\/script>'
+        )
+    </script>
+    -->
+
+    <script type="text/javascript" src="js/charts/apexcharts.min.js"></script>
+        ~;
+    }
 	
 	return  $header;
 }

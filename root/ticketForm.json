@@ -2,7 +2,7 @@
 	"ticket": {
 		"number": "INC0000001",
 		"sys_id": "abcdef123456",
-		"subject": "MY SUBJECT TO BE FILTERED BY AUTOBOT",
+		"subject": "MY SUBJECT TO BE FILTERED BY SPECIFIC AUTOBOT",
 		"state": "new",
 		"type": "INCIDENT"
 	},

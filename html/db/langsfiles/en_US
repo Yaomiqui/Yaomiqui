@@ -54,12 +54,11 @@ CONNECTTIMEOUT = ConnectTimeout refers to the REMOTE SIDE SSH options and it mea
 TIMEOUT = Timeout in seconds for each DO function.<br>(When some DO function is timed out, the Yaomiqui ${TIMEOUT} variable is filled with an error message starting with: TIMEOUT REACHED. ...)<br>Default value: 300 (5 minutes).<br><br>This variable is exported to Environment variables list. You can modify inside any AutoBot
 SSH_TIMEOUT = This is the timeout for SSH connections to establish some connection.<br>Default is 30 seconds.<br><br>This variable is exported to Environment variables list. You can modify inside any AutoBot
 ENVIRONMENT = Environment we are working on. Example: DEV, QA, UAT, STRESS or PROD. You decide what the use of the instance is.<br><br>This variable is exported to Environment variables list. You can read it, even modify it within any AutoBot
-WINRM_CONNECTOR = You can choose to connect to Windows environments using WinRM or Winexe.<br><br>WinRM is the classic method to execute remote commands. It uses port 5985 (HTTP) or 5986 (HTTPS).<br>Supports Kerberos and Basic Authentication.<br><br>Winexe needs to install winexesvc.exe on the server in order to execute remote commands. Uses port 445 (SMB and NetLogon). More stable on Server side, but intrusive.<br>Supports Kerberos and NTLM.<br>Does not support HTTPS.<br><br>Default: WinRM.<br><br>This variable is exported to Environment variables list. You can modify inside any AutoBot
-WINRM_PROTOCOL = You can install SSL certificates and encrypt everything you send and receive using HTTPS (5986), or without certificates, over HTTP (5985).<br><br>Default: HTTP.<br><br>This variable is exported to Environment variables list. You can modify inside any AutoBot
 
 
 [overview]
 Overview = Overview
+Warning = Warning
 or_find_Ticket = or find Ticket
 Type_a_ticket_Number = Type a ticket Number
 Search = Search
@@ -173,8 +172,8 @@ on_GitHub = on GitHub
 Version = Version
 
 
-[settings]
-Settings_for_some_things = Settings for some things
+[myaccount]
+My_Account_Settings = My Account Settings
 Edit_my_record = Edit my record
 Password = password
 Password_again = Password again
@@ -248,11 +247,6 @@ Username = Username
 Config = Config
 
 
-[overview]
-Overview = Overview
-Warning = Warning
-
-
 [charts]
 Report_Charts = Report Charts
 Ticket_Type = Ticket Type
@@ -269,6 +263,8 @@ October = October
 November = November
 December = December
 Date = Date
+Show_Line_Charts = Show Line Charts
+Show_as_Tables = Show as Tables
 
 
 [reports]

@@ -165,13 +165,7 @@ unless ( $input{submod} ) {
 	$html .= qq~<p align="right" style="padding-right: 100px">
 	<input type="button" class="blueLightButton" onclick="location.href='index.cgi?mod=reports&submod=edit_config';" value="Config" />
 	</p>~;
-	
-	$html .= qq~
-	<script type="text/javascript">
-		google.charts.load('current', {'packages':['bar']});
-	</script>
-	~;
-	
+    
 	# $html .= qq~<table cellpadding="0" cellspacing="0" border="0" style="background-color: #FFFFFF">~;
 	
 	connected();
@@ -182,9 +176,12 @@ unless ( $input{submod} ) {
 	
 	# my $qtTt = 3;
 	my $qtTt = $#{$TypeTT} + 1;
-	my $grid;
+	my $grid = {};
+    my $categories;
 	
 	for my $i ( 0 .. $#{$TypeTT} )  {
+        $categories .= qq~'$TypeTT->[$i][0]', ~;
+        
 		my $sth = $dbh->prepare("SELECT COUNT(*) FROM ticket WHERE typeTicket = '$TypeTT->[$i][0]' AND initialDate BETWEEN '$year-$month-01 00:00:00' and '$year-$month-31 23:59:59'");
 		$sth->execute();
 		my ($cnt) = $sth->fetchrow_array;
@@ -202,46 +199,81 @@ unless ( $input{submod} ) {
 			my $currentCost = $cnt * $CST->[0][2];
 			my $save = $oldCost - $currentCost;
 			
-			# $html .= qq~$TypeTT->[$i][0] - $oldCost - $currentCost - $save<br>~;
-			
-			$grid .= qq~['$TypeTT->[$i][0]', $oldCost, $currentCost, $save],~;
+			$grid->{Old_Cost} .= "$oldCost, ";
+			$grid->{Current_Cost} .= "$currentCost, ";
+			$grid->{Saving} .= "$save, ";
 		}
 		
 	}
+    $categories =~ s/, $//;
+    $grid->{Old_Cost} =~ s/, $//;
+    $grid->{Current_Cost} =~ s/, $//;
+    $grid->{Saving} =~ s/, $//;
+    
+    my $series;
+    foreach my $name ( 'Old_Cost', 'Current_Cost', 'Saving' ) {
+        $series .= qq~{name: '$MSG{$name}', data: [$grid->{$name}]},~;
+    }
+    $series =~ s/,$//;
 	
-	my $width = 500;
+	my $width = 400;
 	if ( $qtTt >= 2 ) {
 		$width = $width + (($qtTt - 2) * 100);
 	}
 	# $html .= qq~$qtTt types. Width: $width<br>~;
 	
 	$html .= qq~
-	<script type="text/javascript">
-		google.charts.setOnLoadCallback(drawChart);
-		
-		 function drawChart() {
-	        var data = google.visualization.arrayToDataTable([
-	          ['$MSG{Ticket_Type}', '$MSG{Old_Cost}', '$MSG{Current_Cost}', '$MSG{Saving}'],
-	          $grid
-	        ]);
-	
-	        var options = {
-				chart: {
-					title: '$MSG{Company_Saving}',
-					subtitle: '$MSG{Old_Expenses_Current_costs_and_Saving}: $year-$month',
-				},
-				colors: ['#4285F4', '#DB4437', '#1AA71A']
-	        };
-	
-	        var chart = new google.charts.Bar(document.getElementById('columnchart_material'));
-	
-	        chart.draw(data, google.charts.Bar.convertOptions(options));
-	      }
-	</script>
-	
-	<div id="columnchart_material" style="width: ${width}px; height: 500px;"></div>
+    <div id="chart" style="padding: 0; max-width: ${width}px; margin: 20px;"></div>
+
+    <script>
+    var options = {
+        series: [
+            $series
+        ],
+          chart: {
+          type: 'bar',
+          height: 350
+        },
+        colors: ['#4285F4', '#DB4437', '#1AA71A'],
+        plotOptions: {
+          bar: {
+            horizontal: false,
+            columnWidth: '75%'
+          },
+        },
+        dataLabels: {
+          enabled: false
+        },
+        stroke: {
+          show: true,
+          width: 2,
+          colors: ['transparent']
+        },
+        xaxis: {
+          categories: [$categories],
+        },
+        yaxis: {
+          title: {
+            text: '\$ Cost'
+          }
+        },
+        fill: {
+          opacity: 1
+        },
+        tooltip: {
+          y: {
+            formatter: function (val) {
+              return "\$ " + val + " "
+            }
+          }
+        }
+    };
+
+    var chart = new ApexCharts(document.querySelector("#chart"), options);
+    chart.render();
+    </script>
 	~;
-	
+    
 	$dbh->disconnect if ($dbh);
 }
 
