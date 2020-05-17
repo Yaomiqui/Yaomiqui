@@ -14,13 +14,13 @@ unless ( $input{submod} ) {
 	my $conf = $sth->fetchall_arrayref;
 	$sth->finish;
 	
-	$html .= qq~<div id="miquiloniToolTip"></div><table cellpadding="0" cellspacing="0" style="padding-bottom: 200px">~;
+	$html .= qq~<div id="miquiloniToolTip"></div><table cellpadding="0" cellspacing="0" style="margin-bottom: 200px; padding: 20px;" class="w3-panel w3-card">~;
 	for my $i ( 0 .. $#{$conf} ) {
 		my $inputVarValue;
 		
 		if ( $conf->[$i][1] eq 'SHOW_LOGS_IN_FRAME' ) {
 			my $selected = $conf->[$i][2] eq '0' ? 'selected' : '';
-			$inputVarValue = qq~<select name="varValue"><option value="1">1</option><option value="0" $selected>0</option></select>~;
+			$inputVarValue = qq~<select name="varValue"><option value="1">$MSG{Yes}</option><option value="0" $selected>$MSG{No}</option></select>~;
 		}
         elsif ( $conf->[$i][1] eq 'DESIGNER_SET_MODE' ) {
 			my $selected = $conf->[$i][2] eq 'laic' ? 'selected' : '';
@@ -34,6 +34,10 @@ unless ( $input{submod} ) {
 				$inputVarValue .= qq~<option value="$status" $selected>$status</option>~;
 			}
 			$inputVarValue .= qq~</select>~;
+		}
+        elsif ( $conf->[$i][1] eq 'SHOW_LINECHARTS' ) {
+			my $selected = $conf->[$i][2] eq '0' ? 'selected' : '';
+			$inputVarValue = qq~<select name="varValue"><option value="1">$MSG{Yes}</option><option value="0" $selected>$MSG{No}</option></select>~;
 		}
 		else {
 			$inputVarValue .= qq~<input type="text" name="varValue" value="$conf->[$i][2]">~;
@@ -95,7 +99,7 @@ if ( $input{submod} eq 'configEnvVars' ) {
 	my $conf = $sth->fetchall_arrayref;
 	$sth->finish;
 	
-	$html .= qq~<table cellpadding="0" cellspacing="0">~;
+	$html .= qq~<table cellpadding="0" cellspacing="0" style="margin-bottom: 200px; padding: 20px;" class="w3-panel w3-card">~;
 	for my $i ( 0 .. $#{$conf} ) {
 		$html .= qq~<tr>
 		<td>$conf->[$i][1]
@@ -191,7 +195,8 @@ sub msg_config_vars {
 		'SSH_TIMEOUT'			=> $MSG{SSH_TIMEOUT},
 		'ENVIRONMENT'			=> $MSG{ENVIRONMENT},
 		'WINRM_CONNECTOR'		=> $MSG{WINRM_CONNECTOR},
-		'WINRM_PROTOCOL'		=> $MSG{WINRM_PROTOCOL}
+		'WINRM_PROTOCOL'		=> $MSG{WINRM_PROTOCOL},
+		'SHOW_LINECHARTS'		=> $MSG{SHOW_LINECHARTS}
 	);
 	
 	return %AS;

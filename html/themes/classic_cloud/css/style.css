@@ -132,11 +132,13 @@ li.leftnavbar a.active {
 
 a {
 	text-decoration: none;
-	color: #000084;
+    color: #000084;
 }
+
 a:hover {
-	color: #84004F;
+	color: #DC2191;   /*#84004F*/
 }
+
 
 
 
@@ -193,7 +195,7 @@ td.gridTitle {
 	border-bottom: 1px solid #AFAFAF;
 	padding: 10px 20px 10px 20px;
 	height: 25px;
-	background-color: #EAEAEA;
+	background-color: #F6F6F6;
 }
 
 td.gridContent {
@@ -206,11 +208,11 @@ td.gridContent {
 	white-space: nowrap;
 	border-bottom: 1px solid #AFAFAF;
 	padding: 15px 20px;
-	height: 28px;
+	height: 30px;
 }
 
 tr.gridRowContent:hover {
-	background-color: #efefef;
+	background-color: #F2F2F2;
 }
 
 

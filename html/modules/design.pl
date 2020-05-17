@@ -12,8 +12,8 @@ unless ( $input{submod} ) {
 	$MSG{Create_new_Autobot}: &nbsp; <input type="text" name="NewAutoBotName" maxlength="100" placeholder="$MSG{Type_a_new_NAME}" required> &nbsp; 
 	<input class="blueLightButton" type="submit" value="$MSG{Create_New}">
 	</form>
-	
-	<br><br>
+    <br>
+    <br>
 	~;
 	
 	connected();
@@ -33,14 +33,20 @@ unless ( $input{submod} ) {
 	# </tr>
 	# ~;
 	$html .= qq~
-	<table cellpadding="0" cellspacing="0" class="sortable">
+    <table class="w3-table w3-bordered" style="background-color: #F4F4F4; border-top: 1px solid #E5E5E5;">
+    <tr>
+       <th><input type="text" placeholder="Search for Names.." id="myInput" onkeyup="myFunction()" style="width: 400px; margin-top: 0px; margin-bottom: 0px;"></th>
+    </tr>
+    </table>
+    
+	<table cellpadding="0" cellspacing="0" class="sortable" id="myTable" style="border-top: 1px solid #FFFFFF;">
 	<thead>
-		<tr style="background-color: #E5E5E5; border-bottom: #4D4D4D">
-		<th>$MSG{Name}</th>
-		<th>$MSG{Description}</th>
-		<th>$MSG{Deployed_Date}</th>
-		<th>$MSG{Deployed_by}</th>
-		<th>$MSG{Active}</th>
+		<tr>
+            <th>$MSG{Name}</th>
+            <th>$MSG{Description}</th>
+            <th>$MSG{Deployed_Date}</th>
+            <th>$MSG{Deployed_by}</th>
+            <th>$MSG{Active}</th>
 		</tr>
 	</thead>
 	~;
@@ -74,7 +80,28 @@ unless ( $input{submod} ) {
 	}
 	
 	$dbh->disconnect if ($dbh);
-	$html .= qq~</table><br>~;
+	$html .= qq~</table><br>
+    <script>
+    function myFunction() {
+      var input, filter, table, tr, td, i;
+      input = document.getElementById("myInput");
+      filter = input.value.toUpperCase();
+      table = document.getElementById("myTable");
+      tr = table.getElementsByTagName("tr");
+      for (i = 0; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td")[0];
+        if (td) {
+          txtValue = td.textContent || td.innerText;
+          if (txtValue.toUpperCase().indexOf(filter) > -1) {
+            tr[i].style.display = "";
+          } else {
+            tr[i].style.display = "none";
+          }
+        }
+      }
+    }
+    </script>
+    ~;
 }
 
 
@@ -83,9 +110,10 @@ if ( $input{submod} eq 'new_autoBot_from_xml' ) {
 	$html .= qq~<div class="contentTitle">$MSG{Create_New_from_XML}</div>~ unless $input{'shtl'};
 	
 	$html .= qq~<div id="miquiloniToolTip"></div>
-	<img style="margin-left: 400px" src="../images/help_blue.png" width="28" onMouseOver="showToolTip('$MSG{MIGRATE_HELP}', '#111165', '', '300px');" onMouseout="hideToolTip();" /><br><br>
+	<img style="margin-left: 400px" src="../images/help_blue.png" width="28" onMouseOver="showToolTip('$MSG{MIGRATE_HELP}', '#111165', '', '300px');" onMouseout="hideToolTip();" />
 	
-	<table cellpadding="0" cellspacing="0"><tr><td align="right">
+	<table cellpadding="0" cellspacing="0" style="margin-bottom: 200px; padding: 20px;" class="w3-panel w3-card">
+    <tr><td align="right">
 	
 	<form method="post" action="index.cgi">
 	<input type="hidden" name="mod" value="design">
@@ -548,7 +576,7 @@ if ( $input{submod} eq 'cryptPasswd' ) {
 	
 	$html .= qq~
 	<div id="miquiloniToolTip"></div>
-	<img style="margin-left: 400px" src="../images/help_blue.png" width="28" onMouseOver="showToolTip('$MSG{CRYPT_HELP}', '#111165', '', '300px');" onMouseout="hideToolTip();" /><br><br>~;
+	<img style="margin-left: 400px" src="../images/help_blue.png" width="28" onMouseOver="showToolTip('$MSG{CRYPT_HELP}', '#111165', '', '300px');" onMouseout="hideToolTip();" />~;
 	
 	my $longKey = $input{longKey} || 24;
 	my $passwd = $input{passwd};
@@ -561,7 +589,8 @@ if ( $input{submod} eq 'cryptPasswd' ) {
 		$encryptedPass = $crypt->encode($passwd, $encKey);
 	}
 	
-	$html .= qq~<table cellpadding="0" cellspacing="0"><tr><td align="right">
+	$html .= qq~<table cellpadding="0" cellspacing="0" style="margin-bottom: 200px; padding: 20px;" class="w3-panel w3-card">
+    <tr><td align="right">
 	
 	<form method="post" action="index.cgi">
 	<input type="hidden" name="mod" value="design">

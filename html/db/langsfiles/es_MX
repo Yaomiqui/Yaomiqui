@@ -32,12 +32,15 @@ Environment = Ambiente
 Config_Variables = Variables de Config
 Environment_Variables = Variables de Entorno
 Autobot_Migration = Migración de Autobot
+Dashboard = Dashboard
 
 
 [config]
 Configuration_Variables = Variables de Configuración
 Environment_Variables = Variables de Entorno
 Delete = Eliminar
+Yes = Sí
+No = No
 Save = Guardar
 Create_New = Crear Nuevo
 Create_New_Variable = Crear una nueva Variable
@@ -54,6 +57,7 @@ CONNECTTIMEOUT = ConnectTimeout se refiere al LADO REMOTO de las opciones SSH y 
 TIMEOUT = Timeout en segundos por cada función DO.<br>(Cuando una función DO se vence, la variable Yaomiqui ${TIMEOUT} es establecida con un mensaje de error que comienza con: TIMEOUT REACHED. ...)<br>Valor por Default: 300 (5 minutos).<br><br>Esta variable es exportada dentro de la lista de variables de Ambiente. Usted puede modificarla dentro de cualquier AutoBot
 SSH_TIMEOUT = This is the timeout for SSH connections to establish some connection.<br>Default es 30 segundos.<br><br>Esta variable es exportada dentro de la lista de variables de Ambiente. Usted puede modificarla dentro de cualquier AutoBot
 ENVIRONMENT = El ambiente en el que estamos trabajando. Ejemplo DEV, QA, UAT, STRESS o PROD. Usted decide cuál es el uso de la instancia.<br><br>Esta variable es exportada dentro de la lista de variables de Ambiente. Usted puede leerla, incluso modificarla dentro de cualquier AutoBot
+SHOW_LINECHARTS = Se refiere a que si desea mostrar gráficos de líneas en el Dashboard de forma predeterminada o no.<br><br>Si se establece como Sí, quizás demore un tiempo en cargar todos los gráficos
 
 
 [overview]
@@ -299,6 +303,7 @@ Saving = Ahorro
 Company_Saving = Ahorro de la Empresa
 Old_Expenses_Current_costs_and_Saving = Gasto Antiguo, Costo Actual y Ahorro
 Are_you_sure_to_delete_this = Está seguro de eliminar esto
+Config = Config
 
 
 [end]

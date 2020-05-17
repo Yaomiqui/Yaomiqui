@@ -52,7 +52,7 @@ if ( $input{submod} eq 'findTicket' ) {
 	$html .= paginator($sqlWhere);
 	# style="position: fixed; width: 100%"
 	$html .= qq~
-	<table cellpadding="0" cellspacing="2" border="0" width="100%" class="gridTable" style="padding-top: 30px">
+	<table cellpadding="0" cellspacing="0" border="0" width="100%" class="gridTable" style="padding-top: 32px">
 		<tr>
 			<td class="gridTitle" style="max-width:100px;">$MSG{Ticket_Number}</td>
 			<td class="gridTitle" style="max-width:100px;">$MSG{Subject}</td>

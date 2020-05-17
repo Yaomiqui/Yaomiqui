@@ -39,7 +39,7 @@ $MSG{All_changes_you_make_here}<br><br>
 <form method="post" action="index.cgi">
 <input type="hidden" name="mod" value="tickets_form">
 <input type="hidden" name="submod" value="insertTicket">
-<div><textarea name="formTicket" style="width: 70%; height: 400px; color: #B8DCCD; background-color: #15283F; font-size: 12px; border-color: #7F7F7F">$jsonTemplate</textarea></div><br><br>
+<div><textarea name="formTicket" class="w3-panel w3-card-2" style="width: 70%; height: 400px; color: #B8DCCD; background-color: #15283F; font-size: 12px; border-color: #7F7F7F">$jsonTemplate</textarea></div><br><br>
 
 <div id="myModalRedirectSave" class="confirm"><div class="confirm-content">
 	$MSG{Alert}<hr class="confirm-header">

@@ -62,26 +62,24 @@ unless ( $input{submod} ) {
 			}
 		</script>
 		
-		<form method="POST" action="index.cgi" target="_top">
+		<form method="POST" action="index.cgi" target="_top" class="w3-container w3-card-4 w3-light-grey">
 		<input type="hidden" name="mod" value="my_account">
 		<input type="hidden" name="submod" value="save_record">
 		<input type="hidden" name="idUser" value="$data[0]">
+        
+        <br><p>$MSG{Edit_my_record}: <b>$data[1]</b></p>
 		
-		<table cellpadding="0" cellspacing="0" class="formTitle">
-		<tr><td style="font-size: 12px">$MSG{Edit_my_record}: <b>$data[1]</b></td></tr>
-		</table>
-		
-		<table cellpadding="0" cellspacing="0" class="form">
+		<table cellpadding="0" cellspacing="0" width="60%">
 		
 		<tr><td align="right" width="30%">$MSG{Password}: </td><td width="70%"><input type="password" name="pwd1" value="" maxlength="16" placeholder="****************"></td></tr>
 		<tr><td align="right" width="30%">$MSG{Password_again}: </td><td width="70%"><input type="password" name="pwd2" value="" maxlength="16" placeholder="****************"></td></tr>
-		<tr><td align="right" width="30%">$MSG{Name}: </td><td width="70%"><input type="text" name="name" value="$data[3]"></td></tr>
-		<tr><td align="right" width="30%">$MSG{Last_Name}: </td><td width="70%"><input type="text" name="lastName" value="$data[4]"></td></tr>
-		<tr><td align="right" width="30%">$MSG{Mothers_Last_Name}: </td><td width="70%"><input type="text" name="mothersLastName" value="$data[5]"></td></tr>
-		<tr><td align="right" width="30%">$MSG{Email}: </td><td width="70%"><input type="text" name="email" value="$data[7]"></td></tr>
-		<tr><td align="right" width="30%">$MSG{Secondary_Email}: </td><td width="70%"><input type="text" name="secondaryEmail" value="$data[8]"></td></tr>
-		<tr><td align="right" width="30%">$MSG{Phone}: </td><td width="70%"><input type="text" name="phone" value="$data[9]"></td></tr>
-		<tr><td align="right" width="30%">$MSG{Secondary_Phone}: </td><td width="70%"><input type="text" name="secondaryPhone" value="$data[10]"></td></tr>
+		<tr><td align="right" width="30%">$MSG{Name}: </td><td width="70%"><input class="w3-animate-input" type="text" name="name" value="$data[3]"></td></tr>
+		<tr><td align="right" width="30%">$MSG{Last_Name}: </td><td width="70%"><input class="w3-animate-input" type="text" name="lastName" value="$data[4]"></td></tr>
+		<tr><td align="right" width="30%">$MSG{Mothers_Last_Name}: </td><td width="70%"><input class="w3-animate-input" type="text" name="mothersLastName" value="$data[5]"></td></tr>
+		<tr><td align="right" width="30%">$MSG{Email}: </td><td width="70%"><input class="w3-animate-input" type="text" name="email" value="$data[7]"></td></tr>
+		<tr><td align="right" width="30%">$MSG{Secondary_Email}: </td><td width="70%"><input class="w3-animate-input" type="text" name="secondaryEmail" value="$data[8]"></td></tr>
+		<tr><td align="right" width="30%">$MSG{Phone}: </td><td width="70%"><input class="w3-animate-input" type="text" name="phone" value="$data[9]"></td></tr>
+		<tr><td align="right" width="30%">$MSG{Secondary_Phone}: </td><td width="70%"><input class="w3-animate-input" type="text" name="secondaryPhone" value="$data[10]"></td></tr>
 		<!--<tr><td align="right" width="30%">$MSG{Theme}: </td><td width="70%">
 		<select name="theme">
 		$themeSelect
@@ -92,16 +90,17 @@ unless ( $input{submod} ) {
 		$langageSelect
 		</select>
 		</td></tr>
-		
-		</table>
-		
-		<table cellpadding="0" cellspacing="0" class="formFooter">
-		<tr><td>
-			<div id="myModalRedirectSave" class="confirm"><div class="confirm-content">
+        
+        <tr><td align="right" width="30%" style="padding-top: 50px;">
+            &nbsp;
+        </td><td width="70%">
+            <div id="myModalRedirectSave" class="confirm"><div class="confirm-content">
 			$MSG{Alert}<hr class="confirm-header">
 			$MSG{Sending_form}.<br />$MSG{Please_wait_a_while_and_dont_close_this_window}
-		</div></div>
-		<button class="blueLightButton" onClick="return openModal('myModalRedirectSave');">$MSG{Save}</button>
+            </div></div>
+            <button class="blueLightButton" onClick="return openModal('myModalRedirectSave');">$MSG{Save}</button>
+		</td></tr>
+		
 		</table>
 		
 		</form>

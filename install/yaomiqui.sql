@@ -153,6 +153,7 @@ INSERT INTO configVars (varName, varValue) VALUES ('CONNECTTIMEOUT', '43200');
 INSERT INTO configVars (varName, varValue) VALUES ('TIMEOUT', '300');
 INSERT INTO configVars (varName, varValue) VALUES ('SSH_TIMEOUT', '30');
 INSERT INTO configVars (varName, varValue) VALUES ('ENVIRONMENT', 'DEV');
+INSERT INTO configVars (varName, varValue) VALUES ('SHOW_LINECHARTS', '0');
 
 
 DROP TABLE IF EXISTS environmentVars;

@@ -31,7 +31,7 @@ use Log::Man;
 our(%input, %VAR, %MSG, %PRM, $username, $html, $header, $footer, $module, $module_file, $theme, $dbh, $encKey);
 require 'common.pl';
 %VAR = get_vars();
-$VAR{Version} = '2.0';
+$VAR{Version} = '2.1';
 $encKey = getEncKey();
 $username = get_session();
 $theme = get_theme();
@@ -108,6 +108,9 @@ sub common_header {
 	<script type="text/javascript" src="js/spec.js"></script>
 	<script type="text/javascript" src="js/miquiloniToolTip.js"></script>
 	<link rel="stylesheet" type="text/css" href="css/xonomy.css" />
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" type="text/css" href="css/w3.css" />
     
 	<link href="themes/$theme/css/style.css" rel="stylesheet">
 	~;

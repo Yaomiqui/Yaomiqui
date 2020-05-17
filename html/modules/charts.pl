@@ -21,6 +21,10 @@ my %MON = (
 my $month = $input{dateToChart} ? $input{dateToChart} : currentMonth();
 my $year = $input{yearToChart} ? $input{yearToChart} : currentYear();
 
+my $showLineCharts = 0;
+$showLineCharts = 1 if $input{showLineCharts} eq 'y';
+$showLineCharts = 1 if $VAR{SHOW_LINECHARTS} eq '1';
+
 $html .= qq~
 <form method="get" action="index.cgi" target="_top">
 <input type="hidden" name="mod" value="charts">
@@ -232,8 +236,8 @@ for my $i ( 0 .. $#{$TypeTT} ) {
         
 	    </td>~;
         
-        if ( $input{showLineCharts} eq 'y' ) {
-            $html .= qq~<td valign="top" style="padding-bottom: 15px; padding-top: 15px;">
+        if ( $showLineCharts ) {
+            $html .= qq~<td valign="top" style="width: 100%; padding-bottom: 15px; padding-top: 15px;">
     <div id="chart_$i" style="padding-left: 10px; padding-top: 10px; margin-right: 20px; background: #FFFFFF; border: 1px solid #DDDDDD; box-shadow: 0 22px 35px -16px rgba(0,0,0, 0.1);"></div>
     <script>
         var options = {
@@ -255,8 +259,8 @@ for my $i ( 0 .. $#{$TypeTT} ) {
               }
             },
           
-          width: 650,
-          height: 296,
+          width: '100%',
+          height: 300,
           type: 'line',
           dropShadow: {
             enabled: true,

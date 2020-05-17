@@ -39,113 +39,175 @@ sub header {
 	~;
 	}
 	
-	my ($ahome, $aoverview, $adesign, $aaccounts, $asettings, $atktform, $aabout, $acharts, $areports, $aconfig);
-	unless ( $input{mod} ) { $ahome = 'active' }
-	if ( $input{mod} eq 'overview' ) { $aoverview = 'active' }
-	if ( $input{mod} eq 'design' ) { $adesign = 'active' }
-	elsif ( $input{mod} =~ /^accounts$|^accounts_edit$|^my_account$/ ) { $aaccounts = 'active' }
-	elsif ( $input{mod} eq 'settings' ) { $asettings = 'active' }
-	elsif ( $input{mod} eq 'tickets_form' ) { $atktform = 'active' }
-	elsif ( $input{mod} eq 'about' ) { $aabout = 'active' }
-	elsif ( $input{mod} =~ /^charts|reports$/ ) { $acharts = 'active' }
-	elsif ( $input{mod} eq 'config' ) { $aconfig = 'active' }
-	# elsif ( $input{mod} eq 'charts' ) { $acharts = 'active' }
+	my ($acharts, $areports, $aoverview, $adesign, $amigrate, $acryptPasswd, $aticketsForm, $amyAccount, $aaccounts, $aaccountsNew, $aaconfigVars, $aconfigEnvVars, $aabout, $alicense);
+	my ($prilink, $seclink, $trdlink);
+    if ( $input{mod} eq 'charts' ) {
+        $acharts = $VAR{COLOR_ACTIVE_SIDEBAR};
+        $prilink = $MSG{Dashboard};
+        if ( $input{submod} eq 'viewTable' ) {
+            $prilink = qq~<a href="index.cgi?mod=charts" style="color: #FFF; text-decoration: underline;">$MSG{Dashboard}</a>~;
+            $seclink = '&nbsp; <b>></b> &nbsp;' . 'Table View'
+        }
+    }
+    if ( $input{mod} eq 'reports' ) {
+        $areports = $VAR{COLOR_ACTIVE_SIDEBAR};
+        $prilink = $MSG{Saving_Reports};
+        if ( $input{submod} eq 'edit_config' ) {
+            $prilink = qq~<a href="index.cgi?mod=reports" style="color: #FFF; text-decoration: underline;">$MSG{Saving_Reports}</a>~;
+            $seclink = '&nbsp; <b>></b> &nbsp;' . 'Config'
+        }
+    }
+    if ( $input{mod} eq 'overview' ) {
+        $aoverview = $VAR{COLOR_ACTIVE_SIDEBAR};
+        $prilink = $MSG{Overview};
+    }
+    if ( $input{mod} eq 'logs' ) {
+        $aoverview = $VAR{COLOR_ACTIVE_SIDEBAR};
+        $prilink = $MSG{Overview};
+        if ( $input{submod} eq 'showLogs' ) {
+            if ( $input{timeLine} eq 'true' ) {
+                $prilink = qq~<a href="index.cgi?mod=overview" style="color: #FFF; text-decoration: underline;">$MSG{Overview}</a>~;
+                $seclink = '&nbsp; <b>></b> &nbsp;' . qq~<a href="index.cgi?mod=logs&submod=showLogs&numberTicket=$input{numberTicket}" style="color: #FFF; text-decoration: underline;">$MSG{Standard_View}</a>~ . '&nbsp; <b>></b> &nbsp;' . $MSG{Time_Line};
+            }
+            else {
+                $prilink = qq~<a href="index.cgi?mod=overview" style="color: #FFF; text-decoration: underline;">$MSG{Overview}</a>~;
+                $seclink =  '&nbsp; <b>></b> &nbsp;' . $MSG{Standard_View} . '&nbsp; <b>></b> &nbsp;' . qq~<a href="index.cgi?mod=logs&submod=showLogs&timeLine=true&numberTicket=$input{numberTicket}" style="color: #FFF; text-decoration: underline;">$MSG{Time_Line}</a>~;
+            }
+            
+        }
+    }
+    if ( $input{mod} eq 'design' ) {
+        $adesign = $VAR{COLOR_ACTIVE_SIDEBAR};
+        $prilink = $MSG{AutoBot_Design};
+        if ( $input{submod} eq 'edit_autobot' ) {
+            $prilink = qq~<a href="index.cgi?mod=design" style="color: #FFF; text-decoration: underline;">$MSG{AutoBot_Design}</a>~;
+            $seclink = '&nbsp; <b>></b> &nbsp;' . 'Editing Auto-Bot'
+        }
+        elsif ( $input{submod} eq 'new_autoBot_from_xml' ) {
+            $adesign = '';
+            $amigrate = $VAR{COLOR_ACTIVE_SIDEBAR};
+            $prilink = qq~<a href="index.cgi?mod=design" style="color: #FFF; text-decoration: underline;">$MSG{AutoBot_Design}</a>~;
+            $seclink = '&nbsp; <b>></b> &nbsp;' . $MSG{Autobot_Migration}
+        }
+        elsif ( $input{submod} eq 'cryptPasswd' ) {
+            $adesign = '';
+            $acryptPasswd = $VAR{COLOR_ACTIVE_SIDEBAR};
+            $prilink = qq~<a href="index.cgi?mod=design" style="color: #FFF; text-decoration: underline;">$MSG{AutoBot_Design}</a>~;
+            $seclink = '&nbsp; <b>></b> &nbsp;' . $MSG{Encrypt_Password}
+        }
+    }
+    if ( $input{mod} eq 'tickets_form' ) {
+        $aticketsForm = $VAR{COLOR_ACTIVE_SIDEBAR};
+        $prilink = $MSG{Ticket_Form};
+    }
+    if ( $input{mod} eq 'my_account' ) {
+        $amyAccount = $VAR{COLOR_ACTIVE_SIDEBAR};
+        $prilink = $MSG{My_Account};
+    }
+    if ( $input{mod} eq 'accounts' ) {
+        $aaccounts = $VAR{COLOR_ACTIVE_SIDEBAR};
+        $prilink = $MSG{Accounts_List};
+    }
+    if ( $input{mod} eq 'accounts_edit' ) {
+        if ( $input{idUser} ) {
+            $aaccounts = $VAR{COLOR_ACTIVE_SIDEBAR};
+            $prilink = qq~<a href="index.cgi?mod=accounts" style="color: #FFF; text-decoration: underline;">$MSG{Accounts_List}</a>~;
+            $seclink = '&nbsp; <b>></b> &nbsp;' . 'Editing'
+        }
+        else {
+            $aaccountsNew = $VAR{COLOR_ACTIVE_SIDEBAR};
+            $prilink = $MSG{New_User};
+        }
+    }
+    if ( $input{mod} eq 'config' ) {
+        if ( $input{submod} eq 'configEnvVars' ) {
+            $aconfigEnvVars = $VAR{COLOR_ACTIVE_SIDEBAR};
+            $prilink = $MSG{Environment_Variables};
+        }
+        else {
+            $aaconfigVars = $VAR{COLOR_ACTIVE_SIDEBAR};
+            $prilink = $MSG{Config_Variables};
+        }
+    }
+    if ( $input{mod} eq 'about' ) {
+        if ( $input{submod} eq 'license' ) {
+            $alicense = $VAR{COLOR_ACTIVE_SIDEBAR};
+            $prilink = $MSG{License};
+        }
+        else {
+            $aabout = $VAR{COLOR_ACTIVE_SIDEBAR};
+            $prilink = $MSG{About_Yaomiqui};
+        }
+    }
+    ################################
 	
 	if ( $username ne 'Guest' ) {
 		$header .= qq~
-		<ul class="topnavbar">
-			<li class="topnavbar" style="margin-left: 20px"><a href="index.cgi" class="$acharts">$MSG{Home}</a></li>
-			~;
-			
-            $header .= qq~<li class="topnavbar"><a href="index.cgi?mod=overview" class="$aoverview">$MSG{Overview}</a></li>~ if $PRM{overview};
-			$header .= qq~<li class="topnavbar"><a href="index.cgi?mod=design" class="$adesign">$MSG{AutoBot_Design}</a></li>~ if $PRM{design};
-			$header .= qq~<li class="topnavbar"><a href="index.cgi?mod=tickets_form" class="$atktform">$MSG{Ticket_Form}</a></li>~ if $PRM{tickets_form};
-			# $header .= qq~<li class="topnavbar"><a href="index.cgi?mod=charts" class="$acharts">$MSG{Charts}</a></li>~ if $PRM{charts};
-			# $header .= qq~<li class="topnavbar"><a href="index.cgi?mod=reports" class="$areports">$MSG{Reports}</a></li>~ if $PRM{reports};
-			$header .= qq~<li class="topnavbar"><a href="index.cgi?mod=my_account" class="$aaccounts">$MSG{Accounts}</a></li>~;
-			$header .= qq~<li class="topnavbar"><a href="index.cgi?mod=config" class="$aconfig">Config</a></li>~ if $PRM{config};
-			# $header .= qq~<li class="topnavbar"><a href="index.cgi?mod=settings" class="$asettings">$MSG{My_Account} [$username]</a></li>~};
-			
-			$header .= qq~
-			<li class="topnavbar"><a href="index.cgi?mod=about" class="$aabout">$MSG{About}</a></li>
-			<li class="topnavbar" style="float:right"><font color="#FFFFCC">[$username on $VAR{ENVIRONMENT}]</font> <a href="index.cgi?mod=logout" onclick="return confirm('$MSG{Are_you_sure_you_want_to_log_off} ?')">$MSG{Log_off}</a></li>
-		</ul>
-		
-		<ul class="leftnavbar">
-		~;
-		
-		my ($abotlist, $crnewabot, $timeline, $reports, $charts, $myaccount, $accounts, $accounts_edit, $about, $cryptPasswd);
-		unless ( $input{submod} ) { $list = 'active' }
-		
-		if ( $input{mod} eq 'overview' ) {
-			$header .= qq~
-			<li class="leftnavbar"><a href="index.cgi?mod=overview&submod=" class="$list">$MSG{Overview}</a></li>~;
-		}
-		if ( $input{mod} eq 'design' ) {
-			$crnewabot = 'active' if $input{submod} eq 'new_autoBot_from_xml';
-			$cryPassabot = 'active' if $input{submod} eq 'cryptPasswd';
-			$header .= qq~
-			<li class="leftnavbar"><a href="index.cgi?mod=design" class="$list">$MSG{Autobots_List}</a></li>
-			<li class="leftnavbar"><a href="index.cgi?mod=design&submod=new_autoBot_from_xml" class="$crnewabot">$MSG{Autobot_Migration}</a></li>~;
-			$header .= qq~<li class="leftnavbar"><a href="index.cgi?mod=design&submod=cryptPasswd" class="$cryPassabot">$MSG{Encrypt_Password}</a></li>~;
-		}
-		if ( $input{mod} eq 'tickets_form' ) {
-			$header .= qq~
-			<li class="leftnavbar"><a href="index.cgi?mod=tickets_form" class="$list">$MSG{Ticket_Form}</a></li>~;
-		}
-		if ( $input{mod} eq 'logs' ) {
-			unless ( $input{timeLine} ) { $list = 'active' }
-			if ( $input{timeLine} eq 'true' ) { $timeline = 'active' }
-			$header .= qq~
-			<li class="leftnavbar"><a href="index.cgi?mod=logs&submod=showLogs&numberTicket=$input{numberTicket}&timeLine=" class="$list">$MSG{Standard_View}</a></li>
-			<li class="leftnavbar"><a href="index.cgi?mod=logs&submod=showLogs&numberTicket=$input{numberTicket}&timeLine=true" class="$timeline">$MSG{Time_Line}</a></li>~;
-		}
-		if ( $input{mod} =~ /^charts|reports$/ ) {
-			if ( $input{mod} eq 'charts' ) { $charts = 'active' }
-			if ( $input{mod} eq 'reports' ) { $reports = 'active' }
-			$header .= qq~<li class="leftnavbar"><a href="index.cgi?mod=charts" class="$charts">$MSG{Charts}</a></li>~ if $PRM{charts};
-			$header .= qq~<li class="leftnavbar"><a href="index.cgi?mod=reports" class="$reports">$MSG{Saving_Reports}</a></li>~ if $PRM{reports};
-		}
-		if ( $input{mod} =~ /^accounts$|^accounts_edit$|^my_account$/ ) {
-			if ( $input{mod} eq 'my_account' ) { $myaccount = 'active' }
-			if ( $input{mod} eq 'accounts' ) { $accounts = 'active' }
-			if ( $input{mod} eq 'accounts_edit' ) { $accounts_edit = 'active' unless $input{idUser} }
-			$header .= qq~<li class="leftnavbar"><a href="index.cgi?mod=my_account" class="$myaccount">$MSG{My_Account}</a></li>~;
-            $header .= qq~<li class="leftnavbar"><a href="index.cgi?mod=accounts" class="$accounts">$MSG{Accounts_List}</a></li>~ if $PRM{accounts};
-			$header .= qq~<li class="leftnavbar"><a href="index.cgi?mod=accounts_edit" class="$accounts_edit">$MSG{New_User}</a></li>~ if $PRM{accounts_edit};
+    <script>
+    function w3_close() {
+        document.getElementById("mySidebar").style.display = "none";
+    }
+    function w3_open() {
+        if (document.getElementById("mySidebar").style.display == "none") {
+            document.getElementById("mySidebar").style.display = "block";
+            document.getElementById("main").style.marginLeft = "200px";
+            document.getElementById("hamburger").src = "themes/$theme/images/hamLeft.png";
             
-		}
-		if ( $input{mod} eq 'about' ) {
-			if ( $input{submod} eq 'license' ) { $about = 'active' }
-			$header .= qq~
-			<li class="leftnavbar"><a href="index.cgi?mod=about" class="$list">$MSG{About_Yaomiqui}</a></li>
-			<li class="leftnavbar"><a href="index.cgi?mod=about&submod=license" class="$about">$MSG{License}</a></li>~;
-		}
-		if ( $input{mod} eq 'config' ) {
-			$configEnvVars = 'active' if $input{submod} eq 'configEnvVars';
-			$header .= qq~
-			<li class="leftnavbar"><a href="index.cgi?mod=config" class="$list">$MSG{Config_Variables}</a></li>
-			<li class="leftnavbar"><a href="index.cgi?mod=config&submod=configEnvVars" class="$configEnvVars">$MSG{Environment_Variables}</a></li>~;
-		}
+        } else {
+            document.getElementById("mySidebar").style.display = "none";
+            document.getElementById("main").style.marginLeft = "0px";
+            document.getElementById("hamburger").src = "themes/$theme/images/hamRight.png";
+        }
+    }
+    </script>
+        ~;
+        
+        ####  SIDEBAR                        w3-animate-left
+        $header .= qq~<div class="w3-sidebar w3-animate-opacity w3-bar-block w3-white w3-border-right" style="background-color: #F1F1F1; display:block; margin-top: 38px; overflow: auto; width: 200px" id="mySidebar">~;
+        
+        # $header .= qq~<button class="w3-bar-item w3-button w3-tiny" onclick="w3_close()"> Close </button>~;
+        $header .= qq~
+        <a href="index.cgi?mod=charts" class="w3-bar-item w3-button w3-small w3-border-top $acharts">$MSG{Dashboard}</a>
+        <a href="index.cgi?mod=reports" class="w3-bar-item w3-button w3-small $areports">$MSG{Saving_Reports}</a>
+        <a href="index.cgi?mod=overview" class="w3-bar-item w3-button w3-small w3-border-top $aoverview">$MSG{Overview}</a>~;
+        
+        $header .= qq~<a href="index.cgi?mod=design" class="w3-bar-item w3-button w3-small w3-border-top $adesign">$MSG{AutoBot_Design}</a>~ if $PRM{design};
+        $header .= qq~<a href="index.cgi?mod=design&submod=new_autoBot_from_xml" class="w3-bar-item w3-button w3-small $amigrate">$MSG{Autobot_Migration}</a>~ if $PRM{design};
+        $header .= qq~<a href="index.cgi?mod=design&submod=cryptPasswd" class="w3-bar-item w3-button w3-small $acryptPasswd">$MSG{Encrypt_Password}</a>~ if $PRM{design};
+        $header .= qq~<a href="index.cgi?mod=tickets_form" class="w3-bar-item w3-button w3-small w3-border-top $aticketsForm">$MSG{Ticket_Form}</a>~ if $PRM{tickets_form};
+        $header .= qq~<a href="index.cgi?mod=my_account" class="w3-bar-item w3-button w3-small w3-border-top $amyAccount">$MSG{My_Account}</a>~;
+        $header .= qq~<a href="index.cgi?mod=accounts" class="w3-bar-item w3-button w3-small $aaccounts">$MSG{Accounts_List}</a>~ if $PRM{accounts};
+        $header .= qq~<a href="index.cgi?mod=accounts_edit" class="w3-bar-item w3-button w3-small $aaccountsNew">$MSG{New_User}</a>~ if $PRM{accounts_edit};
+        $header .= qq~<a href="index.cgi?mod=config" class="w3-bar-item w3-button w3-small w3-border-top $aaconfigVars">$MSG{Config_Variables}</a>~ if $PRM{config};
+        $header .= qq~<a href="index.cgi?mod=config&submod=configEnvVars" class="w3-bar-item w3-button w3-small $aconfigEnvVars">$MSG{Environment_Variables}</a>~ if $PRM{config};
+        
+        $header .= qq~<a href="index.cgi?mod=about" class="w3-bar-item w3-button w3-small w3-border-top $aabout">$MSG{About_Yaomiqui}</a>
+        <a href="index.cgi?mod=about&submod=license" class="w3-bar-item w3-button w3-small $alicense">$MSG{License}</a>
+        
+        <div style="opacity:0.3; margin-top: 40px;" class="w3-small" align="center">
+        <img src="images/logo.png" alt="Snow" style="width:70%; display: block; margin-left: auto; margin-right: auto;">
+            <br><br>Powered by:<br>
+            <img src="themes/$theme/images/YaomiquiLogoTransparent.png">
+            <br/>YAOMIQUI
+            <br>Automation Platform
+        </div>
+        <br><br><br>
+    </div>
 		
-		$header .= qq~
-		<li class="leftnavbar" style="opacity: 0.40; filter: alpha(opacity=40)">
-		<p align="center" style="font-size: 110%; font-weight: bold; color: #000;">
-		<img src="images/logo.png" style="padding-top:80px; width: 150px">
-		<br><br><br><br>
-		</li>
-		<li class="leftnavbar" style="opacity: 0.25; filter: alpha(opacity=25)">
-		<p align="center" style="font-size: 110%; font-weight: bold; color: #000;">
-		Powered by:<br>
-		<img src="themes/$theme/images/YaomiquiLogoTransparent.png" style="padding-top:10px;"><br/>YAOMIQUI</p>
-		<p align="center" style="font-size: 100%; color: #000;">Automation Platform</p>
-		</li>
-		~;
-		$header .= qq~
-		</ul>
-		
-		<div class="content">
-		~;
+        <div class="w3-top">
+            <div class="w3-bar w3-left-align" style="background-color: #242C3F; padding-right: 50px;">
+                <a href="#" class="w3-bar-item w3-button w3-medium" style="margin-right: 40px; margin-left: 50px;" onClick="w3_open()"><img id="hamburger" src="themes/$theme/images/hamLeft.png" style="height: 22px; border: 0px"></a>
+                <div class="w3-display-left w3-text-white" style="margin-left: 120px;">$prilink $seclink</div>
+                <a href="index.cgi?mod=logout" onclick="return confirm('$MSG{Are_you_sure_you_want_to_log_off} ?')" class="w3-bar-item w3-button w3-right w3-medium"><img src="themes/$theme/images/logout64.png" style="height: 22px; border: 0px;"></a>
+                <div class="w3-display-right w3-text-white" style="margin-right: 120px;">[$username on $VAR{ENVIRONMENT}]</div>
+            </div>
+        </div>
+        ~;
+    
+        ####    MAIN CONTAINER
+        # $header .= qq~<div class="w3-container" onclick="w3_close()" style="height: 95%;">~;
+        $header .= qq~<div class="w3-container" id="main" style="height: calc(100% - 32px); margin-left: 200px;">~;
+    
 	}
 	
 	return $header;
@@ -156,6 +218,7 @@ sub footer {
 	
 	if ( $username ne 'Guest' ) {
 		$footer .= qq~
+		</div>
 		</div>
 </body>
 </html>

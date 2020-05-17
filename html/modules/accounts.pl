@@ -286,7 +286,12 @@ unless ( $input{submod} ) {
 		# </tr>
 	# ~;
 	$html .= qq~
-	<table cellpadding="0" cellspacing="0" border="0" class="sortable">
+    <table class="w3-table w3-bordered" style="background-color: #F4F4F4; border-top: 1px solid #E5E5E5;">
+    <tr>
+       <th><input type="text" placeholder="Search for User Name..." id="myInput" onkeyup="myFunction()" style="width: 400px; margin-top: 0px; margin-bottom: 0px;"></th>
+    </tr>
+    </table>
+	<table cellpadding="0" cellspacing="0" border="0" class="sortable" id="myTable" style="border-top: 1px solid #FFFFFF;">
 		<thead>
 			<tr>
 			<th>$MSG{User_Name}</th>
@@ -316,6 +321,26 @@ unless ( $input{submod} ) {
 	$html .= qq~
 	</table>
 	<br /><br />
+    <script>
+    function myFunction() {
+      var input, filter, table, tr, td, i;
+      input = document.getElementById("myInput");
+      filter = input.value.toUpperCase();
+      table = document.getElementById("myTable");
+      tr = table.getElementsByTagName("tr");
+      for (i = 0; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td")[0];
+        if (td) {
+          txtValue = td.textContent || td.innerText;
+          if (txtValue.toUpperCase().indexOf(filter) > -1) {
+            tr[i].style.display = "";
+          } else {
+            tr[i].style.display = "none";
+          }
+        }
+      }
+    }
+    </script>
 	~;
 }
 

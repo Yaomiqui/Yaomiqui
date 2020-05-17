@@ -68,30 +68,30 @@ if ( $input{idUser} ) {
 				window.open(htmlink, targetLink);
 			}
 		</script>
-		<form method="get" action="index.cgi" target="_top">
+		<form method="get" action="index.cgi" target="_top" class="w3-container w3-card-4 w3-light-grey">
 		<input type="hidden" name="mod" value="accounts">
 		<input type="hidden" name="submod" value="save_record">
 		<input type="hidden" name="idUser" value="$data[0]">
+        
+        <br><p>$MSG{Editing} <b>$data[1]</b></p>
+        
+        
 		
-		<table cellpadding="0" cellspacing="0" class="formTitle">
-		<tr><td style="font-size: 12px">$MSG{Editing} <b>$data[1]</b></td></tr>
-		</table>
-		
-		<table cellpadding="0" cellspacing="0" class="form">
+		<table cellpadding="0" cellspacing="0" width="60%">
 		
 		<tr><td align="right" width="30%">$MSG{Password} <font color="BB0000"><b>*</b></font>: </td><td width="70%"><input type="password" name="pwd1" value="" maxlength="16" placeholder="****************"></td></tr>
 		<tr><td align="right" width="30%">$MSG{Password_again} <font color="BB0000"><b>*</b></font>: </td><td width="70%"><input type="password" name="pwd2" value="" maxlength="16" placeholder="****************"></td></tr>
-		<tr><td align="right" width="30%">$MSG{Name}: </td><td width="70%"><input type="text" name="name" value="$data[3]"></td></tr>
-		<tr><td align="right" width="30%">$MSG{Last_Name}: </td><td width="70%"><input type="text" name="lastName" value="$data[4]"></td></tr>
-		<tr><td align="right" width="30%">$MSG{Mothers_Last_Name}: </td><td width="70%"><input type="text" name="mothersLastName" value="$data[5]"></td></tr>
-		<tr><td align="right" width="30%">$MSG{ID_Employee}: </td><td width="70%"><input type="text" name="idEmployee" value="$data[6]"></td></tr>
-		<tr><td align="right" width="30%">$MSG{Email}: </td><td width="70%"><input type="text" name="email" value="$data[7]"></td></tr>
-		<tr><td align="right" width="30%">$MSG{Secondary_Email}: </td><td width="70%"><input type="text" name="secondaryEmail" value="$data[8]"></td></tr>
-		<tr><td align="right" width="30%">$MSG{Phone}: </td><td width="70%"><input type="text" name="phone" value="$data[9]"></td></tr>
-		<tr><td align="right" width="30%">$MSG{Secondary_Phone}: </td><td width="70%"><input type="text" name="secondaryPhone" value="$data[10]"></td></tr>
-		<tr><td align="right" width="30%">$MSG{Cost_Center_ID}: </td><td width="70%"><input type="text" name="costCenterId" value="$data[11]"></td></tr>
-		<tr><td align="right" width="30%">$MSG{Group_ID}: </td><td width="70%"><input type="text" name="groupId" value="$data[12]"></td></tr>
-		<tr><td align="right" width="30%">$MSG{Secondary_Group_ID}: </td><td width="70%"><input type="text" name="secondaryGroupId" value="$data[13]"></td></tr>
+		<tr><td align="right" width="30%">$MSG{Name}: </td><td width="70%"><input class="w3-animate-input" type="text" name="name" value="$data[3]"></td></tr>
+		<tr><td align="right" width="30%">$MSG{Last_Name}: </td><td width="70%"><input class="w3-animate-input" type="text" name="lastName" value="$data[4]"></td></tr>
+		<tr><td align="right" width="30%">$MSG{Mothers_Last_Name}: </td><td width="70%"><input class="w3-animate-input" type="text" name="mothersLastName" value="$data[5]"></td></tr>
+		<tr><td align="right" width="30%">$MSG{ID_Employee}: </td><td width="70%"><input class="w3-animate-input" type="text" name="idEmployee" value="$data[6]"></td></tr>
+		<tr><td align="right" width="30%">$MSG{Email}: </td><td width="70%"><input class="w3-animate-input" type="text" name="email" value="$data[7]"></td></tr>
+		<tr><td align="right" width="30%">$MSG{Secondary_Email}: </td><td width="70%"><input class="w3-animate-input" type="text" name="secondaryEmail" value="$data[8]"></td></tr>
+		<tr><td align="right" width="30%">$MSG{Phone}: </td><td width="70%"><input class="w3-animate-input" type="text" name="phone" value="$data[9]"></td></tr>
+		<tr><td align="right" width="30%">$MSG{Secondary_Phone}: </td><td width="70%"><input class="w3-animate-input" type="text" name="secondaryPhone" value="$data[10]"></td></tr>
+		<tr><td align="right" width="30%">$MSG{Cost_Center_ID}: </td><td width="70%"><input class="w3-animate-input" type="text" name="costCenterId" value="$data[11]"></td></tr>
+		<tr><td align="right" width="30%">$MSG{Group_ID}: </td><td width="70%"><input class="w3-animate-input" type="text" name="groupId" value="$data[12]"></td></tr>
+		<tr><td align="right" width="30%">$MSG{Secondary_Group_ID}: </td><td width="70%"><input class="w3-animate-input" type="text" name="secondaryGroupId" value="$data[13]"></td></tr>
 		<!--<tr><td align="right" width="30%">$MSG{Theme}: </td><td width="70%">
 		<select name="theme">
 		$themeSelect
@@ -131,19 +131,18 @@ if ( $input{idUser} ) {
 		<tr><td align="right" width="30%">$MSG{Reports}: </td><td width="70%"><input type="checkbox" name="reports" style="margin: 6px 4px;" value="1" $chk_reports></td></tr>
 		<tr><td align="right" width="30%">$MSG{Config}: </td><td width="70%"><input type="checkbox" name="config" style="margin: 6px 4px;" value="1" $chk_config></td></tr>
 		
-		</table>
-		
-		<table cellpadding="0" cellspacing="0" class="formFooter">
-		<tr><td>
-		<div id="myModalRedirectSave" class="confirm"><div class="confirm-content">
+        <tr><td align="right" width="30%" style="padding-top: 50px;">
+            &nbsp;
+        </td><td width="70%">
+            <div id="myModalRedirectSave" class="confirm"><div class="confirm-content">
 			$MSG{Alert}<hr class="confirm-header">
 			$MAG{Saving_changes_for_user} $data[1].<br />$MSG{Please_wait_a_while_and_dont_close_this_window}
 		</div></div>
 		<button class="blueLightButton" onClick="return openModal('myModalRedirectSave');">$MSG{Save}</button>
-		&nbsp; &nbsp; &nbsp; 
-		<a class="redButton" href="index.cgi?mod=accounts&submod=delete_record&idUser=$data[0]" target="_top" onclick="return confirm('$MSG{Are_you_sure_you_want_to_continue_deleting_the_user}: $data[1]?')">$MSG{Delete}</a>
-		
+		&nbsp; 
+		<a style="margin-left: 50px;" class="redButton" href="index.cgi?mod=accounts&submod=delete_record&idUser=$data[0]" target="_top" onclick="return confirm('$MSG{Are_you_sure_you_want_to_continue_deleting_the_user}: $data[1]?')">$MSG{Delete}</a>
 		</td></tr>
+        
 		</table>
 		
 		</form>
@@ -185,30 +184,28 @@ if ( $input{idUser} ) {
 				window.open(htmlink, targetLink);
 			}
 		</script>
-		<form method="get" action="index.cgi" target="_parent" id="form">
+		<form method="get" action="index.cgi" target="_parent" id="form" class="w3-container w3-card-4 w3-light-grey">
 		<input type="hidden" name="mod" value="accounts">
 		<input type="hidden" name="submod" value="new_record">
+        
+        <br><p><b>$MSG{Create_new_user}</b></p>
 		
-		<table cellpadding="0" cellspacing="0" class="formTitle">
-		<tr><td style="font-size: 12px">$MSG{Create_new_user}</b></td></tr>
-		</table>
+		<table cellpadding="0" cellspacing="0" width="60%">
 		
-		<table cellpadding="0" cellspacing="0" class="form">
-		
-		<tr><td align="right" width="30%">$MSG{Username} <font color="BB0000"><b>*</b></font>: </td><td width="70%"><input type="text" name="username" maxlength="40"></td></tr>
+		<tr><td align="right" width="30%">$MSG{Username} <font color="BB0000"><b>*</b></font>: </td><td width="70%"><input class="w3-animate-input" type="text" name="username" maxlength="40"></td></tr>
 		<tr><td align="right" width="30%">$MSG{Password} <font color="BB0000"><b>*</b></font>: </td><td width="70%"><input type="password" name="pwd1" maxlength="16"></td></tr>
 		<tr><td align="right" width="30%">$MSG{Password_again} <font color="BB0000"><b>*</b></font>: </td><td width="70%"><input type="password" name="pwd2" maxlength="16"></td></tr>
-		<tr><td align="right" width="30%">$MSG{Name}: </td><td width="70%"><input type="text" name="name"></td></tr>
-		<tr><td align="right" width="30%">$MSG{Last_Name}: </td><td width="70%"><input type="text" name="lastName"></td></tr>
-		<tr><td align="right" width="30%">$MSG{Mothers_Last_Name}: </td><td width="70%"><input type="text" name="mothersLastName"></td></tr>
-		<tr><td align="right" width="30%">$MSG{ID_Employee}: </td><td width="70%"><input type="text" name="idEmployee"></td></tr>
-		<tr><td align="right" width="30%">$MSG{Email}: </td><td width="70%"><input type="text" name="email"></td></tr>
-		<tr><td align="right" width="30%">$MSG{Secondary_Email}: </td><td width="70%"><input type="text" name="secondaryEmail"></td></tr>
-		<tr><td align="right" width="30%">$MSG{Phone}: </td><td width="70%"><input type="text" name="phone"></td></tr>
-		<tr><td align="right" width="30%">$MSG{Secondary_Phone}: </td><td width="70%"><input type="text" name="secondaryPhone"></td></tr>
-		<tr><td align="right" width="30%">$MSG{Cost_Center_ID}: </td><td width="70%"><input type="text" name="costCenterId"></td></tr>
-		<tr><td align="right" width="30%">$MSG{Group_ID}: </td><td width="70%"><input type="text" name="groupId"></td></tr>
-		<tr><td align="right" width="30%">$MSG{Secondary_Group_ID}: </td><td width="70%"><input type="text" name="secondaryGroupId"></td></tr>
+		<tr><td align="right" width="30%">$MSG{Name}: </td><td width="70%"><input class="w3-animate-input" type="text" name="name"></td></tr>
+		<tr><td align="right" width="30%">$MSG{Last_Name}: </td><td width="70%"><input class="w3-animate-input" type="text" name="lastName"></td></tr>
+		<tr><td align="right" width="30%">$MSG{Mothers_Last_Name}: </td><td width="70%"><input class="w3-animate-input" type="text" name="mothersLastName"></td></tr>
+		<tr><td align="right" width="30%">$MSG{ID_Employee}: </td><td width="70%"><input class="w3-animate-input" type="text" name="idEmployee"></td></tr>
+		<tr><td align="right" width="30%">$MSG{Email}: </td><td width="70%"><input class="w3-animate-input" type="text" name="email"></td></tr>
+		<tr><td align="right" width="30%">$MSG{Secondary_Email}: </td><td width="70%"><input class="w3-animate-input" type="text" name="secondaryEmail"></td></tr>
+		<tr><td align="right" width="30%">$MSG{Phone}: </td><td width="70%"><input class="w3-animate-input" type="text" name="phone"></td></tr>
+		<tr><td align="right" width="30%">$MSG{Secondary_Phone}: </td><td width="70%"><input class="w3-animate-input" type="text" name="secondaryPhone"></td></tr>
+		<tr><td align="right" width="30%">$MSG{Cost_Center_ID}: </td><td width="70%"><input class="w3-animate-input" type="text" name="costCenterId"></td></tr>
+		<tr><td align="right" width="30%">$MSG{Group_ID}: </td><td width="70%"><input class="w3-animate-input" type="text" name="groupId"></td></tr>
+		<tr><td align="right" width="30%">$MSG{Secondary_Group_ID}: </td><td width="70%"><input class="w3-animate-input" type="text" name="secondaryGroupId"></td></tr>
 		<!--<tr><td align="right" width="30%">$MSG{Theme}: </td><td width="70%">
 		<select name="theme">
 		$themeSelect
@@ -237,21 +234,20 @@ if ( $input{idUser} ) {
 		<tr><td align="right" width="30%">$MSG{Reports}: </td><td width="70%"><input type="checkbox" name="reports" style="margin: 6px 4px;" value="1" checked></td></tr>
 		<tr><td align="right" width="30%">$MSG{Config}: </td><td width="70%"><input type="checkbox" name="config" style="margin: 6px 4px;" value="1"></td></tr>
 		
-		</table>
-		
-		<table cellpadding="0" cellspacing="0" class="formFooter">
-		<tr><td>
-		
-		<div id="myModalRedirectSave" class="confirm"><div class="confirm-content">
+        <tr><td align="right" width="30%" style="padding-top: 50px;">
+            &nbsp;
+        </td><td width="70%">
+            <div id="myModalRedirectSave" class="confirm"><div class="confirm-content">
 			$MSG{Alert}<hr class="confirm-header">
 			$MAG{Saving_changes_for_user}.<br />$MSG{Please_wait_a_while_and_dont_close_this_window}
-		</div></div>
-		<button class="blueLightButton" onClick="return openModal('myModalRedirectSave');">$MSG{Save}</button>
-		
+            </div></div>
+            <button class="blueLightButton" onClick="return openModal('myModalRedirectSave');">$MSG{Save}</button>
 		</td></tr>
+        </table>
+        
 		</form>
-		</table>
 		
+		<br><br>
 		<br><br>
 	~;
 }

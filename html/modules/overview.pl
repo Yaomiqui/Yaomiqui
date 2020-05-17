@@ -48,7 +48,7 @@ $html .= qq~
 			<input type="hidden" name="submod" value="findTicket">
 			<input type="hidden" name="page" value="$page">
 			<input type="hidden" name="shtl" value="1">
-			<input type="text" name="year" value="$year" style="width: 40px">
+			<input type="text" name="year" value="$year" style="width: 50px">
 			<select name="month" onChange="this.form.submit();">
 ~;
 
@@ -87,8 +87,8 @@ for my $i ( 0 .. $#{$STS} ) {
 
 $html .= qq~
 			</select>
-			&nbsp;  &nbsp;  &nbsp; 
-			$MSG{or_find_Ticket}: <input type="text" name="ftt" maxlength="100" style="width:100px" placeholder="$MSG{Type_a_ticket_Number}" > &nbsp;
+			&nbsp; 
+			$MSG{or_find_Ticket}: <input type="text" name="ftt" maxlength="100" style="width:140px" placeholder="$MSG{Type_a_ticket_Number}" > &nbsp;
 			<input class="blueLightButton" type="submit" value="$MSG{Search}">
 			</form>
 			~;
