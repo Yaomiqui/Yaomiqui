@@ -31,7 +31,7 @@ use Log::Man;
 our(%input, %VAR, %MSG, %PRM, $username, $html, $header, $footer, $module, $module_file, $theme, $dbh, $encKey);
 require 'common.pl';
 %VAR = get_vars();
-$VAR{Version} = '2.1';
+$VAR{Version} = '2.3+Alert-Mgmt';
 $encKey = getEncKey();
 $username = get_session();
 $theme = get_theme();
@@ -111,6 +111,8 @@ sub common_header {
     
     <meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" type="text/css" href="css/w3.css" />
+    <link rel="stylesheet" type="text/css" href="css/v-resizable.css" />
+    <link rel="stylesheet" type="text/css" href="css/h-resizable.css" />
     
 	<link href="themes/$theme/css/style.css" rel="stylesheet">
 	~;

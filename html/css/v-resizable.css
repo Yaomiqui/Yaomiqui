@@ -1,0 +1,39 @@
+.vertical {
+  display: flex;
+  padding: 0;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  /*border: 1px solid silver;*/
+}
+.top {
+  flex: 0 0 auto;
+  padding: 0;
+  height: 75%;
+  width: 100%;
+  white-space: nowrap;
+  background: #F6F6F6;
+  color: white;
+}
+.splitter-horizontal {
+  flex: 0 0 auto;
+  height: 8px;
+  background: #F1F1F1;
+  border-top: 1px solid #CACACA;
+  border-bottom: 1px solid #CACACA;
+  cursor: row-resize;
+  padding: 0;
+  font-size: 6px;
+  font-weight: bold;
+  color: #4D4D4D;
+  line-height: 6px;
+  text-align: center;
+}
+.bottom {
+  flex: 1 1 auto;
+  padding: 0;
+  height: 25%;
+  width: 100%;
+  background: #F6F6F6;
+}

@@ -119,6 +119,8 @@ if ( $input{idUser} ) {
 		my $chk_charts = $PRM[11] == 1 ? 'checked' : '';
 		my $chk_reports = $PRM[12] ? 'checked' : '';
 		my $chk_config = $PRM[14] ? 'checked' : '';
+		my $chk_alerts = $PRM[16] ? 'checked' : '';
+		my $chk_alerts_config = $PRM[17] ? 'checked' : '';
 		
 		$html .= qq~
 		<tr><td align="right" width="30%"><br />$MSG{PERMISIONS}:<br /><br /></td><td width="70%">&nbsp;</td></tr>
@@ -130,6 +132,9 @@ if ( $input{idUser} ) {
 		<tr><td align="right" width="30%">$MSG{Logs}: </td><td width="70%"><input type="checkbox" name="logs" style="margin: 6px 4px;" value="1" $chk_logs></td></tr>
 		<tr><td align="right" width="30%">$MSG{Reports}: </td><td width="70%"><input type="checkbox" name="reports" style="margin: 6px 4px;" value="1" $chk_reports></td></tr>
 		<tr><td align="right" width="30%">$MSG{Config}: </td><td width="70%"><input type="checkbox" name="config" style="margin: 6px 4px;" value="1" $chk_config></td></tr>
+        
+		<tr><td align="right" width="30%">Alerts: </td><td width="70%"><input type="checkbox" name="alerts" style="margin: 6px 4px;" value="1" $chk_alerts></td></tr>
+		<tr><td align="right" width="30%">Alerts_Config: </td><td width="70%"><input type="checkbox" name="alerts_config" style="margin: 6px 4px;" value="1" $chk_alerts_config></td></tr>
 		
         <tr><td align="right" width="30%" style="padding-top: 50px;">
             &nbsp;
@@ -233,6 +238,9 @@ if ( $input{idUser} ) {
 		<tr><td align="right" width="30%">$MSG{Charts}: </td><td width="70%"><input type="checkbox" name="charts" style="margin: 6px 4px;" value="1" checked></td></tr>
 		<tr><td align="right" width="30%">$MSG{Reports}: </td><td width="70%"><input type="checkbox" name="reports" style="margin: 6px 4px;" value="1" checked></td></tr>
 		<tr><td align="right" width="30%">$MSG{Config}: </td><td width="70%"><input type="checkbox" name="config" style="margin: 6px 4px;" value="1"></td></tr>
+        
+		<tr><td align="right" width="30%">Alerts: </td><td width="70%"><input type="checkbox" name="alerts" style="margin: 6px 4px;" value="1" checked></td></tr>
+		<tr><td align="right" width="30%">Alerts_Config: </td><td width="70%"><input type="checkbox" name="alerts_config" style="margin: 6px 4px;" value="1"></td></tr>
 		
         <tr><td align="right" width="30%" style="padding-top: 50px;">
             &nbsp;

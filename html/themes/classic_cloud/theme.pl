@@ -28,7 +28,6 @@ sub header {
 	<script type="text/javascript">if (top != self) top.location.href = location.href;</script>
 	<script type="text/javascript" src="js/miquiloniToolTip.js"></script>
 	<script type="text/javascript" src="js/jquery-1.10.2.min.js"></script>
-	<script type="text/javascript" src="js/sorTable.js"></script>
 	</head>
 <body>
 	~;
@@ -39,7 +38,7 @@ sub header {
 	~;
 	}
 	
-	my ($acharts, $areports, $aoverview, $adesign, $amigrate, $acryptPasswd, $aticketsForm, $amyAccount, $aaccounts, $aaccountsNew, $aaconfigVars, $aconfigEnvVars, $aabout, $alicense);
+	my ($acharts, $areports, $aoverview, $adesign, $amigrate, $acryptPasswd, $aticketsForm, $amyAccount, $aaccounts, $aaccountsNew, $aaconfigVars, $aconfigEnvVars, $aabout, $alicense, $aalerts, $aalertsConfig);
 	my ($prilink, $seclink, $trdlink);
     if ( $input{mod} eq 'charts' ) {
         $acharts = $VAR{COLOR_ACTIVE_SIDEBAR};
@@ -99,6 +98,31 @@ sub header {
     if ( $input{mod} eq 'tickets_form' ) {
         $aticketsForm = $VAR{COLOR_ACTIVE_SIDEBAR};
         $prilink = $MSG{Ticket_Form};
+    }
+    if ( $input{mod} eq 'alerts' ) {
+        $aalerts = $VAR{COLOR_ACTIVE_SIDEBAR};
+        $prilink = $MSG{Alerts};
+    }
+    if ( $input{mod} eq 'alerts_config' ) {
+        $aalertsConfig = $VAR{COLOR_ACTIVE_SIDEBAR};
+        $prilink = $MSG{Alerts_Configuration};
+        
+        if ( $input{submod} eq 'alertViews' ) {
+            $prilink = qq~<a href="index.cgi?mod=alerts_config" style="color: #FFF; text-decoration: underline;">$MSG{Alerts_Configuration}</a>~;
+            $seclink = '&nbsp; <b>></b> &nbsp;' . $MSG{Alert_Views_Management}
+        }
+        elsif ( $input{submod} eq 'NewAlertView' ) {
+            $prilink = qq~<a href="index.cgi?mod=alerts_config" style="color: #FFF; text-decoration: underline;">$MSG{Alerts_Configuration}</a>~;
+            $seclink = '&nbsp; <b>></b> &nbsp;' . $MSG{Create_New_Alerts_View}
+        }
+        elsif ( $input{submod} eq 'triggersMan' ) {
+            $prilink = qq~<a href="index.cgi?mod=alerts_config" style="color: #FFF; text-decoration: underline;">$MSG{Alerts_Configuration}</a>~;
+            $seclink = '&nbsp; <b>></b> &nbsp;' . $MSG{Triggers_Management}
+        }
+        elsif ( $input{submod} eq 'NewTrigger' ) {
+            $prilink = qq~<a href="index.cgi?mod=alerts_config" style="color: #FFF; text-decoration: underline;">$MSG{Alerts_Configuration}</a>~;
+            $seclink = '&nbsp; <b>></b> &nbsp;' . $MSG{Create_New_Trigger}
+        }
     }
     if ( $input{mod} eq 'my_account' ) {
         $amyAccount = $VAR{COLOR_ACTIVE_SIDEBAR};
@@ -175,6 +199,8 @@ sub header {
         $header .= qq~<a href="index.cgi?mod=design&submod=new_autoBot_from_xml" class="w3-bar-item w3-button w3-small $amigrate">$MSG{Autobot_Migration}</a>~ if $PRM{design};
         $header .= qq~<a href="index.cgi?mod=design&submod=cryptPasswd" class="w3-bar-item w3-button w3-small $acryptPasswd">$MSG{Encrypt_Password}</a>~ if $PRM{design};
         $header .= qq~<a href="index.cgi?mod=tickets_form" class="w3-bar-item w3-button w3-small w3-border-top $aticketsForm">$MSG{Ticket_Form}</a>~ if $PRM{tickets_form};
+        $header .= qq~<a href="index.cgi?mod=alerts" class="w3-bar-item w3-button w3-small w3-border-top $aalerts">$MSG{Alerts_Overview}</a>~ if $PRM{alerts};
+        $header .= qq~<a href="index.cgi?mod=alerts_config" class="w3-bar-item w3-button w3-small $aalertsConfig">$MSG{Alerts_Configuration}</a>~ if $PRM{alerts_config};
         $header .= qq~<a href="index.cgi?mod=my_account" class="w3-bar-item w3-button w3-small w3-border-top $amyAccount">$MSG{My_Account}</a>~;
         $header .= qq~<a href="index.cgi?mod=accounts" class="w3-bar-item w3-button w3-small $aaccounts">$MSG{Accounts_List}</a>~ if $PRM{accounts};
         $header .= qq~<a href="index.cgi?mod=accounts_edit" class="w3-bar-item w3-button w3-small $aaccountsNew">$MSG{New_User}</a>~ if $PRM{accounts_edit};
@@ -188,14 +214,13 @@ sub header {
         <img src="images/logo.png" alt="Snow" style="width:70%; display: block; margin-left: auto; margin-right: auto;">
             <br><br>Powered by:<br>
             <img src="themes/$theme/images/YaomiquiLogoTransparent.png">
-            <br/>YAOMIQUI
             <br>Automation Platform
         </div>
         <br><br><br>
     </div>
 		
         <div class="w3-top">
-            <div class="w3-bar w3-left-align" style="background-color: #242C3F; padding-right: 50px;">
+            <div class="w3-bar w3-left-align" style="background-color: #242C3F !important; padding-right: 50px; z-index: 100;">
                 <a href="#" class="w3-bar-item w3-button w3-medium" style="margin-right: 40px; margin-left: 50px;" onClick="w3_open()"><img id="hamburger" src="themes/$theme/images/hamLeft.png" style="height: 22px; border: 0px"></a>
                 <div class="w3-display-left w3-text-white" style="margin-left: 120px;">$prilink $seclink</div>
                 <a href="index.cgi?mod=logout" onclick="return confirm('$MSG{Are_you_sure_you_want_to_log_off} ?')" class="w3-bar-item w3-button w3-right w3-medium"><img src="themes/$theme/images/logout64.png" style="height: 22px; border: 0px;"></a>

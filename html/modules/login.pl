@@ -2,6 +2,9 @@ my $user = $input{user};
 my $pass = $input{pass};
 my $vendor = "yaomiqui";
 
+$user = delMalCode($user);
+$pass = delMalCode($pass);
+
 use Math::Random::ISAAC;
 my $rng = Math::Random::ISAAC->new(time());
 my $prnrand = $rng->irand();

@@ -1,12 +1,8 @@
+CREATE USER 'yaomiqui'@'localhost' IDENTIFIED BY 'MYSQL_PASSWD';
+
 CREATE DATABASE IF NOT EXISTS yaomiqui CHARACTER SET 'UTF8' COLLATE 'utf8_general_ci';
 
-SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode, 'ONLY_FULL_GROUP_BY', ''));
-
-SET @@SESSION.sql_mode = CONCAT_WS(',', @@SESSION.sql_mode, 'ALLOW_INVALID_DATES');
-
-CREATE USER IF NOT EXISTS 'yaomiqui'@'localhost' IDENTIFIED BY 'MYSQL_PASSWD';
-
-GRANT ALL PRIVILEGES ON yaomiqui.* TO 'yaomiqui'@'localhost' WITH GRANT OPTION;
+GRANT ALL PRIVILEGES ON yaomiqui.* TO 'yaomiqui'@'localhost' IDENTIFIED BY 'MYSQL_PASSWD' WITH GRANT OPTION;
 
 FLUSH PRIVILEGES;
 
@@ -52,7 +48,7 @@ CREATE TABLE IF NOT EXISTS permissions (
 	tickets int(1) DEFAULT '0',
 	tickets_form int(1) DEFAULT '0',
 	logs int(1) DEFAULT '0',
-	charts int(1) DEFAULT '0',
+	charts int(1) DEFAULT '1',
 	reports int(1) DEFAULT '0',
 	about int(1) DEFAULT '1',
 	config int(1) DEFAULT '0',
@@ -245,7 +241,7 @@ CREATE TABLE IF NOT EXISTS alertsView (
     definition varchar(40) NULL,
     description varchar(255) NULL
 ) ENGINE=InnoDB;
-
+--  INSERT INTO alertsView (viewName, title, definition, description) VALUES ('Test Alert', 'Just for test', 'Just for test', 'This alert is for check if this thing works');
 
 DROP TABLE IF EXISTS alertsHistory;
 
@@ -265,6 +261,10 @@ CREATE TABLE IF NOT EXISTS alertsHistory (
     idTrigger int(40) NOT NULL DEFAULT '0001',
     silenced int(1) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB;
+
+
+
+
 
 
 

@@ -22,7 +22,7 @@
 
 sub get_vars {
 	my %VARS;
-	open my $file, "</var/www/yaomiqui/yaomiqui.conf";
+	open my $file, "<../yaomiqui.conf";
 	while ( <$file> ) {
 		$_ =~ s/\n$//;
 		$_ =~ s/^\s*//;
@@ -117,6 +117,8 @@ sub get_permissions {
 	$PERM{about} = $perm[13];
 	$PERM{config} = $perm[14];
 	$PERM{my_account} = $perm[15];
+	$PERM{alerts} = $perm[16];
+	$PERM{alerts_config} = $perm[17];
 	
 	return %PERM;
 }
@@ -214,6 +216,12 @@ sub get_cookie_Sector {
 	}
 	
 	return $cookie_Sector;
+}
+
+sub delMalCode {
+    my $input = shift;
+    $input =~ s/<|>|script|java//gi;
+    return $input;
 }
 
 sub set_cookie_Sector {

@@ -63,6 +63,9 @@ unless ( $input{submod} ) {
 
 
 if ( $input{submod} eq 'save_config' ) {
+    $input{varValue} = delMalCode($input{varValue});
+    $input{idConfigVar} = delMalCode($input{idConfigVar});
+    
 	connected();
 	my $sth = $dbh->prepare(qq~UPDATE configVars SET varValue='$input{varValue}' WHERE idConfigVar='$input{idConfigVar}'~);
 	$sth->execute();
@@ -77,6 +80,9 @@ if ( $input{submod} eq 'save_config' ) {
 
 
 if ( $input{submod} eq 'save_env_var' ) {
+    $input{varValue} = delMalCode($input{varValue});
+    $input{idEnvVar} = delMalCode($input{idEnvVar});
+    
 	connected();
 	my $sth = $dbh->prepare(qq~UPDATE environmentVars SET varValue='$input{varValue}' WHERE idEnvVar='$input{idEnvVar}'~);
 	$sth->execute();
@@ -145,12 +151,17 @@ if ( $input{submod} eq 'configEnvVars' ) {
 
 if ( $input{submod} eq 'add_new_env_var' ) {
 	if ( $input{varName} ) {
-		connected();
-		my $insert_string = "INSERT INTO environmentVars (varName, varValue) VALUES (?, ?)";
-		$sth = $dbh->prepare("$insert_string");
-		$sth->execute($input{varName}, $input{varValue});
-		$sth->finish;
-		$dbh->disconnect if $dbh;
+        $input{varName} = delMalCode($input{varName});
+        $input{varValue} = delMalCode($input{varValue});
+        
+        if ( $input{varName} and $input{varValue} ) {
+            connected();
+            my $insert_string = "INSERT INTO environmentVars (varName, varValue) VALUES (?, ?)";
+            $sth = $dbh->prepare("$insert_string");
+            $sth->execute($input{varName}, $input{varValue});
+            $sth->finish;
+            $dbh->disconnect if $dbh;
+        }
 		
 		my $log = new Log::Man($VAR{log_dir}, $VAR{log_file}, $username);
 		$log->Log("NEW:environmentVars:varName=$input{varName},varValue=$input{varValue}");

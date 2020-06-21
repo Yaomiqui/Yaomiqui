@@ -13,11 +13,14 @@ Yaomiqui reduces more than 80% your repetitive common tasks and of course, it re
 
 ### Features
 
-- Runs on some GNU- /Linux distribution.
-- Built over a solid base of Perl.
+- Enables you to create hundreds and hundreds of robots for IT process automation
+- Complete Alerts processing/management platform
+- Runs on some GNU/Linux distribution.
+- Engine is built over a solid base of Perl.
 - Low system requirements.
 - Very easy to install.
 - Easy to use.
+- Super stable and fast
 - Written by Automation Specialists, not by administrative people guiding programmers.
 - Multi language.
   - en_US

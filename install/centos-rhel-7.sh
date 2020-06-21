@@ -2,7 +2,7 @@
 ########################################################################
 # Yaomiqui is Powerful tool for Automation + Easy to use Web UI
 # Written in freestyle Perl + CGI + Apache + MySQL + Javascript + CSS
-# Automated installation script for Yaomiqui 1.0 on RHEL 7.x
+# Automated installation script for Yaomiqui 1.0 on CentOS 7.x
 # 
 # Yaomiqui and its logo are registered trademark by Hugo Maza Moreno
 # Copyright (C) 2019
@@ -27,7 +27,7 @@ export LC_ALL=en_US.UTF-8
 
 source ./keys_auto.conf
 
-yum install -y wget vim curl net-tools httpd perl perl-core perl-CGI perl-DBI mod_ssl perl-JSON perl-XML-Simple sendmail make gcc cpanminus realmd krb5*
+yum install -y wget vim curl net-tools httpd perl perl-core perl-CGI perl-DBI mod_ssl perl-JSON perl-XML-Simple sendmail make gcc cpanminus realmd krb5* sssd-krb5 adcli
 
 wget -c http://repo.mysql.com/mysql-community-release-el7-5.noarch.rpm
 
@@ -37,7 +37,7 @@ yum install -y mysql-server perl-DBD-MySQL
 
 rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 
-yum --enablerepo=epel install -y sshpass perl-Parallel-ForkManager perl-Net-OpenSSH perl-MIME-Lite perl-Math-Random-ISAAC
+yum --enablerepo=epel install -y sshpass perl-Math-Random-ISAAC perl-Parallel-ForkManager perl-Net-OpenSSH perl-MIME-Lite perl-Date-Calc
 
 chown apache:apache /usr/share/httpd
 
@@ -87,15 +87,15 @@ chown -R apache:apache /var/www/yaomiqui
 
 mysqlPasswdAdmin=`./generateEncKey.pl 12`
 perl -pi -e "s/DBPASSWD/DBPASSWD \= ${mysqlPasswdAdmin}/g" /var/www/yaomiqui/yaomiqui.conf
-perl -pi -e "s/MYSQL_PASSWD/${mysqlPasswdAdmin}/g" yaomiqui.sql
+perl -pi -e "s/MYSQL_PASSWD/${mysqlPasswdAdmin}/g" yaomiqui-CentOS-7.sql
 
 encKey=`./generateEncKey.pl`;
 echo "${encKey}" > /var/www/yaomiqui/certs/yaomiquikey.enc
 
 encPasswd=`./cryptPasswdAdmin.pl admin`
-perl -pi -e "s/ADMIN_PASSWD/${encPasswd}/" yaomiqui.sql
+perl -pi -e "s/ADMIN_PASSWD/${encPasswd}/" yaomiqui-CentOS-7.sql
 
-mysql -u root < yaomiqui.sql
+mysql -u root < yaomiqui-CentOS-7.sql
 
 cd /var/www/yaomiqui/certs
 
@@ -117,7 +117,7 @@ echo ''
 echo '================================================================================'
 echo 'If there was some problem with SQL execution'
 echo 'Please enter to MySQL as root and run:'
-echo 'SQL> source yaomiqui.sql;'
+echo 'SQL> source yaomiqui-CentOS-7.sql;'
 echo '================================================================================'
 echo ''
 echo '================================================================================'

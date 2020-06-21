@@ -47,17 +47,17 @@ if ( $input{submod} eq 'save_record' ) {
 		$input{groupId} = '0' unless $input{groupId};
 		$input{secondaryGroupId} = '0' unless $input{secondaryGroupId};
 		
-		$input{name} =~ s/<|>|script|alert//gi;
-		$input{lastName} =~ s/<|>|script|alert//gi;
-		$input{mothersLastName} =~ s/<|>|script|alert//gi;
-		$input{email} =~ s/<|>|script|alert//gi;
-		$input{secondaryEmail} =~ s/<|>|script|alert//gi;
-		$input{phone} =~ s/<|>|script|alert//gi;
-		$input{secondaryPhone} =~ s/<|>|script|alert//gi;
-		$input{idEmployee} =~ s/<|>|script|alert//gi;
-		$input{costCenterId} =~ s/<|>|script|alert//gi;
-		$input{groupId} =~ s/<|>|script|alert//gi;
-		$input{secondaryGroupId} =~ s/<|>|script|alert//gi;
+		$input{name} = delMalCode($input{name});
+		$input{lastName} = delMalCode($input{lastName});
+		$input{mothersLastName} = delMalCode($input{mothersLastName});
+		$input{email} = delMalCode($input{email});
+		$input{secondaryEmail} = delMalCode($input{secondaryEmail});
+		$input{phone} = delMalCode($input{phone});
+		$input{secondaryPhone} = delMalCode($input{secondaryPhone});
+		$input{idEmployee} = delMalCode($input{idEmployee});
+		$input{costCenterId} = delMalCode($input{costCenterId});
+		$input{groupId} = delMalCode($input{groupId});
+		$input{secondaryGroupId} = delMalCode($input{secondaryGroupId});
 		
 		connected();
 		
@@ -111,6 +111,8 @@ if ( $input{submod} eq 'save_record' ) {
 		$input{charts} = '0' unless $input{charts};
 		$input{reports} = '0' unless $input{reports};
 		$input{config} = '0' unless $input{config};
+		$input{alerts} = '0' unless $input{alerts};
+		$input{alerts_config} = '0' unless $input{alerts_config};
 		
 		my $sth1 = $dbh->prepare("UPDATE permissions SET 
 		design='$input{design}',
@@ -122,7 +124,9 @@ if ( $input{submod} eq 'save_record' ) {
 		charts='1',
 		reports='$input{reports}',
 		config='$input{config}',
-		my_account='1'
+		my_account='1',
+        alerts='$input{alerts}',
+        alerts_config='$input{alerts_config}' 
 		WHERE idUser='$input{idUser}'");
 		$sth1->execute();
 		$sth1->finish;
@@ -132,7 +136,7 @@ if ( $input{submod} eq 'save_record' ) {
 		my $log = new Log::Man($VAR{log_dir}, $VAR{log_file}, $username);
 		$log->Log("UPDATE:Account:idUser=$input{idUser};name=$input{name};lastName=$input{lastName};mothersLastName=$input{mothersLastName};idEmployee=$input{idEmployee};email=$input{email};secondaryEmail=$input{secondaryEmail};phone=$input{phone};secondaryPhone=$input{secondaryPhone};costCenterId=$input{costCenterId};groupId=$input{groupId};secondaryGroupId=$input{secondaryGroupId};theme=$input{theme};language=$input{language};active=$input{active};lxcservers=$input{lxcservers};lxcservers_edit=$input{lxcservers_edit};provisioning=$input{provisioning};accounts=$input{accounts};accounts_edit=$input{accounts_edit};containers=$input{containers};containers_edit=$input{containers_edit};sectors=$input{sectors};migration=$input{migration};keypairs=$input{keypairs};distros=$input{distros}");
 		
-		print "Location: index.cgi?mod=accounts&idUser=$input{idUser}\n\n";
+		print "Location: index.cgi?mod=accounts_edit&idUser=$input{idUser}\n\n";
 		
 		
 	} else {
@@ -161,19 +165,19 @@ if ( $input{submod} eq 'new_record' ) {
 				$input{costCenterId} = '0' unless $input{costCenterId};
 				$input{groupId} = '0' unless $input{groupId};
 				$input{secondaryGroupId} = '0' unless $input{secondaryGroupId};
-				
-				$input{username} =~ s/<|>|script|alert//gi;
-				$input{name} =~ s/<|>|script|alert//gi;
-				$input{lastName} =~ s/<|>|script|alert//gi;
-				$input{mothersLastName} =~ s/<|>|script|alert//gi;
-				$input{email} =~ s/<|>|script|alert//gi;
-				$input{secondaryEmail} =~ s/<|>|script|alert//gi;
-				$input{phone} =~ s/<|>|script|alert//gi;
-				$input{secondaryPhone} =~ s/<|>|script|alert//gi;
-				$input{idEmployee} =~ s/<|>|script|alert//gi;
-				$input{costCenterId} =~ s/<|>|script|alert//gi;
-				$input{groupId} =~ s/<|>|script|alert//gi;
-				$input{secondaryGroupId} =~ s/<|>|script|alert//gi;
+                
+                $input{username} = delMalCode($input{username});
+                $input{name} = delMalCode($input{name});
+                $input{lastName} = delMalCode($input{lastName});
+                $input{mothersLastName} = delMalCode($input{mothersLastName});
+                $input{email} = delMalCode($input{email});
+                $input{secondaryEmail} = delMalCode($input{secondaryEmail});
+                $input{phone} = delMalCode($input{phone});
+                $input{secondaryPhone} = delMalCode($input{secondaryPhone});
+                $input{idEmployee} = delMalCode($input{idEmployee});
+                $input{costCenterId} = delMalCode($input{costCenterId});
+                $input{groupId} = delMalCode($input{groupId});
+                $input{secondaryGroupId} = delMalCode($input{secondaryGroupId});
 				
 				# $dbh->do("LOCK TABLES users WRITE");
 				my $insert_string = qq~INSERT INTO users (
@@ -215,9 +219,10 @@ if ( $input{submod} eq 'new_record' ) {
 				$input{charts} = '0' unless $input{charts};
 				$input{reports} = '0' unless $input{reports};
 				$input{config} = '0' unless $input{config};
+				$input{alerts_config} = '0' unless $input{alerts_config};
 				
 				$insert_string = qq~INSERT INTO permissions (
-				idUser, design, accounts, accounts_edit, tickets, tickets_form, logs, reports, config
+				idUser, design, accounts, accounts_edit, tickets, tickets_form, logs, reports, config, alerts, alerts_config
 				) VALUES (
 				'$idUserNew',
 				'$input{design}',
@@ -227,7 +232,9 @@ if ( $input{submod} eq 'new_record' ) {
 				'$input{tickets_form}',
 				'$input{logs}',
 				'$input{reports}',
-				'$input{config}')~;
+				'$input{config}',
+				'$input{alerts}',
+				'$input{alerts_config}')~;
 				$sth = $dbh->prepare("$insert_string");
 				$sth->execute();
 				$sth->finish;
@@ -238,7 +245,7 @@ if ( $input{submod} eq 'new_record' ) {
 				my $log = new Log::Man($VAR{log_dir}, $VAR{log_file}, $username);
 				$log->Log("NEW:Account:idUser=$input{idUser};username=$input{username};name=$input{name};lastName=$input{lastName};mothersLastName=$input{mothersLastName};idEmployee=$input{idEmployee};email=$input{email};secondaryEmail=$input{secondaryEmail};phone=$input{phone};secondaryPhone=$input{secondaryPhone};costCenterId=$input{costCenterId};groupId=$input{groupId};secondaryGroupId=$input{secondaryGroupId};theme=$input{theme};language=$input{language};active=$input{active};lxcservers=$input{lxcservers};lxcservers_edit=$input{lxcservers_edit};provisioning=$input{provisioning};accounts=$input{accounts};accounts_edit=$input{accounts_edit};containers=$input{containers};containers_edit=$input{containers_edit};sectors=$input{sectors};migration=$input{migration};keypairs=$input{keypairs};distros=$input{distros}");
 				
-				print "Location: index.cgi?mod=accounts\n\n";
+				print "Location: index.cgi?mod=accounts_edit&idUser=$idUserNew\n\n";
 				
 			} else {
 				$html .= qq~<font color="#BB0000">$MSG{Username_alredy_exists}</font><br /><br /><br /><br />~;
@@ -286,6 +293,7 @@ unless ( $input{submod} ) {
 		# </tr>
 	# ~;
 	$html .= qq~
+    <script type="text/javascript" src="js/sorTable.js"></script>
     <table class="w3-table w3-bordered" style="background-color: #F4F4F4; border-top: 1px solid #E5E5E5;">
     <tr>
        <th><input type="text" placeholder="Search for User Name..." id="myInput" onkeyup="myFunction()" style="width: 400px; margin-top: 0px; margin-bottom: 0px;"></th>

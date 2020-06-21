@@ -128,14 +128,13 @@ if ( $input{submod} eq 'save_record' ) {
 		$sth1->finish;
 		
 		if ( $userfromdb eq $username ) {
-			
-			$input{name} =~ s/<|>|script|alert//gi;
-			$input{lastName} =~ s/<|>|script|alert//gi;
-			$input{mothersLastName} =~ s/<|>|script|alert//gi;
-			$input{email} =~ s/<|>|script|alert//gi;
-			$input{secondaryEmail} =~ s/<|>|script|alert//gi;
-			$input{phone} =~ s/<|>|script|alert//gi;
-			$input{secondaryPhone} =~ s/<|>|script|alert//gi;
+			$input{name} = delMalCode($input{name});
+			$input{lastName} = delMalCode($input{lastName});
+			$input{mothersLastName} = delMalCode($input{mothersLastName});
+			$input{email} = delMalCode($input{email});
+			$input{secondaryEmail} = delMalCode($input{secondaryEmail});
+			$input{phone} = delMalCode($input{phone});
+			$input{secondaryPhone} = delMalCode($input{secondaryPhone});
 			
 			my $sth;
 			if ( $input{pwd1} ) {

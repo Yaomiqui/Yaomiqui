@@ -1,8 +1,8 @@
-#!/bin/bash
+#!/bin/sh
 ########################################################################
 # Yaomiqui is Powerful tool for Automation + Easy to use Web UI
 # Written in freestyle Perl + CGI + Apache + MySQL + Javascript + CSS
-# Automated installation script for Yaomiqui 1.0 on Ubuntu 18.04 Server
+# Automated installation script for Yaomiqui 1.0 on CentOS 7.x
 # 
 # Yaomiqui and its logo are registered trademark by Hugo Maza Moreno
 # Copyright (C) 2019
@@ -25,24 +25,45 @@ export LC_CTYPE=en_US.UTF-8
 
 export LC_ALL=en_US.UTF-8
 
-ps -efa | grep apt | grep -v grep | awk '{print "kill -9 "$2}' | sh
-
 source ./keys_auto.conf
 
-apt-get update
+yum install -y wget vim curl net-tools httpd perl perl-core perl-CGI perl-DBI mod_ssl perl-JSON perl-XML-Simple perl-MIME-Base64 sendmail make gcc cpanminus realmd krb5* sssd-krb5 adcli
 
-apt install -y libsoap-lite-perl
+yum install -y mariadb-server perl-DBD-MySQL epel-release
 
-apt install -y curl apache2 mysql-server sshpass libnet-openssh-perl libdbi-perl libdbd-mysql-perl libjson-perl libtest-json-perl libxml-simple-perl libxml-validate-perl libparallel-forkmanager-perl libnet-openssh-perl sendmail libmime-lite-perl libmath-random-isaac-perl realmd krb5-kdc krb5-pkinit krb5-sync-tools krb5-user
+#### Temporary until we have all libreries on epel repos
+yum --enablerepo=epel install -y sshpass perl-Math-Random-ISAAC perl-Date-Calc
 
-# Install winexe. You can comment the next five lines to enhance performance. Then you can run it later.
-# apt-get -y install python2.7 gcc-mingw-w64 libtevent-dev samba-dev libsmbclient comerr-dev libc6-dev libpopt-dev libsmbclient-dev samba-libs --fix-missing
+# cpanm -i Date::Calc
+cpanm -i Parallel::ForkManager
+cpanm -i Net::OpenSSH
+cpanm -i MIME::Lite
+# cpanm -i Math::Random::ISAAC
+#### Temporary until we have all libreries on epel repos
 
-/usr/bin/perl -pi -e 's/Timeout 300/Timeout 1200\nTimeout 1200\nLimitRequestLine 100000\nLimitRequestFieldSize 100000/' /etc/apache2/apache2.conf
+chown apache:apache /usr/share/httpd
 
-a2enmod ssl
+# service NetworkManager stop
 
-a2enmod cgi
+# chkconfig NetworkManager off
+
+service firewalld stop
+
+chkconfig firewalld off
+
+service httpd start
+
+service mariadb start
+
+chkconfig httpd on
+
+chkconfig mariadb on
+
+perl -pi -e 's/SELINUX=enforcing/SELINUX=disabled/' /etc/selinux/config
+
+setenforce 0
+
+perl -pi -e 's/Listen 80/Listen 80\nListen 443\n\nTimeout 1200\nLimitRequestLine 100000\nLimitRequestFieldSize 100000/' /etc/httpd/conf/httpd.conf
 
 mkdir /var/www/yaomiqui
 
@@ -54,47 +75,41 @@ mkdir /var/www/yaomiqui/certs
 
 mkdir /var/www/yaomiqui/logs
 
-/usr/bin/perl -pi -e "s/SERVER_NAME/${COMMON_NAME}/g" yaomiqui_apache.conf
+perl -pi -e "s/SERVER_NAME/${COMMON_NAME}/g" yaomiqui_apache.conf
 
-cat ./yaomiqui_apache.conf > /etc/apache2/sites-available/yaomiqui.conf
+cat ./yaomiqui_apache.conf > /etc/httpd/conf.d/yaomiqui.conf
 
-mv /etc/apache2/sites-available/default-ssl.conf /etc/apache2/sites-available/default-ssl.conf.bk
+mv /etc/httpd/conf.d/ssl.conf /etc/httpd/conf.d/ssl.conf.bk
 
 cp -r ../html/* /var/www/yaomiqui/html/
 
 cp -r ../root/* /var/www/yaomiqui/
 
-chown -R www-data:www-data /var/www/yaomiqui
+chown -R apache:apache /var/www/yaomiqui
 
 mysqlPasswdAdmin=`./generateEncKey.pl 12`
-/usr/bin/perl -pi -e "s/DBPASSWD/DBPASSWD \= ${mysqlPasswdAdmin}/g" /var/www/yaomiqui/yaomiqui.conf
-/usr/bin/perl -pi -e "s/MYSQL_PASSWD/${mysqlPasswdAdmin}/g" yaomiqui.sql
 
-echo "" >> yaomiqui.sql
-echo "SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode, 'ONLY_FULL_GROUP_BY', ''));" >> yaomiqui.sql
-echo "" >> yaomiqui.sql
+perl -pi -e "s/DBPASSWD/DBPASSWD \= ${mysqlPasswdAdmin}/g" /var/www/yaomiqui/yaomiqui.conf
+
+perl -pi -e "s/MYSQL_PASSWD/${mysqlPasswdAdmin}/g" yaomiqui.sql
 
 encKey=`./generateEncKey.pl`;
+
 echo "${encKey}" > /var/www/yaomiqui/certs/yaomiquikey.enc
 
 encPasswd=`./cryptPasswdAdmin.pl admin`
-/usr/bin/perl -pi -e "s/ADMIN_PASSWD/${encPasswd}/" yaomiqui.sql
 
-mysql -u root -p < yaomiqui.sql
+perl -pi -e "s/ADMIN_PASSWD/${encPasswd}/" yaomiqui.sql
+
+mysql -u root < yaomiqui.sql
 
 cd /var/www/yaomiqui/certs
 
 openssl req -new -x509 -nodes -days 3650 -newkey rsa:2048 -keyout yaomiqui-private.key -out yaomiqui-cert.crt -subj "/C=${COUNTRY}/ST=${CITY}/L=Region/O=${REGION}/OU=${ORGANIZATION}/CN=${COMMON_NAME}"
 
-chown -R www-data:www-data /var/www/yaomiqui
+chown -R apache:apache /var/www/yaomiqui
 
-service apache2 restart
-
-cd /etc/apache2/sites-available
-
-a2ensite yaomiqui.conf
-
-service apache2 restart
+service httpd restart
 
 /usr/bin/find /var/www/yaomiqui -name *.cgi -exec chmod 755 {} \;
 

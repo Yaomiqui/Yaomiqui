@@ -4,6 +4,11 @@ my $html;
 $html .= qq~<div class="contentTitle">$MSG{Saving_Reports}</div>~ unless $input{'shtl'};
 
 if ( $input{submod} eq 'save_config' ) {
+    $input{typeTicket} = delMalCode($input{typeTicket});
+    $input{averageAttTime} = delMalCode($input{averageAttTime});
+    $input{costPerHour} = delMalCode($input{costPerHour});
+    $input{costPerTicket} = delMalCode($input{costPerTicket});
+    
 	connected();
 	my $sth = $dbh->prepare(qq~UPDATE report SET typeTicket='$input{typeTicket}', averageAttTime='$input{averageAttTime}', costPerHour='$input{costPerHour}', costPerTicket='$input{costPerTicket}' WHERE idReport='$input{idReport}'~);
 	$sth->execute();
@@ -26,6 +31,11 @@ if ( $input{submod} eq 'delete_config' ) {
 }
 
 if ( $input{submod} eq 'add_config_element' ) {
+    $input{typeTicket} = delMalCode($input{typeTicket});
+    $input{averageAttTime} = delMalCode($input{averageAttTime});
+    $input{costPerHour} = delMalCode($input{costPerHour});
+    $input{costPerTicket} = delMalCode($input{costPerTicket});
+    
 	connected();
 	my $insert_string = "INSERT INTO report (typeTicket, averageAttTime, costPerHour, costPerTicket) VALUES (?, ?, ?, ?)";
 	$sth = $dbh->prepare("$insert_string");

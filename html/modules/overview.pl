@@ -37,9 +37,9 @@ my $month = $input{month} ? $input{month} : currentMonth();
 my $page = $input{page} || 1;
 
 $html .= qq~
-<table cellpadding="0" cellspacing="2" border="0" width="100%" style="min-height: 400px; height: calc(100% - 62px);">
+<table cellpadding="0" cellspacing="2" border="0" width="100%">
 	<tr>
-		<td width="65%" valign="top" style="height: calc(100% - 62px);">
+		<td width="100%">
 		~;
 
 $html .= qq~
@@ -48,7 +48,7 @@ $html .= qq~
 			<input type="hidden" name="submod" value="findTicket">
 			<input type="hidden" name="page" value="$page">
 			<input type="hidden" name="shtl" value="1">
-			<input type="text" name="year" value="$year" style="width: 50px">
+			<input type="text" name="year" value="$year" style="width: 60px">
 			<select name="month" onChange="this.form.submit();">
 ~;
 
@@ -88,24 +88,36 @@ for my $i ( 0 .. $#{$STS} ) {
 $html .= qq~
 			</select>
 			&nbsp; 
-			$MSG{or_find_Ticket}: <input type="text" name="ftt" maxlength="100" style="width:140px" placeholder="$MSG{Type_a_ticket_Number}" > &nbsp;
+			$MSG{or_find_Ticket}: <input type="text" name="ftt" maxlength="100" style="width:200px" placeholder="$MSG{Type_a_ticket_Number}" > &nbsp;
 			<input class="blueLightButton" type="submit" value="$MSG{Search}">
 			</form>
-			~;
-			
+            
+            </td>
+            </tr>
+            </table>
+            <br/>~;
 			
 $html .= qq~
-			<br/>
-		<iframe name="ticket" id="ticketList" scrolling="auto" src="launcher.cgi?mod=tickets&submod=findTicket&year=$year&month=$month&state=&ftt=&page=$page&shtl=1" frameborder="0" width="100%" height="100%"></iframe>
-		</td>
-		
-		<td width="35%" valign="top" style="min-height: 400px; height: calc(100% - 62px);">
-			<iframe name="logs" scrolling="auto" frameborder="0" width="100%" style="height: calc(100% + 40px); background-color: #E0E0E0;"></iframe>
-		</td>
-	</tr>
-</table>
-~;
+<script type="text/javascript" src="js/jquery-resizable.js"></script>
 
+<div class="horizontal">
+    <div class="izquierda">
+        <iframe class="content" name="ticket" id="ticket" scrolling="auto" src="launcher.cgi?mod=tickets&submod=findTicket&year=$year&month=$month&state=&ftt=&page=$page&shtl=1" frameborder="0" width="100%" height="100%"></iframe>
+    </div>
+    <div class="splitter"></div>
+    <div class="derecha">
+        <iframe class="content" name="logs" id="logs" scrolling="auto" frameborder="0" width="100%" style="height: 100%;"></iframe>
+    </div>
+<div>
+
+<script type="text/javascript">
+    \$(".izquierda").resizable({
+        handleSelector: ".splitter",
+        resizeHeight: false
+    });
+</script>
+~;
+# left
 
 # src="launcher.cgi?mod=logs&shtl=1"
 return $html;

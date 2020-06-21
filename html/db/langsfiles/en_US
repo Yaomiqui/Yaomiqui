@@ -33,6 +33,13 @@ Config_Variables = Config Variables
 Environment_Variables = Environment Variables
 Autobot_Migration = Autobot Migration
 Dashboard = Dashboard
+Alerts = Alerts
+Alerts_Overview = Alerts Overview
+Alerts_Configuration = Alerts Configuration
+Alert_Views_Management = Alert Views Management
+Create_New_Alerts_View = Create New Alert View
+Create_New_Trigger = Create New Trigger
+Triggers_Management = Triggers Management
 
 
 [config]
@@ -304,6 +311,65 @@ Company_Saving = Company Saving
 Old_Expenses_Current_costs_and_Saving = Old Expenses, Current costs and Saving
 Are_you_sure_to_delete_this = Are you sure to delete this
 Config = Config
+
+
+[alerts]
+Please_select_some_view = Please select some view
+Qty = Qty
+Insert_Date = Insert Date
+Queue = Queue
+Severity = Severity
+Title = Title
+Definition = Definition
+Description = Description
+Search_for_Title = Search for Title
+Silence = Silence
+Are_you_sure_to_Silence_this_Alert = Are you sure to Silence this Alert
+Last_Event_Date = Last Event Date
+Impact = Impact
+Urgency = Urgency
+First = First
+Scalation = Scalation
+Second = Second
+Third = Third
+Ticket_Number = Ticket_Number
+All_alerts = All alerts
+Alert_ID = Alert ID
+
+
+[alerts_config]
+Please_select_some_View_to_manage = Please select some View to manage
+Create_New_Trigger = Create New Trigger
+New_Alert_View = New Alert View
+View_Name = View Name
+Severity = Severity
+Impact = Impact
+Urgency = Urgency
+Queue = Queue
+Title = Title
+Definition = Definition
+Description = Description
+Update = Update
+Create_New = Create New
+Please_select_some_Trigger_to_manage = Please select some Trigger to manage
+New_Trigger = New Trigger
+Count_To_Status_Up = Counter to see Status one level up
+Minutes_To_Status_Down = Minutes to down the status level
+Minutes_To_Hidden = Minutes elapsed to hide the alert
+Counter_of_times_the_alert_should_appear_to_INCREASE = Counter of times the alert should appear to INCREASE its warning color in the Alerts View
+Minutes_quantity_that_must_elapse_DECREASE = Minutes quantity that must elapse before the alert should appear to DECREASE its warning color in the Alerts View
+Minutes_quantity_that_must_elapse_before_alert_hidden = Minutes quantity that must elapse before the alert be hidden in the alerts view
+Distribution_List_of_First_Escalation = Distribution List of First Escalation
+Distribution_List_of_Second_Escalation = Distribution List of Second Escalation
+Distribution_List_of_Third_Escalation = Distribution List of Third Escalation
+ID_AutoBot_to_trigger = ID AutoBot to trigger
+JSON_to_send_to_the_Autobot = JSON to send to the Autobot
+fill_some_data_you_want_to_create_a_new_Trigger = Please fill some data you want to create a new Trigger to run an Autobot
+Alert_Views = Alert Views
+Trigger_Scalations = Triggers & Scalations
+Please_fill_some_data_you_want_to_filter_to_create_a_new_Alert_View = Please fill some data you want to filter to create a new Alerts View
+Trigger_Name = Trigger Name
+includes_the_following_Json_variables = includes the following Json variables
 
 
 [end]

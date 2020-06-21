@@ -165,10 +165,10 @@ elsif ( $ENV{REQUEST_METHOD} eq 'PUT' ) {
 			
 			unless ( $TT ) {
 				my $insert_string = "INSERT INTO ticket (numberTicket, sysidTicket, subject, initialDate, initialState, typeTicket, json) 
-				VALUES ('$json->{ticket}->{number}', '$json->{ticket}->{sys_id}', '$json->{ticket}->{subject}', '$sysdate', '$json->{ticket}->{state}', '$json->{ticket}->{type}', '$data{PUTDATA}')";
+				VALUES (?, ?, ?, '$sysdate', ?, ?, ?)";
 				my $sth = $dbh->prepare("$insert_string");
 				
-				if ( $sth->execute() ) {
+				if ( $sth->execute($json->{ticket}->{number}, $json->{ticket}->{sys_id}, $json->{ticket}->{subject}, $json->{ticket}->{state}, $json->{ticket}->{type}, $data{PUTDATA}) ) {
 					restApiLog("INFO  :: $ticketNumber : Ticket successfully inserted with data: $data{PUTDATA}. User: $input{user}");
 					print qq~$data{PUTDATA}~;
 				} else {
@@ -196,6 +196,65 @@ elsif ( $ENV{REQUEST_METHOD} eq 'PUT' ) {
 			print qq~{"Error":"I cannot get the ticket Number"}~;
 		}
 	}
+    elsif ( $ENV{PATH_INFO} =~ /^\/insertAlert\// ) {
+        my $json = eval { JSON->new->decode($data{PUTDATA}) };
+		# my $json = eval { decode_json $data{PUTDATA} };
+        
+        if ( $json->{alert}->{title} and $json->{alert}->{definition} ) {
+            my $sysdate = sysdate();
+            
+            my $AND;
+            $AND .= qq~ AND A.queue = '$json->{alert}->{queue}' ~ if $json->{alert}->{queue};
+            $AND .= qq~ AND A.impact = '$json->{alert}->{impact}' ~ if $json->{alert}->{impact};
+            $AND .= qq~ AND A.severity = '$json->{alert}->{severity}' ~ if $json->{alert}->{severity};
+            $AND .= qq~ AND A.urgency = '$json->{alert}->{urgency}' ~ if $json->{alert}->{urgency};
+            $AND .= qq~ AND A.description = '$json->{alert}->{description}' ~ if $json->{alert}->{description};
+            
+            connected();
+            my $sth = $dbh->prepare(qq~SELECT A.idAlert, A.alertCounter, A.idTrigger, T.countToStatusUp, T.idAutoBot, T.Json 
+            FROM alerts AS A, alertTriggerToAutoBot as T 
+            WHERE A.title = '$json->{alert}->{title}' AND A.definition = '$json->{alert}->{definition}' $AND AND T.idTrigger = A.idTrigger~);
+            $sth->execute();
+            my ($idAlert, $alertCounter, $idTrigger, $countToStatusUp, $idAutoBot, $Json) = $sth->fetchrow_array;
+            $sth->finish;
+            
+            if ( $idAlert ) {
+                $alertCounter ++;
+                my $sth = $dbh->prepare(qq~UPDATE alerts SET alertCounter = '$alertCounter', lastDate = '$sysdate' WHERE idAlert = '$idAlert'~);
+                $sth->execute();
+                $sth->finish;
+                
+                restApiLog("INFO  :: ALERTS : Alert successfully updated with data: $data{PUTDATA}. User: $input{user}");
+                print qq~{"results": {"update alert": "successful"}}~;
+            }
+            else {
+                $dbh->do("LOCK TABLES alerts WRITE");
+                my $sth = $dbh->prepare(qq~INSERT INTO alerts 
+                (insertDate, lastDate, severity, impact, urgency, queue, title, definition, description, idTrigger) VALUES (
+                '$sysdate', '$sysdate', ?, ?, ?, ?, ?, ?, ?, ?)~);
+                $sth->execute($json->{alert}->{severity}, $json->{alert}->{impact}, $json->{alert}->{urgency}, $json->{alert}->{queue}, $json->{alert}->{title}, $json->{alert}->{definition}, $json->{alert}->{description}, $json->{alert}->{idTrigger});
+                $sth->finish;
+                
+                my $sth1 = $dbh->prepare(qq~SELECT idAlert FROM alerts ORDER BY idAlert DESC LIMIT 1~);
+                $sth1->execute();
+                my ($NewIdAlert) = $sth1->fetchrow_array;
+                $sth1->finish;
+                $dbh->do("UNLOCK TABLES");
+                
+                my $sth2 = $dbh->prepare(qq~INSERT INTO scalation (idAlert) VALUES ('$NewIdAlert')~);
+                $sth2->execute();
+                $sth2->finish;
+                
+                restApiLog("INFO  :: ALERTS : Alert successfully inserted with data: $data{PUTDATA}. User: $input{user}");
+                print qq~{"results": {"insert alert": "successful"}}~;
+            }
+            $dbh->disconnect if ($dbh);
+        }
+        else {
+            restApiLog("ERROR :: ALERTS : Tittle or Definition missing. Data: $data{PUTDATA}. User: $input{user}");
+            print qq~{"Error":"Tittle or Definition missing"}~;
+        }
+    }
 	else {
 		restApiLog("ERROR :: $ticketNumber : Wrong PATH_INFO - $ENV{PATH_INFO}. User: $input{user}");
 		print qq~{"Error":"Wrong PATH_INFO"}~;
@@ -243,7 +302,7 @@ sub restApiLog {
 
 sub get_vars {
 	my %VARS;
-	open my $file, "</var/www/yaomiqui/yaomiqui.conf";
+	open my $file, "<../../yaomiqui.conf";
 	while ( <$file> ) {
 		$_ =~ s/\n$//;
 		$_ =~ s/^\s*//;

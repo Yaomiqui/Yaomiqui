@@ -1,0 +1,38 @@
+.horizontal {
+  display: flex;
+  padding: 0;
+  flex-direction: row;
+  border: 1px solid #D7D7D7;
+  overflow: hidden;
+  height: calc(100% - 85px);
+}
+
+.izquierda {
+  flex: 0 0 auto;
+  padding: 0px;
+  width: 65%;
+  min-width: 50%;
+  max-width: 80%;
+  white-space: nowrap;
+  background: #F6F6F6;
+}
+
+.splitter {
+  flex: 0 0 auto;
+  width: 8px;  
+  background:#F1F1F1;
+  border-right: 1px solid #CACACA;
+  border-left: 1px solid #CACACA;
+  min-height: 200px;
+  cursor: col-resize;
+  padding: 0;
+}
+
+.derecha {
+  flex: 1 1 auto;
+  padding: 0px;
+  width: 35%;
+  min-width: 20%;
+  max-width: 50%;
+  background: #F6F6F6;
+}

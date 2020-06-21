@@ -33,6 +33,13 @@ Config_Variables = Variables de Config
 Environment_Variables = Variables de Entorno
 Autobot_Migration = Migración de Autobot
 Dashboard = Dashboard
+Alerts = Alertas
+Alerts_Overview = Vista de Alertas
+Alerts_Configuration = Config Alertas
+Alert_Views_Management =  = Administración de Vistas de Alertas
+Create_New_Alerts_View = Crear Nueva Vista de Alertas
+Create_New_Trigger = Crear Nuevo Trigger
+Triggers_Management = Administración de Disparadores
 
 
 [config]
@@ -304,6 +311,65 @@ Company_Saving = Ahorro de la Empresa
 Old_Expenses_Current_costs_and_Saving = Gasto Antiguo, Costo Actual y Ahorro
 Are_you_sure_to_delete_this = Está seguro de eliminar esto
 Config = Config
+
+
+[alerts]
+Please_select_some_view = Selecciona una vista por favor
+Qty = Cnt
+Insert_Date = Fecha de Inserción
+Queue = Queue
+Severity = Severidad
+Title = Título
+Definition = Definición
+Description = Descripción
+Search_for_Title = Buscar por título
+Silence = Silencio
+Are_you_sure_to_Silence_this_Alert = Está seguro de silenciar esta Alerta
+Last_Event_Date = Fecha último evento
+Impact = Impacto
+Urgency = Urgencia
+First = Primera
+Scalation = Escalación
+Second = Segunda
+Third = Tercera
+Ticket_Number = Número de Ticket
+All_alerts = Todas las alertas
+Alert_ID = ID Alerta
+
+
+[alerts_config]
+Please_select_some_View_to_manage = Selecccione por favor una vista para administrar
+Create_New_Trigger = Crear Nuevo Trigger
+New_Alert_View = Nueva Vista de Alertas
+View_Name = Nombre de Vista
+Severity = Severidad
+Impact = Impacto
+Urgency = Urgencia
+Queue = Queue
+Title = Título
+Definition = Definición
+Description = Descripción
+Update = Actualizar
+Create_New = Crear Nuevo
+Please_select_some_Trigger_to_manage = Seleccione un Trigger para administrar
+New_Trigger = Nuevo Trigger
+Count_To_Status_Up = Contador para ver el estado un nivel arriba
+Minutes_To_Status_Down = Minutos para bajar el nivel de estado
+Minutes_To_Hidden = Minutos transcurridos para ocultar la alerta
+Counter_of_times_the_alert_should_appear_to_INCREASE = Contador de veces que la alerta debería AUMENTAR su color de advertencia en la Vista de alertas
+Minutes_quantity_that_must_elapse_DECREASE = La cantidad de minutos que debe transcurrir antes de que la alerta muestre DISMINUIR su color de advertencia en la Vista de alertas
+Minutes_quantity_that_must_elapse_before_alert_hidden = Cantidad de minutos que debe transcurrir antes de que la alerta se oculte en la vista de alertas
+Distribution_List_of_First_Escalation = Lista de Distribución de la Primera Escalación
+Distribution_List_of_Second_Escalation = Lista de Distribución de la Segunda Escalación
+Distribution_List_of_Third_Escalation = Lista de Distribución de la Tercera Escalación
+ID_AutoBot_to_trigger = ID del AutoBot a ejecutar
+JSON_to_send_to_the_Autobot = JSON para enviar al Autobot
+fill_some_data_you_want_to_create_a_new_Trigger = Introduzca algunos datos que desee para crear un nuevo Trigger
+Alert_Views = Vistas de Alertas
+Trigger_Scalations = Escalaciones & Triggers
+Please_fill_some_data_you_want_to_filter_to_create_a_new_Alert_View = Introduzca algunos datos que desee para crear una nueva vista de Alertas
+Trigger_Name = Nombre del Trigger
+includes_the_following_Json_variables = incluye las siguientes variables
 
 
 [end]
