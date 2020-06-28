@@ -211,9 +211,9 @@ sub header {
         <a href="index.cgi?mod=about&submod=license" class="w3-bar-item w3-button w3-small $alicense">$MSG{License}</a>
         
         <div style="opacity:0.3; margin-top: 40px;" class="w3-small" align="center">
-        <img src="images/logo.png" alt="Snow" style="width:70%; display: block; margin-left: auto; margin-right: auto;">
+            <img src="images/logo.png" style="width:80%; display: block; margin-left: auto; margin-right: auto;">
             <br><br>Powered by:<br>
-            <img src="themes/$theme/images/YaomiquiLogoTransparent.png">
+            <img src="themes/$theme/images/YaomiquiLogoTransparent.png" alt="Yaomiqui Powered" style="width:80%; display: block; margin-left: auto; margin-right: auto; padding-bottom: 0px">
             <br>Automation Platform
         </div>
         <br><br><br>

@@ -32,12 +32,7 @@ source ./keys_auto.conf
 
 apt-get update
 
-apt install -y libsoap-lite-perl
-
 apt install -y curl apache2 mariadb-server sshpass libnet-openssh-perl libdbi-perl libdbd-mysql-perl libjson-perl libtest-json-perl libxml-simple-perl libxml-validate-perl libparallel-forkmanager-perl libnet-openssh-perl sendmail libmime-lite-perl libmath-random-isaac-perl libdate-calc-perl realmd krb5-kdc krb5-pkinit krb5-sync-tools krb5-user
-
-# Install winexe. You can comment the next five lines to enhance performance. Then you can run it later.
-# apt-get -y install python2.7 gcc-mingw-w64 libtevent-dev samba-dev libsmbclient comerr-dev libc6-dev libpopt-dev libsmbclient-dev samba-libs --fix-missing
 
 /usr/bin/perl -pi -e 's/Timeout 300/Timeout 1200\nLimitRequestLine 100000\nLimitRequestFieldSize 100000/' /etc/apache2/apache2.conf
 

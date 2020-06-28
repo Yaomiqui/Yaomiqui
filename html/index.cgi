@@ -31,7 +31,7 @@ use Log::Man;
 our(%input, %VAR, %MSG, %PRM, $username, $html, $header, $footer, $module, $module_file, $theme, $dbh, $encKey);
 require 'common.pl';
 %VAR = get_vars();
-$VAR{Version} = '2.3+Alert-Mgmt';
+$VAR{Version} = '2.3.2-Stable + Alerts-Mgmt-Beta';
 $encKey = getEncKey();
 $username = get_session();
 $theme = get_theme();

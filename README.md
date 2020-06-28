@@ -1,10 +1,12 @@
+### [Download Yaomiqui](https://github.com/Yaomiqui/Yaomiqui/releases/latest "Download Yaomiqui")
+
 # Yaomiqui
 ## Automation Platform
 ### for business repetitive tasks.
 
 Yaomiqui is a very easy to use and highly versatile Open Source tool to Automate business repetitive tasks through your IT environment.
 
-Its built on solid base of Perl, which provide an highly stability and performance.
+Engine is built on solid base of Perl, which provide an highly stability and performance.
 Yaomiqui is able to run remote commands in remote GNU/Linux as well as ®Windows machines.
 
 It can takes decisions as well as you decide that do it.
@@ -13,10 +15,10 @@ Yaomiqui reduces more than 80% your repetitive common tasks and of course, it re
 
 ### Features
 
-- Enables you to create hundreds and hundreds of robots for IT process automation
+- Enables you to create hundreds and hundreds of robots for IT Process Automation
 - Complete Alerts processing/management platform
 - Runs on some GNU/Linux distribution.
-- Engine is built over a solid base of Perl.
+- Engines are built over a solid base of Perl.
 - Low system requirements.
 - Very easy to install.
 - Easy to use.
@@ -28,15 +30,16 @@ Yaomiqui reduces more than 80% your repetitive common tasks and of course, it re
 - Easy to add any language. (You can contribute translating the [language files](https://github.com/Yaomiqui/Yaomiqui/tree/master/html/db/langsfiles "language files"))
 - Open Source
 
-It can connects to a lot of ITSM like:
+Yaomiqui can connects with a lot of ITSM like:
 
 - ®ServiceNow
 - ®HPSM
 - ®OTRS
-- ®BMC Remedy
+- ®Salesforce Remedy
 - Any other ITSM with an API available.
 - Connects to Unix or GNU/Linux Servers to execute remote tasks
 - Connects to ®Windows Servers to execute remote tasks
+- Can start a process with Chrome::Selenium or another web robot App
 
 Then, Yaomiqui is able to go back to change status or close tickets.
 

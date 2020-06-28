@@ -6,9 +6,7 @@ $html .= qq~<div class="contentTitle">$MSG{About_Yaomiqui}</div>~ unless $input{
 unless ( $input{submod} ) {
 	$html .= qq~
 	<div style="padding: 30px 30px 30px 50px; background-color: #FFFFFF">
-	<a href="https://yaomiqui.org" target="_blank"><img src="images/logo64x80.jpg" border="0"/></a>
-	<br/>
-	<font style="font-size: 180%">Yaomiqui</font>
+	<a href="https://yaomiqui.org" target="_blank"><img src="images/logo42x200.png" border="0"/></a>
 	<br/>
 	<font style="font-size: 120%">Automation Platform for Business Repetitive Tasks</font>
 	<br/>

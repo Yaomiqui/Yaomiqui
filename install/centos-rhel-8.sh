@@ -29,7 +29,9 @@ source ./keys_auto.conf
 
 yum install -y wget vim curl net-tools httpd perl perl-core perl-CGI perl-DBI mod_ssl perl-JSON perl-XML-Simple perl-MIME-Base64 sendmail make gcc cpanminus realmd krb5* sssd-krb5 adcli
 
-yum install -y mariadb-server perl-DBD-MySQL epel-release
+yum install -y mariadb-server perl-DBD-MySQL
+
+rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
 
 #### Temporary until we have all libreries on epel repos
 yum --enablerepo=epel install -y sshpass perl-Math-Random-ISAAC perl-Date-Calc

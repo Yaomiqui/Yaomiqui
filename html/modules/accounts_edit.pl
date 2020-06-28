@@ -116,7 +116,7 @@ if ( $input{idUser} ) {
 		my $chk_tickets = $PRM[8] ? 'checked' : '';
 		my $chk_tickets_form = $PRM[9] ? 'checked' : '';
 		my $chk_logs = $PRM[10] ? 'checked' : '';
-		my $chk_charts = $PRM[11] == 1 ? 'checked' : '';
+		my $chk_charts = $PRM[11] ? 'checked' : '';
 		my $chk_reports = $PRM[12] ? 'checked' : '';
 		my $chk_config = $PRM[14] ? 'checked' : '';
 		my $chk_alerts = $PRM[16] ? 'checked' : '';
@@ -130,6 +130,8 @@ if ( $input{idUser} ) {
 		<tr><td align="right" width="30%">$MSG{Tickets}: </td><td width="70%"><input type="checkbox" name="tickets" style="margin: 6px 4px;" value="1" $chk_tickets></td></tr>
 		<tr><td align="right" width="30%">$MSG{Tickets_Form}: </td><td width="70%"><input type="checkbox" name="tickets_form" style="margin: 6px 4px;" value="1" $chk_tickets_form></td></tr>
 		<tr><td align="right" width="30%">$MSG{Logs}: </td><td width="70%"><input type="checkbox" name="logs" style="margin: 6px 4px;" value="1" $chk_logs></td></tr>
+		<tr><td align="right" width="30%">$MSG{Charts}: </td><td width="70%"><input type="checkbox" name="logs" style="margin: 6px 4px;" value="1" $chk_charts></td></tr>
+		
 		<tr><td align="right" width="30%">$MSG{Reports}: </td><td width="70%"><input type="checkbox" name="reports" style="margin: 6px 4px;" value="1" $chk_reports></td></tr>
 		<tr><td align="right" width="30%">$MSG{Config}: </td><td width="70%"><input type="checkbox" name="config" style="margin: 6px 4px;" value="1" $chk_config></td></tr>
         

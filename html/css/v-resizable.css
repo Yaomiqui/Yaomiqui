@@ -12,6 +12,8 @@
   padding: 0;
   height: 75%;
   width: 100%;
+  min-height: 10%;
+  max-height: 90%;
   white-space: nowrap;
   background: #F6F6F6;
   color: white;
@@ -35,5 +37,7 @@
   padding: 0;
   height: 25%;
   width: 100%;
+  min-height: 10%;
+  max-height: 90%;
   background: #F6F6F6;
 }

@@ -1,5 +1,6 @@
 ## It reads database looking for new tickets
 * * * * * /var/www/yaomiqui/auto.sh
+* * * * * /var/www/yaomiqui/alertsProcess.pl
 
 ## Self Monitoring - Free Memory
 ## Threshold is 30 as default, but you can change it

@@ -222,7 +222,7 @@ if ( $input{submod} eq 'new_record' ) {
 				$input{alerts_config} = '0' unless $input{alerts_config};
 				
 				$insert_string = qq~INSERT INTO permissions (
-				idUser, design, accounts, accounts_edit, tickets, tickets_form, logs, reports, config, alerts, alerts_config
+				idUser, design, accounts, accounts_edit, tickets, tickets_form, logs, charts, reports, config, alerts, alerts_config
 				) VALUES (
 				'$idUserNew',
 				'$input{design}',
@@ -231,6 +231,7 @@ if ( $input{submod} eq 'new_record' ) {
 				'$input{tickets}',
 				'$input{tickets_form}',
 				'$input{logs}',
+				'$input{charts}',
 				'$input{reports}',
 				'$input{config}',
 				'$input{alerts}',
