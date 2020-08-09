@@ -5,6 +5,9 @@ my $vendor = "yaomiqui";
 $user = delMalCode($user);
 $pass = delMalCode($pass);
 
+$user =~ s/ //g;
+$pass =~ s/ //g;
+
 use Math::Random::ISAAC;
 my $rng = Math::Random::ISAAC->new(time());
 my $prnrand = $rng->irand();
@@ -18,8 +21,8 @@ print "Location: index.cgi\n\n" unless $user;
 print "Location: index.cgi?user=$user\n\n" unless $pass;
 
 connected();
-my $sth = $dbh->prepare("SELECT username, password, active FROM users WHERE username = '$user'");
-$sth->execute();
+my $sth = $dbh->prepare("SELECT username, password, active FROM users WHERE username = ?");
+$sth->execute($user);
 my ($user_registred, $crypt_passwd, $active) = $sth->fetchrow_array;
 $sth->finish;
 $dbh->disconnect if ($dbh);
@@ -36,7 +39,8 @@ if ( $active ) {
 					-name    	=> $vendor,
 					-value   	=> $num_sesion,
 					-httponly	=> true,
-					-secure		=>  1,
+					-secure		=> 1,
+                    -samesite   => 'Strict',
 					-expires 	=> $VAR{COOKIE_TERM}
 				);
 			} else {
@@ -44,7 +48,8 @@ if ( $active ) {
 					-name    	=> $vendor,
 					-value   	=> $num_sesion,
 					-httponly	=> true,
-					-secure		=>  1
+					-secure		=> 1,
+                    -samesite   => 'Strict'
 				);
 			}
 			print "Set-Cookie: $cookie\n";
@@ -55,7 +60,7 @@ if ( $active ) {
 			$log->Log("Login From IP " . $ENV{REMOTE_ADDR});
 			print "Location: index.cgi\n\n";
 		} else {
-			print "Location: index.cgi?user=$input{user}\n\n";
+			print "Location: index.cgi?user=$user\n\n";
 		}
 	}
 	
@@ -77,7 +82,7 @@ if ( $active ) {
 		close SESSION;
 	}
 } else {
-	print "Location: index.cgi?user=$input{user}\n\n";
+	print "Location: index.cgi?user=$user\n\n";
 }
 
 sub no_open_file {

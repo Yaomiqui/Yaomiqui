@@ -36,6 +36,11 @@ my $year = $input{year} ? $input{year} : currentYear();
 my $month = $input{month} ? $input{month} : currentMonth();
 my $page = $input{page} || 1;
 
+$input{year} = delMalCode($input{year});
+$input{month} = delMalCode($input{month});
+$input{page} = delMalCode($input{page});
+$input{state} = delMalCode($input{state});
+
 $html .= qq~
 <table cellpadding="0" cellspacing="2" border="0" width="100%">
 	<tr>

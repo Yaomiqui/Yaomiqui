@@ -24,9 +24,9 @@ if ( $input{submod} eq 'save_updated_alert' ) {
         queue = '$input{queue}',
         title = '$input{title}',
         definition = '$input{definition}',
-        description = '$input{description}'
-        WHERE idView = '$input{idView}'");
-        $sth->execute();
+        description = ? 
+        WHERE idView = ?");
+        $sth->execute($input{description}, $input{idView});
         $sth->finish;
         $dbh->disconnect if ($dbh);
     }
@@ -58,10 +58,10 @@ if ( $input{submod} eq 'save_updated_Trigger' ) {
         dlFirstEscalation = '$input{dlFirstEscalation}',
         dlSecondEscalation = '$input{dlSecondEscalation}',
         dlThirdEscalation = '$input{dlThirdEscalation}',
-        idAutoBot = '$input{idAutoBot}',
+        idAutoBot = ?,
         Json = '$input{Json}'
-        WHERE idTrigger = '$input{idTrigger}'");
-        $sth->execute();
+        WHERE idTrigger = ?");
+        $sth->execute($input{idAutoBot}, $input{idTrigger});
         $sth->finish;
         $dbh->disconnect if ($dbh);
     }
@@ -84,8 +84,8 @@ if ( $input{submod} eq 'save_new_alert' ) {
         
         connected();
         my $sth = $dbh->prepare(qq~INSERT INTO alertsView (viewName, severity, impact, urgency, queue, title, definition, description)
-        VALUES ('$input{viewName}', '$input{severity}', '$input{impact}', '$input{urgency}', '$input{queue}', '$input{title}', '$input{definition}', '$input{description}')~);
-        $sth->execute();
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)~);
+        $sth->execute($input{viewName}, $input{severity}, $input{impact}, $input{urgency}, $input{queue}, $input{title}, $input{definition}, $input{description});
         $sth->finish;
         $dbh->disconnect if ($dbh);
     }
@@ -110,8 +110,8 @@ if ( $input{submod} eq 'save_new_Trigger' ) {
         
         connected();
         my $sth = $dbh->prepare(qq~INSERT INTO alertTriggerToAutoBot (triggerName, countToStatusUp, minutesToStatusDown, minutesToHidden, dlFirstEscalation, dlSecondEscalation, dlThirdEscalation, idAutoBot, Json)
-        VALUES ('$input{triggerName}', '$input{countToStatusUp}', '$input{minutesToStatusDown}', '$input{minutesToHidden}', '$input{dlFirstEscalation}', '$input{dlSecondEscalation}', '$input{dlThirdEscalation}', '$input{idAutoBot}', '$input{Json}')~);
-        $sth->execute();
+        VALUES (?, '$input{countToStatusUp}', '$input{minutesToStatusDown}', '$input{minutesToHidden}', ?, ?, ?, ?, '$input{Json}')~);
+        $sth->execute($input{triggerName}, $input{dlFirstEscalation}, $input{dlSecondEscalation}, $input{dlThirdEscalation}, $input{idAutoBot});
         $sth->finish;
         
         my $sth = $dbh->prepare("SELECT idTrigger FROM alertTriggerToAutoBot ORDER BY idTrigger DESC LIMIT 1");
@@ -201,8 +201,8 @@ if ( $input{submod} eq 'alertViews' ) {
     
     if ( $input{idView} ) {
         connected();
-        my $sth = $dbh->prepare("SELECT * FROM alertsView WHERE idView = '$input{idView}'");
-        $sth->execute();
+        my $sth = $dbh->prepare("SELECT * FROM alertsView WHERE idView = ?");
+        $sth->execute($input{idView});
         my $views = $sth->fetchall_arrayref;
         $sth->finish;
         $dbh->disconnect if ($dbh);
@@ -298,8 +298,8 @@ if ( $input{submod} eq 'triggersMan' ) {
     
     if ( $input{idTrigger} ) {
         connected();
-        my $sth = $dbh->prepare("SELECT * FROM alertTriggerToAutoBot WHERE idTrigger = '$input{idTrigger}'");
-        $sth->execute();
+        my $sth = $dbh->prepare("SELECT * FROM alertTriggerToAutoBot WHERE idTrigger = ?");
+        $sth->execute($input{idTrigger});
         my $views = $sth->fetchall_arrayref;
         $sth->finish;
         $dbh->disconnect if ($dbh);

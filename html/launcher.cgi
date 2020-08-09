@@ -78,6 +78,9 @@ if ( $username  eq 'Guest' and $module ne 'login' ) {
 	}
 }
 
+print "X-FRAME-OPTIONS: SAMEORIGIN\n";
+print "x-content-type-options: nosniff\n";
+print "X-XSS-Protection: 1;mode=block\n";
 print "Content-Type: text/html\n\n";
 print $html;
 

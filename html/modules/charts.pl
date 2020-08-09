@@ -18,6 +18,10 @@ my %MON = (
 	'12'	=> $MSG{December}
 );
 
+$input{dateToChart} = delMalCode($input{dateToChart});
+$input{yearToChart} = delMalCode($input{yearToChart});
+$input{showLineCharts} = delMalCode($input{showLineCharts});
+
 my $month = $input{dateToChart} ? $input{dateToChart} : currentMonth();
 my $year = $input{yearToChart} ? $input{yearToChart} : currentYear();
 

@@ -2,7 +2,7 @@
 ########################################################################
 # Yaomiqui is Powerful tool for Automation + Easy to use Web UI
 # Written in freestyle Perl + CGI + Apache + MySQL + Javascript + CSS
-# This is the main index for Web UI of Yaomiqui 1.0
+# This is the main index for Web UI of Yaomiqui 2.0
 # 
 # Yaomiqui and its logo are registered trademark by Hugo Maza Moreno
 # Copyright (C) 2019
@@ -31,7 +31,7 @@ use Log::Man;
 our(%input, %VAR, %MSG, %PRM, $username, $html, $header, $footer, $module, $module_file, $theme, $dbh, $encKey);
 require 'common.pl';
 %VAR = get_vars();
-$VAR{Version} = '2.3.2-Stable + Alerts-Mgmt-Beta';
+$VAR{Version} = '2.3.4-Stable + Alerts-Mgmt-Beta';
 $encKey = getEncKey();
 $username = get_session();
 $theme = get_theme();
@@ -50,6 +50,11 @@ my @pares = $consulta->param;
 foreach my $par ( @pares ){
 	$input{"$par"} = $consulta->param("$par");
 }
+
+$input{'mod'} = delMalCode($input{'mod'});
+$input{'shtl'} = delMalCode($input{'shtl'});
+$input{'submod'} = delMalCode($input{'submod'});
+
 $module = $input{'mod'};
 
 require "$VAR{themes_path}/$theme/theme.pl";
@@ -81,6 +86,11 @@ if ( $username  eq 'Guest' and $module ne 'login' ) {
 	$html .= $footer unless $input{'shtl'};
 }
 
+print "X-FRAME-OPTIONS: DENY\n";
+print "x-content-type-options: nosniff\n";
+print "X-XSS-Protection: 1; mode=block\n";
+print "Cache-Control: no-cache\n";
+print "Pragma: no-cache\n";
 print "Content-Type: text/html\n\n";
 print $html;
 

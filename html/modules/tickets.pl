@@ -21,12 +21,20 @@ if ( $input{submod} eq 'findTicket' ) {
 	my $fromRec = ($input{page} - 1) * $VAR{SHOW_PER_PAGE};
 	my $queryLimit = "$fromRec, $VAR{SHOW_PER_PAGE}";
 	my $sqlWhere;
+    
+    $input{year} = delMalCode($input{year});
+    $input{month} = delMalCode($input{month});
+    $input{state} = delMalCode($input{state});
+    $input{page} = delMalCode($input{page});
+    $input{typeTicket} = delMalCode($input{typeTicket});
+    $input{ftt} = delMalCode($input{ftt});
 	
 	connected();
 	my $sth;
 	if ( $input{ftt} ) {
-		$sth = $dbh->prepare("SELECT numberTicket, Subject, idAutoBotCatched, initialDate, finalDate, finalState FROM ticket WHERE numberTicket LIKE '%$input{ftt}%' ORDER BY initialDate DESC LIMIT $queryLimit");
-		$sqlWhere = qq~numberTicket LIKE '%$input{ftt}%'~;
+		$sth = $dbh->prepare("SELECT numberTicket, Subject, idAutoBotCatched, initialDate, finalDate, finalState FROM ticket WHERE numberTicket LIKE ? ORDER BY initialDate DESC LIMIT $queryLimit");
+		$sth->execute("\%$input{ftt}\%");
+        $sqlWhere = qq~numberTicket LIKE '%$input{ftt}%'~;
 	
 	} elsif ( $input{year} and $input{month} ) {
 		my $finalState = '';
@@ -38,13 +46,14 @@ if ( $input{submod} eq 'findTicket' ) {
 			 $typeTicket = qq~AND typeTicket = '$input{typeTicket}'~;
 		}
 		$sth = $dbh->prepare("SELECT numberTicket, Subject, idAutoBotCatched, initialDate, finalDate, finalState FROM ticket WHERE initialDate BETWEEN '$input{year}-$input{month}-01 00:00:00' AND '$input{year}-$input{month}-31 23:59:59' $finalState $typeTicket ORDER BY initialDate DESC LIMIT $queryLimit");
-		$sqlWhere = qq~initialDate BETWEEN '$input{year}-$input{month}-01 00:00:00' AND '$input{year}-$input{month}-31 23:59:59' $finalState $typeTicket~;
+		$sth->execute();
+        $sqlWhere = qq~initialDate BETWEEN '$input{year}-$input{month}-01 00:00:00' AND '$input{year}-$input{month}-31 23:59:59' $finalState $typeTicket~;
 		
 		# $html .= qq~<br>$ENV{QUERY_STRING}<br>~;
 		# $html .= qq~<br>SELECT COUNT(idTicket) FROM ticket WHERE $sqlWhere<br>~;
 		# $html .= qq~<br>SELECT numberTicket, Subject, idAutoBotCatched, initialDate, finalDate, finalState FROM ticket WHERE initialDate BETWEEN '$input{year}-$input{month}-01 00:00:00' AND '$input{year}-$input{month}-31 23:59:59' $finalState ORDER BY initialDate DESC LIMIT $queryLimit<br>~;
 	}
-	$sth->execute();
+	# $sth->execute();
 	my $TT = $sth->fetchall_arrayref;
 	$sth->finish;
 	$dbh->disconnect if ($dbh);

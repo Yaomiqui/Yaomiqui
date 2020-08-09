@@ -220,7 +220,7 @@ sub get_cookie_Sector {
 
 sub delMalCode {
     my $input = shift;
-    $input =~ s/<|>|script|java//gi;
+    $input =~ s/<|>|\%3C|\%3E|script|java|onmouse|onkey|onload|onerror|onunload|onresize|onclick|onchange|onblur|onfocus|onselect|onsubmit|\#|\!//gi;
     return $input;
 }
 
@@ -249,7 +249,7 @@ sub login {
 			<title>LogIn :: YAOMIQUI :: Automation Platform :: For business repetitive tasks</title>
 			<link rel="icon" type="image/png" href="images/favicon.ico" />
 			<meta name="keywords" content="rpa,automation,tasks,repetitive" />
-			<meta name="description" content="Automation for repetitive task,RPA" />
+			<meta name="description" content="Automation for bussines repetitive task,ITPA,RPA" />
 		</head>
 		<style>
 			html {

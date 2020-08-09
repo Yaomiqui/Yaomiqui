@@ -10,8 +10,8 @@ if ( $input{submod} eq 'save_config' ) {
     $input{costPerTicket} = delMalCode($input{costPerTicket});
     
 	connected();
-	my $sth = $dbh->prepare(qq~UPDATE report SET typeTicket='$input{typeTicket}', averageAttTime='$input{averageAttTime}', costPerHour='$input{costPerHour}', costPerTicket='$input{costPerTicket}' WHERE idReport='$input{idReport}'~);
-	$sth->execute();
+	my $sth = $dbh->prepare(qq~UPDATE report SET typeTicket=?, averageAttTime=?, costPerHour=?, costPerTicket=? WHERE idReport=?~);
+	$sth->execute($input{typeTicket}, $input{averageAttTime}, $input{costPerHour}, $input{costPerTicket}, $input{idReport});
 	$sth->finish;
 	$dbh->disconnect if $dbh;
 	
@@ -21,8 +21,8 @@ if ( $input{submod} eq 'save_config' ) {
 if ( $input{submod} eq 'delete_config' ) {
 	connected();
 	$dbh->do("LOCK TABLES report WRITE");
-	my $sth = $dbh->prepare(qq~DELETE FROM report WHERE idReport = '$input{idReport}'~);
-	$sth->execute();
+	my $sth = $dbh->prepare(qq~DELETE FROM report WHERE idReport = ?~);
+	$sth->execute($input{idReport});
 	$sth->finish;
 	$dbh->do("UNLOCK TABLES");
 	$dbh->disconnect if $dbh;

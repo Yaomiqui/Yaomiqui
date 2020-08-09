@@ -5,8 +5,8 @@ $html .= qq~<div class="contentTitle">$MSG{My_Account_Settings}</div>~ unless $i
 
 unless ( $input{submod} ) {
 	connected();
-	my $sth = $dbh->prepare("SELECT * FROM users WHERE username = '$username'");
-	$sth->execute();
+	my $sth = $dbh->prepare("SELECT * FROM users WHERE username = ?");
+	$sth->execute($username);
 	my @data = $sth->fetchrow_array;
 	$sth->finish;
 	$dbh->disconnect if ($dbh);
@@ -113,6 +113,7 @@ unless ( $input{submod} ) {
 
 if ( $input{submod} eq 'save_record' ) {
 	my $prepare;
+    $input{pwd1} = delMalCode($input{pwd1});
 	
 	if ( $input{pwd1} eq $input{pwd2} ) {
 		# $prepare = "UPDATE users SET name=?, lastName=?, maidenName=?, idEmployee=?, email=?, secondaryEmail=?, phone=?, secondaryPhone=?, costCenterId=?, groupId=?, secondaryGroupId=?, theme=?, language=?, active=?, password=? WHERE idUser=?";
@@ -122,8 +123,8 @@ if ( $input{submod} eq 'save_record' ) {
 		
 		connected();
 		
-		my $sth1 = $dbh->prepare("SELECT username FROM users where idUser = '$input{idUser}'");
-		$sth1->execute();
+		my $sth1 = $dbh->prepare("SELECT username FROM users where idUser = ?");
+		$sth1->execute($input{idUser});
 		my ($userfromdb) = $sth1->fetchrow_array;
 		$sth1->finish;
 		
@@ -140,29 +141,29 @@ if ( $input{submod} eq 'save_record' ) {
 			if ( $input{pwd1} ) {
 				$sth = $dbh->prepare("UPDATE users SET 
 				password='$pwdEnc',
-				name='$input{name}',
-				lastName='$input{lastName}',
-				mothersLastName='$input{mothersLastName}',
-				email='$input{email}',
+				name=?,
+				lastName=?,
+				mothersLastName=?,
+				email=?,
 				secondaryEmail='$input{secondaryEmail}',
 				phone='$input{phone}',
 				secondaryPhone='$input{secondaryPhone}',
 				language='$input{language}'
-				WHERE idUser='$input{idUser}'");
+				WHERE idUser=?");
 			} else {
 				$sth = $dbh->prepare("UPDATE users SET 
-				name='$input{name}',
-				lastName='$input{lastName}',
-				mothersLastName='$input{mothersLastName}',
-				email='$input{email}',
+				name=?,
+				lastName=?,
+				mothersLastName=?,
+				email=?,
 				secondaryEmail='$input{secondaryEmail}',
 				phone='$input{phone}',
 				secondaryPhone='$input{secondaryPhone}',
 				language='$input{language}'
-				WHERE idUser='$input{idUser}'");
+				WHERE idUser=?");
 			}
 			
-			$sth->execute();
+			$sth->execute($input{name}, $input{lastName}, $input{mothersLastName}, $input{email}, $input{idUser});
 			$sth->finish;
 			$dbh->disconnect if $dbh;
 			#theme='$input{theme}',

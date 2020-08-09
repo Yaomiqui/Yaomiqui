@@ -61,8 +61,8 @@ foreach my $par ( @pares ){
 if ( $ENV{REMOTE_ADDR} ne $ENV{SERVER_ADDR} ) {
 	if ( $input{user} and $input{passwd} ) {
 		connected();
-		my $sth = $dbh->prepare("SELECT password FROM users WHERE username = '$input{user}' AND active = '1'");
-		$sth->execute();
+		my $sth = $dbh->prepare("SELECT password FROM users WHERE username = ? AND active = '1'");
+		$sth->execute($input{user});
 		my ($crypt_passwd) = $sth->fetchrow_array;
 		$sth->finish;
 		$dbh->disconnect if ($dbh);
@@ -93,8 +93,8 @@ if ( $ENV{REQUEST_METHOD} eq 'GET' ) {
 		if ( $ticketNumber ) {
 			connected();
 			my $sth = $dbh->prepare("SELECT t.numberTicket, t.Subject, a.autoBotName, t.initialDate, a.idAutoBot FROM ticket t, autoBot a 
-			WHERE numberTicket = '$ticketNumber' AND t.idAutoBotCatched = a.idAutoBot");
-			$sth->execute();
+			WHERE numberTicket = ? AND t.idAutoBotCatched = a.idAutoBot");
+			$sth->execute($ticketNumber);
 			my @TT = $sth->fetchrow_array;
 			$sth->finish;
 			
@@ -102,8 +102,8 @@ if ( $ENV{REQUEST_METHOD} eq 'GET' ) {
 			if ( $TT[0] ) {
 				$var = qq~{"ticket":{"Number":"$TT[0]","Subject":"$TT[1]","AutoBotName":"$TT[2]","initialDate":"$TT[3]","idAutoBot":"$TT[4]"},~;
 				
-				$sth = $dbh->prepare("SELECT insertDate, log FROM log WHERE numberTicket = '$ticketNumber' ORDER BY idLog ASC");
-				$sth->execute();
+				$sth = $dbh->prepare("SELECT insertDate, log FROM log WHERE numberTicket = ? ORDER BY idLog ASC");
+				$sth->execute($ticketNumber);
 				my $LOG = $sth->fetchall_arrayref;
 				$sth->finish;
 				$dbh->disconnect if ($dbh);
@@ -158,8 +158,8 @@ elsif ( $ENV{REQUEST_METHOD} eq 'PUT' ) {
 			##### PARANOIAC!!! CHECK FOR id AutoBotCatched IF DOES NOT EXISTS
 			$dbh->do("LOCK TABLES ticket WRITE, ticket AS ticketRead READ");
 			
-			my $sth = $dbh->prepare("SELECT numberTicket FROM ticket WHERE numberTicket = '$json->{ticket}->{number}'");
-			$sth->execute();
+			my $sth = $dbh->prepare("SELECT numberTicket FROM ticket WHERE numberTicket = ?");
+			$sth->execute($json->{ticket}->{number});
 			my ($TT) = $sth->fetchrow_array;
 			$sth->finish;
 			
@@ -203,6 +203,12 @@ elsif ( $ENV{REQUEST_METHOD} eq 'PUT' ) {
         if ( $json->{alert}->{title} and $json->{alert}->{definition} ) {
             my $sysdate = sysdate();
             
+            $json->{alert}->{queue} = clean_field($json->{alert}->{queue});
+            $json->{alert}->{impact} = clean_field($json->{alert}->{impact});
+            $json->{alert}->{severity} = clean_field($json->{alert}->{severity});
+            $json->{alert}->{urgency} = clean_field($json->{alert}->{urgency});
+            $json->{alert}->{description} = clean_field($json->{alert}->{description});
+            
             my $AND;
             $AND .= qq~ AND A.queue = '$json->{alert}->{queue}' ~ if $json->{alert}->{queue};
             $AND .= qq~ AND A.impact = '$json->{alert}->{impact}' ~ if $json->{alert}->{impact};
@@ -220,8 +226,8 @@ elsif ( $ENV{REQUEST_METHOD} eq 'PUT' ) {
             
             if ( $idAlert ) {
                 $alertCounter ++;
-                my $sth = $dbh->prepare(qq~UPDATE alerts SET alertCounter = '$alertCounter', lastDate = '$sysdate' WHERE idAlert = '$idAlert'~);
-                $sth->execute();
+                my $sth = $dbh->prepare(qq~UPDATE alerts SET alertCounter = '$alertCounter', lastDate = '$sysdate' WHERE idAlert = ?~);
+                $sth->execute($idAlert);
                 $sth->finish;
                 
                 restApiLog("INFO  :: ALERTS : Alert successfully updated with data: $data{PUTDATA}. User: $input{user}");
@@ -241,8 +247,8 @@ elsif ( $ENV{REQUEST_METHOD} eq 'PUT' ) {
                 $sth1->finish;
                 $dbh->do("UNLOCK TABLES");
                 
-                my $sth2 = $dbh->prepare(qq~INSERT INTO scalation (idAlert) VALUES ('$NewIdAlert')~);
-                $sth2->execute();
+                my $sth2 = $dbh->prepare(qq~INSERT INTO scalation (idAlert) VALUES (?)~);
+                $sth2->execute($NewIdAlert);
                 $sth2->finish;
                 
                 restApiLog("INFO  :: ALERTS : Alert successfully inserted with data: $data{PUTDATA}. User: $input{user}");
@@ -281,6 +287,12 @@ else {
 
 exit;
 
+sub clean_field {
+    my $field = shift;
+    $field =~ s/<|>|script|java|onmouse|onkey|onload|onerror|onunload|onresize|onclick|onchange|onblur|onfocus|onselect|onsubmit|\#|select|update|delete|insert|sleep//gi;
+    return $field;
+}
+
 sub connected {
 	use DBI;
 	$dbh = DBI->connect("DBI:mysql:$VAR{'DB'}:$VAR{'DBHOST'}", $VAR{'DBUSER'}, $VAR{'DBPASSWD'}) or restApiLog("ERROR :: $ticketNumber : MySQL Connect: " . $DBI::errstr) and exit;
@@ -302,6 +314,7 @@ sub restApiLog {
 
 sub get_vars {
 	my %VARS;
+    
 	open my $file, "<../../yaomiqui.conf";
 	while ( <$file> ) {
 		$_ =~ s/\n$//;

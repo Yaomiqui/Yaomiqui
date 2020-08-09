@@ -27,8 +27,8 @@ unless ( $input{submod} ) {
 
 if ( $input{submod} eq 'showLogs' ) {
 	connected();
-	my $sth = $dbh->prepare("SELECT t.numberTicket, t.Subject, a.autoBotName, t.initialDate, a.idAutoBot FROM ticket t, autoBot a WHERE numberTicket = '$input{numberTicket}' AND t.idAutoBotCatched = a.idAutoBot");
-	$sth->execute();
+	my $sth = $dbh->prepare("SELECT t.numberTicket, t.Subject, a.autoBotName, t.initialDate, a.idAutoBot FROM ticket t, autoBot a WHERE numberTicket = ? AND t.idAutoBotCatched = a.idAutoBot");
+	$sth->execute($input{numberTicket});
 	my @TT = $sth->fetchrow_array;
 	$sth->finish;
 	$dbh->disconnect if ($dbh);
@@ -52,8 +52,8 @@ if ( $input{submod} eq 'showLogs' ) {
 		~;
 		
 		connected();
-		my $sth = $dbh->prepare("SELECT insertDate, log FROM log WHERE numberTicket = '$input{numberTicket}' ORDER BY idLog ASC");
-		$sth->execute();
+		my $sth = $dbh->prepare("SELECT insertDate, log FROM log WHERE numberTicket = ? ORDER BY idLog ASC");
+		$sth->execute($input{numberTicket});
 		my $LOG = $sth->fetchall_arrayref;
 		$sth->finish;
 		$dbh->disconnect if ($dbh);
@@ -127,8 +127,8 @@ if ( $input{submod} eq 'showLogs' ) {
 		~;
 		
 		connected();
-		my $sth = $dbh->prepare("SELECT insertDate, log FROM log WHERE numberTicket = '$input{numberTicket}' ORDER BY idLog ASC");
-		$sth->execute();
+		my $sth = $dbh->prepare("SELECT insertDate, log FROM log WHERE numberTicket = ? ORDER BY idLog ASC");
+		$sth->execute($input{numberTicket});
 		my $LOG = $sth->fetchall_arrayref;
 		$sth->finish;
 		$dbh->disconnect if ($dbh);
@@ -183,8 +183,8 @@ if ( $input{submod} eq 'showLogs' ) {
 
 if ( $input{submod} eq 'showJson' ) {
 	connected();
-	my $sth = $dbh->prepare("SELECT numberTicket, Subject, json FROM ticket WHERE numberTicket = '$input{numberTicket}'");
-	$sth->execute();
+	my $sth = $dbh->prepare("SELECT numberTicket, Subject, json FROM ticket WHERE numberTicket = ?");
+	$sth->execute($input{numberTicket});
 	my @TT = $sth->fetchrow_array;
 	$sth->finish;
 	$dbh->disconnect if ($dbh);

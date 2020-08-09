@@ -6,8 +6,8 @@ $html .= qq~<div class="contentTitle">Something</div>~ unless $input{'shtl'};
 
 if ( $input{submod} eq 'silenceAlert' ) {
     connected();
-    my $sth = $dbh->prepare("UPDATE alerts SET silenced = '1' WHERE idAlert = '$input{idAlert}'");
-    $sth->execute();
+    my $sth = $dbh->prepare("UPDATE alerts SET silenced = '1' WHERE idAlert = ?");
+    $sth->execute($input{idAlert});
     $sth->finish;
     $dbh->disconnect if ($dbh);
     
@@ -72,8 +72,8 @@ unless ( $input{submod} ) {
 # if ( $input{idView} ) {
 if ( $input{submod} eq 'alertView' ) {
     connected();
-    my $sth = $dbh->prepare("SELECT * FROM alertsView WHERE idView = '$input{idView}'");
-    $sth->execute();
+    my $sth = $dbh->prepare("SELECT * FROM alertsView WHERE idView = ?");
+    $sth->execute($input{idView});
     my ($no, $no1, $severity, $impact, $urgency, $queue, $title, $definition, $description) = $sth->fetchrow_array;
     $sth->finish;
     
@@ -226,8 +226,8 @@ if ( $input{submod} eq 'ViewAlertDetail' ) {
     # $html .= qq~Alert Deyail: idAlert = '$input{idAlert}'<br>~;
     
     connected();
-    my $sth = $dbh->prepare(qq~SELECT * FROM alerts as A, scalation as S WHERE A.idAlert = '$input{idAlert}' AND S.idAlert = A.idAlert~);
-    $sth->execute();
+    my $sth = $dbh->prepare(qq~SELECT * FROM alerts as A, scalation as S WHERE A.idAlert = ? AND S.idAlert = A.idAlert~);
+    $sth->execute($input{idAlert});
     my @alert = $sth->fetchrow_array;
     $sth->finish;
     $dbh->disconnect if ($dbh);

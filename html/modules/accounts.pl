@@ -8,14 +8,14 @@ $html .= qq~<div class="contentTitle">$MSG{User_Accounts}</div>~ unless $input{'
 if ( $input{submod} eq 'delete_record' ) {
 	connected();
 	$dbh->do("LOCK TABLES users WRITE");
-	my $sth = $dbh->prepare(qq~DELETE FROM users WHERE idUser = '$input{idUser}'~);
-	$sth->execute();
+	my $sth = $dbh->prepare(qq~DELETE FROM users WHERE idUser = ?~);
+	$sth->execute($input{idUser});
 	$sth->finish;
 	$dbh->do("UNLOCK TABLES");
 	
 	$dbh->do("LOCK TABLES permissions WRITE");
-	my $sth = $dbh->prepare(qq~DELETE FROM permissions WHERE idUser = '$input{idUser}'~);
-	$sth->execute();
+	my $sth = $dbh->prepare(qq~DELETE FROM permissions WHERE idUser = ?~);
+	$sth->execute($input{idUser});
 	$sth->finish;
 	$dbh->do("UNLOCK TABLES");
 	
@@ -78,8 +78,8 @@ if ( $input{submod} eq 'save_record' ) {
 			secondaryGroupId='$input{secondaryGroupId}',
 			theme='classic_cloud',
 			language='$input{language}',
-			active='$input{active}' 
-			WHERE idUser='$input{idUser}'");
+			active=? 
+			WHERE idUser=?");
 		} else {
 			$sth = $dbh->prepare("UPDATE users SET 
 			name='$input{name}',
@@ -95,11 +95,11 @@ if ( $input{submod} eq 'save_record' ) {
 			secondaryGroupId='$input{secondaryGroupId}',
 			theme='classic_cloud',
 			language='$input{language}',
-			active='$input{active}' 
-			WHERE idUser='$input{idUser}'");
+			active=? 
+			WHERE idUser=?");
 		}
 		
-		$sth->execute();
+		$sth->execute($input{active}, $input{idUser});
 		$sth->finish;
 		
 		$input{design} = '0' unless $input{design};
@@ -126,9 +126,9 @@ if ( $input{submod} eq 'save_record' ) {
 		config='$input{config}',
 		my_account='1',
         alerts='$input{alerts}',
-        alerts_config='$input{alerts_config}' 
-		WHERE idUser='$input{idUser}'");
-		$sth1->execute();
+        alerts_config=? 
+		WHERE idUser=?");
+		$sth1->execute($input{alerts_config}, $input{idUser});
 		$sth1->finish;
 		
 		$dbh->disconnect if $dbh;
@@ -149,11 +149,14 @@ if ( $input{submod} eq 'save_record' ) {
 if ( $input{submod} eq 'new_record' ) {
 	
 	if ( $input{username} and $input{pwd1} and $input{pwd2} ) {
+        $input{username} = delMalCode($input{username});
+        $input{pwd1} = delMalCode($input{pwd1});
+        
 		if ( $input{pwd1} eq $input{pwd2} ) {
 			
 			connected();
-			$sth = $dbh->prepare("SELECT idUser FROM users WHERE username = '$input{username}'");
-			$sth->execute();
+			$sth = $dbh->prepare("SELECT idUser FROM users WHERE username = ?");
+			$sth->execute($input{username});
 			my ($idUserTest) = $sth->fetchrow_array;
 			$sth->finish;
 			
@@ -166,7 +169,6 @@ if ( $input{submod} eq 'new_record' ) {
 				$input{groupId} = '0' unless $input{groupId};
 				$input{secondaryGroupId} = '0' unless $input{secondaryGroupId};
                 
-                $input{username} = delMalCode($input{username});
                 $input{name} = delMalCode($input{name});
                 $input{lastName} = delMalCode($input{lastName});
                 $input{mothersLastName} = delMalCode($input{mothersLastName});
@@ -183,30 +185,25 @@ if ( $input{submod} eq 'new_record' ) {
 				my $insert_string = qq~INSERT INTO users (
 				username, password, name, lastName, mothersLastName, idEmployee, email, secondaryEmail, phone, secondaryPhone, costCenterId, groupId, secondaryGroupId, theme, language, active
 				) VALUES (
-				'$input{username}',
-				'$pwdEnc',
-				'$input{name}',
-				'$input{lastName}', 
-				'$input{mothersLastName}',
-				'$input{idEmployee}',
-				'$input{email}',
-				'$input{secondaryEmail}',
+				?, '$pwdEnc', ?, ?, ?, 
+				'$input{idEmployee}', 
+				'$input{email}', 
+				'$input{secondaryEmail}', 
 				'$input{phone}', 
-				'$input{secondaryPhone}',
-				'$input{costCenterId}',
-				'$input{groupId}',
-				'$input{secondaryGroupId}',
-				'classic_cloud',
-				'$input{language}',
-				'$input{active}')~;
+				'$input{secondaryPhone}', 
+				'$input{costCenterId}', 
+				'$input{groupId}', 
+				'$input{secondaryGroupId}', 
+				'classic_cloud', 
+				'$input{language}', ?)~;
 				$sth = $dbh->prepare($insert_string);
-				$sth->execute();
+				$sth->execute($input{username}, $input{name}, $input{lastName}, $input{mothersLastName}, $input{active});
 				$sth->finish;
 				# $dbh->do("UNLOCK TABLES");
 						$html .= "$insert_string<br>";
 				
-				$sth = $dbh->prepare("SELECT idUser FROM users WHERE username = '$input{username}'");
-				$sth->execute();
+				$sth = $dbh->prepare("SELECT idUser FROM users WHERE username = ?");
+				$sth->execute($input{username});
 				my ($idUserNew) = $sth->fetchrow_array;
 				$sth->finish;
 				
@@ -234,10 +231,9 @@ if ( $input{submod} eq 'new_record' ) {
 				'$input{charts}',
 				'$input{reports}',
 				'$input{config}',
-				'$input{alerts}',
-				'$input{alerts_config}')~;
+				'$input{alerts}', ?)~;
 				$sth = $dbh->prepare("$insert_string");
-				$sth->execute();
+				$sth->execute($input{alerts_config});
 				$sth->finish;
 						$html .= "<br>$insert_string<br><br>";
 				

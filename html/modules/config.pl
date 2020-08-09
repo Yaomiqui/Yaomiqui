@@ -67,8 +67,8 @@ if ( $input{submod} eq 'save_config' ) {
     $input{idConfigVar} = delMalCode($input{idConfigVar});
     
 	connected();
-	my $sth = $dbh->prepare(qq~UPDATE configVars SET varValue='$input{varValue}' WHERE idConfigVar='$input{idConfigVar}'~);
-	$sth->execute();
+	my $sth = $dbh->prepare(qq~UPDATE configVars SET varValue=? WHERE idConfigVar=?~);
+	$sth->execute($input{varValue}, $input{idConfigVar});
 	$sth->finish;
 	$dbh->disconnect if $dbh;
 	
@@ -84,8 +84,8 @@ if ( $input{submod} eq 'save_env_var' ) {
     $input{idEnvVar} = delMalCode($input{idEnvVar});
     
 	connected();
-	my $sth = $dbh->prepare(qq~UPDATE environmentVars SET varValue='$input{varValue}' WHERE idEnvVar='$input{idEnvVar}'~);
-	$sth->execute();
+	my $sth = $dbh->prepare(qq~UPDATE environmentVars SET varValue=? WHERE idEnvVar=?~);
+	$sth->execute($input{varValue}, $input{idEnvVar});
 	$sth->finish;
 	$dbh->disconnect if $dbh;
 	
@@ -174,8 +174,8 @@ if ( $input{submod} eq 'add_new_env_var' ) {
 if ( $input{submod} eq 'delete_record' ) {
 	connected();
 	$dbh->do("LOCK TABLES environmentVars WRITE");
-	my $sth = $dbh->prepare(qq~DELETE FROM environmentVars WHERE idEnvVar = '$input{idEnvVar}'~);
-	$sth->execute();
+	my $sth = $dbh->prepare(qq~DELETE FROM environmentVars WHERE idEnvVar = ?~);
+	$sth->execute($input{idEnvVar});
 	$sth->finish;
 	$dbh->do("UNLOCK TABLES");
 	$dbh->disconnect if $dbh;

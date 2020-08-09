@@ -7,13 +7,13 @@ $html .= qq~<div class="contentTitle">$MSG{User_Accounts_Edition}</div>~ unless 
 
 if ( $input{idUser} ) {
 	connected();
-	my $sth = $dbh->prepare("SELECT * FROM users WHERE idUser = '$input{idUser}'");
-	$sth->execute();
+	my $sth = $dbh->prepare("SELECT * FROM users WHERE idUser = ?");
+	$sth->execute($input{idUser});
 	my @data = $sth->fetchrow_array;
 	$sth->finish;
 	
-	my $sth = $dbh->prepare("SELECT permissions.* FROM users, permissions WHERE users.username = '$data[1]' and users.idUser = permissions.idUser");
-	$sth->execute();
+	my $sth = $dbh->prepare("SELECT permissions.* FROM users, permissions WHERE users.username = ? and users.idUser = permissions.idUser");
+	$sth->execute($data[1]);
 	my @PRM = $sth->fetchrow_array;
 	$sth->finish;
 	$dbh->disconnect if ($dbh);

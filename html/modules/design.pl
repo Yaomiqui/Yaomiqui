@@ -124,15 +124,15 @@ if ( $input{submod} eq 'new_autoBot' ) {
 	# my $newID = $input{idAutoBotManual} ? $input{idAutoBotManual} : `../generateEncKey.pl 40`;
 	
 	connected();
-	my $sth = $dbh->prepare("SELECT idUser FROM users WHERE username = '$username'");
-	$sth->execute();
+	my $sth = $dbh->prepare("SELECT idUser FROM users WHERE username = ?");
+	$sth->execute($username);
 	my ($myIDuser) = $sth->fetchrow_array;
 	$sth->finish;
 	# $dbh->disconnect if ($dbh);
 	
 	# connected();
-	my $sth = $dbh->prepare("SELECT idAutoBot FROM autoBot WHERE idAutoBot = '$newID'");
-	$sth->execute();
+	my $sth = $dbh->prepare("SELECT idAutoBot FROM autoBot WHERE idAutoBot = ?");
+	$sth->execute($newID);
 	my ($IDexists) = $sth->fetchrow_array;
 	$sth->finish;
 	# $dbh->disconnect if ($dbh);
@@ -159,6 +159,10 @@ if ( $input{submod} eq 'new_autoBot' ) {
 			$xml = $input{xml};
 			$xml =~ s/\>\s*\</\>\</g;
 		}
+        
+        if ( length $newID != 40 ) {
+            print "Location: index.cgi?mod=design\n\n";
+        }
 		
 		# $html .= qq~
 		# VALUES ('$newID', '$input{NewAutoBotName}', '$sysdate', '$myIDuser', '0', <br>
@@ -168,11 +172,15 @@ if ( $input{submod} eq 'new_autoBot' ) {
         $newID = delMalCode($newID);
         $input{NewAutoBotName} = delMalCode($input{NewAutoBotName});
 		
-		my $insert_string = "INSERT INTO autoBot (idAutoBot, autoBotName, deployedDate, idUserDeploy, active, autoBotXML) 
-		VALUES ('$newID', '$input{NewAutoBotName}', '$sysdate', '$myIDuser', '0', ?)";
-		$sth = $dbh->prepare("$insert_string");
-		$sth->execute($xml);
-		$sth->finish;
+        if ( $newID and $input{NewAutoBotName} ) {
+            my $insert_string = "INSERT INTO autoBot (idAutoBot, autoBotName, deployedDate, idUserDeploy, active, autoBotXML) 
+            VALUES (?, ?, '$sysdate', '$myIDuser', '0', ?)";
+            $sth = $dbh->prepare("$insert_string");
+            $sth->execute($newID, $input{NewAutoBotName}, $xml);
+            $sth->finish;
+        } else {
+            print "Location: index.cgi?mod=design\n\n";
+        }
 	}
 	$dbh->disconnect if ($dbh);
 	
@@ -184,13 +192,13 @@ if ( $input{submod} eq 'new_autoBot' ) {
 if ( $input{submod} eq 'save_autobot_xml' ) {
 	if ( $input{xml} ) {
 		connected();
-		my $sth = $dbh->prepare("SELECT idUser FROM users WHERE username = '$username'");
-		$sth->execute();
+		my $sth = $dbh->prepare("SELECT idUser FROM users WHERE username = ?");
+		$sth->execute($username);
 		my ($myIDuser) = $sth->fetchrow_array;
 		$sth->finish;
 		
-		my $sth = $dbh->prepare("SELECT * FROM autoBot WHERE idAutoBot = '$input{autoBotId}'");
-		$sth->execute();
+		my $sth = $dbh->prepare("SELECT * FROM autoBot WHERE idAutoBot = ?");
+		$sth->execute($input{autoBotId});
 		my @ABOT = $sth->fetchrow_array;
 		$sth->finish;
 		
@@ -231,13 +239,13 @@ if ( $input{submod} eq 'save_autobot_xml' ) {
 
 if ( $input{submod} eq 'save_autobot_data' ) {
 	connected();
-	my $sth = $dbh->prepare("SELECT idUser FROM users WHERE username = '$username'");
-	$sth->execute();
+	my $sth = $dbh->prepare("SELECT idUser FROM users WHERE username = ?");
+	$sth->execute($username);
 	my ($myIDuser) = $sth->fetchrow_array;
 	$sth->finish;
 	
-	my $sth = $dbh->prepare("SELECT * FROM autoBot WHERE idAutoBot = '$input{autoBotId}'");
-	$sth->execute();
+	my $sth = $dbh->prepare("SELECT * FROM autoBot WHERE idAutoBot = ?");
+	$sth->execute($input{autoBotId});
 	my @ABOT = $sth->fetchrow_array;
 	$sth->finish;
 	
@@ -248,16 +256,20 @@ if ( $input{submod} eq 'save_autobot_data' ) {
 	$sth->finish;
 	
 	my $sysdate = sysdate();
+    
+    $input{autoBotName} = delMalCode($input{autoBotName});
+    $input{description} = delMalCode($input{description});
+    $input{autoBotId} = delMalCode($input{autoBotId});
 	
 	connected();
 	my $sth = $dbh->prepare("UPDATE autoBot SET 
 	deployedDate='$sysdate', 
 	idUserDeploy='$myIDuser', 
-	autoBotName='$input{autoBotName}', 
-	description='$input{description}', 
+	autoBotName=?, 
+	description=?, 
 	active='$input{active}' 
-	WHERE idAutoBot='$input{autoBotId}'");
-	$sth->execute();
+	WHERE idAutoBot=?");
+	$sth->execute($input{autoBotName}, $input{description}, $input{autoBotId});
 	$sth->finish;
 	$dbh->disconnect if $dbh;
 	
@@ -273,8 +285,8 @@ if ( $input{submod} eq 'save_autobot_data' ) {
 
 if ( $input{submod} eq 'downloadXML' ) {
 	connected();
-	my $sth = $dbh->prepare("select autoBotXML from autoBot where idAutoBot = '$input{idAutoBot}'");
-	$sth->execute();
+	my $sth = $dbh->prepare("select autoBotXML from autoBot where idAutoBot = ?");
+	$sth->execute($input{idAutoBot});
 	my ($myXML) = $sth->fetchrow_array;
 	$sth->finish;
 	
@@ -299,11 +311,12 @@ if ( $input{submod} eq 'downloadXML' ) {
 if ( $input{submod} eq 'edit_autobot' ) {
 	$html .= qq~<div class="contentTitle">$MSG{Autobots_Design}</div>~ unless $input{'shtl'};
 	
-	my $QUERY = qq~SELECT * FROM autoBot WHERE idAutoBot = '$input{autoBotId}'~;
+	my $QUERY = qq~SELECT * FROM autoBot WHERE idAutoBot = ?~;
 	my $ADVRT;
 	my $CurrDeploy;
 	if ( $input{HistoricView} ) {
-		$QUERY = qq~SELECT idAutoBot,autoBotName,description,deployedDate,idUserDeploy,active,autoBotXML FROM autoBotHistory WHERE idAutoBot = '$input{autoBotId}' AND idABhistory = '$input{HistoricView}'~;
+        $input{HistoricView} = delMalCode($input{HistoricView});
+		$QUERY = qq~SELECT idAutoBot,autoBotName,description,deployedDate,idUserDeploy,active,autoBotXML FROM autoBotHistory WHERE idAutoBot = ? AND idABhistory = ?~;
 		$ADVRT = qq~
 		<font color="#DD0000" style="padding-left: 20px; font-size: 130%;">$MSG{You_are_viewing_a_historic_data_Please_be_careful_with_your_actions}.</font>
 		<br><br>
@@ -315,7 +328,11 @@ if ( $input{submod} eq 'edit_autobot' ) {
 	
 	connected();
 	my $sth = $dbh->prepare("$QUERY");
-	$sth->execute();
+	if ( $input{HistoricView} ) {
+        $sth->execute($input{autoBotId}, $input{HistoricView});
+    } else {
+        $sth->execute($input{autoBotId});
+    }
 	my @ABOT = $sth->fetchrow_array;
 	$sth->finish;
 	
@@ -489,8 +506,8 @@ if ( $input{submod} eq 'edit_autobot' ) {
 	
 	
 	connected();
-	my $sth1 = $dbh->prepare("SELECT idABhistory, deployedDate, idUserDeploy FROM autoBotHistory WHERE idAutoBot = '$input{autoBotId}' ORDER BY deployedDate DESC");
-	$sth1->execute();
+	my $sth1 = $dbh->prepare("SELECT idABhistory, deployedDate, idUserDeploy FROM autoBotHistory WHERE idAutoBot = ? ORDER BY deployedDate DESC");
+	$sth1->execute($input{autoBotId});
 	my $ABhistory = $sth1->fetchall_arrayref;
 	$sth1->finish;
 	
