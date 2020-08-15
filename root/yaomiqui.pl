@@ -365,13 +365,23 @@ sub runDO {
     			$VAR{Error} = '';
     			
     			my $linuxCommand = replaceSpecChar($DO->{execLinuxCommand}->{command});
-    			# $linuxCommand =~ s/'/'\\''/g;
     			$linuxCommand =~ s/\r?\n//g;
     			
     			my $linerrfile = '/tmp/' . $TT . '.err';
     			
     			# ## debug
     			# print "COMMAND:\n" . $linuxCommand . "\n\n" if $debug;
+                
+                ####    Added on Aug 15 2020
+                $linuxCommand =~ s/^\s*//;
+                $linuxCommand =~ s/\s*$//;
+                if ( $linuxCommand =~ /^perl\s*-e/ ) {
+                    $linuxCommand =~ /^perl\s*-e\s*\'(.+)\'$/;
+                    my $perlScript = $1;
+                    $perlScript =~ s/'/'\\''/g;
+                    $linuxCommand = qq~perl -e '$perlScript'~;
+                }
+                ####
     			
     			$VAR{ $DO->{execLinuxCommand}->{catchVarName} } = `$linuxCommand 2>$linerrfile`;
     			$VAR{ $DO->{execLinuxCommand}->{catchVarName} } =~ s/^\n//g;
@@ -427,8 +437,18 @@ sub runDO {
     				$VAR{Error} =~ s/\n$//g;
     				
     				$remoteLinuxCommand = replaceSpecChar($DO->{execRemoteLinuxCommand}->{command});
-    				$remoteLinuxCommand =~ s/'/'\\''/g;
     				$remoteLinuxCommand =~ s/\r?\n//g;
+                    
+                    ####    Added on Aug 15 2020
+                    $remoteLinuxCommand =~ s/^\s*//;
+                    $remoteLinuxCommand =~ s/\s*$//;
+                    if ( $remoteLinuxCommand =~ /^perl\s*-e/ ) {
+                        $remoteLinuxCommand =~ /^perl\s*-e\s*\'(.+)\'$/;
+                        my $perlScript = $1;
+                        $perlScript =~ s/'/'\\''/g;
+                        $remoteLinuxCommand = qq~perl -e '$perlScript'~;
+                    }
+                    ####
     				
     				unless ( $ssh->error ) {
     					$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } = $ssh->capture2("$remoteLinuxCommand 2>&1");
@@ -481,8 +501,19 @@ sub runDO {
     				$VAR{Error} =~ s/\n$//g;
     				
     				$remoteLinuxCommand = replaceSpecChar($DO->{execRemoteLinuxCommand}->{command});
-    				$remoteLinuxCommand =~ s/'/'\\''/g;
+    				# $remoteLinuxCommand =~ s/'/'\\''/g;
     				$remoteLinuxCommand =~ s/\r?\n//g;
+                    
+                    ####    Added on Aug 15 2020
+                    $remoteLinuxCommand =~ s/^\s*//;
+                    $remoteLinuxCommand =~ s/\s*$//;
+                    if ( $remoteLinuxCommand =~ /^perl\s*-e/ ) {
+                        $remoteLinuxCommand =~ /^perl\s*-e\s*\'(.+)\'$/;
+                        my $perlScript = $1;
+                        $perlScript =~ s/'/'\\''/g;
+                        $remoteLinuxCommand = qq~perl -e '$perlScript'~;
+                    }
+                    ####
     				
     				unless ( $VAR{Error} ) {
     					$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } = $ssh->capture2("$remoteLinuxCommand 2>&1");
