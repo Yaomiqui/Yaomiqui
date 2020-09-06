@@ -208,6 +208,7 @@ CREATE TABLE IF NOT EXISTS alertTriggerToAutoBot (
     dlSecondEscalation varchar(255) NULL,
     dlThirdEscalation varchar(255) NULL,
     idAutoBot varchar(40) NULL,
+    yaomiquiTriggerTicket int(1) NOT NULL DEFAULT '1',
     Json text NULL
 ) ENGINE=InnoDB;
 

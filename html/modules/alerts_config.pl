@@ -47,6 +47,7 @@ if ( $input{submod} eq 'save_updated_Trigger' ) {
         $input{dlSecondEscalation} = delMalCode($input{dlSecondEscalation});
         $input{dlThirdEscalation} = delMalCode($input{dlThirdEscalation});
         $input{idAutoBot} = delMalCode($input{idAutoBot});
+        $input{yaomiquiExTicketBg} = delMalCode($input{yaomiquiExTicketBg});
         $input{Json} = delMalCode($input{Json});
         
         connected();
@@ -59,6 +60,7 @@ if ( $input{submod} eq 'save_updated_Trigger' ) {
         dlSecondEscalation = '$input{dlSecondEscalation}',
         dlThirdEscalation = '$input{dlThirdEscalation}',
         idAutoBot = ?,
+        yaomiquiExTicketBg = '$input{yaomiquiExTicketBg}',
         Json = '$input{Json}'
         WHERE idTrigger = ?");
         $sth->execute($input{idAutoBot}, $input{idTrigger});
@@ -106,11 +108,12 @@ if ( $input{submod} eq 'save_new_Trigger' ) {
         $input{dlSecondEscalation} = delMalCode($input{dlSecondEscalation});
         $input{dlThirdEscalation} = delMalCode($input{dlThirdEscalation});
         $input{idAutoBot} = delMalCode($input{idAutoBot});
+        $input{yaomiquiExTicketBg} = delMalCode($input{yaomiquiExTicketBg});
         $input{Json} = delMalCode($input{Json});
         
         connected();
-        my $sth = $dbh->prepare(qq~INSERT INTO alertTriggerToAutoBot (triggerName, countToStatusUp, minutesToStatusDown, minutesToHidden, dlFirstEscalation, dlSecondEscalation, dlThirdEscalation, idAutoBot, Json)
-        VALUES (?, '$input{countToStatusUp}', '$input{minutesToStatusDown}', '$input{minutesToHidden}', ?, ?, ?, ?, '$input{Json}')~);
+        my $sth = $dbh->prepare(qq~INSERT INTO alertTriggerToAutoBot (triggerName, countToStatusUp, minutesToStatusDown, minutesToHidden, dlFirstEscalation, dlSecondEscalation, dlThirdEscalation, idAutoBot, yaomiquiExTicketBg, Json)
+        VALUES (?, '$input{countToStatusUp}', '$input{minutesToStatusDown}', '$input{minutesToHidden}', ?, ?, ?, ?, '$input{yaomiquiExTicketBg}', '$input{Json}')~);
         $sth->execute($input{triggerName}, $input{dlFirstEscalation}, $input{dlSecondEscalation}, $input{dlThirdEscalation}, $input{idAutoBot});
         $sth->finish;
         
@@ -309,6 +312,14 @@ if ( $input{submod} eq 'triggersMan' ) {
         <table cellpadding="0" cellspacing="0" style="margin-bottom: 200px; padding: 20px;" class="w3-panel w3-card">~;
         
         for $i ( 0 .. $#{$views} ) {
+            my $exABbg = '<select name="yaomiquiExTicketBg">';
+            if ( $views->[$i][9] eq 1 ) {
+                $exABbg .= qq~<option value="1" Selected>Yes</option><option value="0">No</option>~;
+            } else {
+                $exABbg .= qq~<option value="1">Yes</option><option value="0" Selected>No</option>~;
+            }
+            $exABbg .= '</select>';
+            
             $html .= qq~
             <form method="post" action="index.cgi">
             <input type="hidden" name="mod" value="alerts_config">
@@ -336,10 +347,14 @@ if ( $input{submod} eq 'triggersMan' ) {
             
             <tr><td align="right">$MSG{Distribution_List_of_Third_Escalation}: </td><td><input type="text" name="dlThirdEscalation" maxlength="255" value="$views->[$i][7]" style="width: 400px;"></td></tr>
             
-            <tr><td align="right">$MSG{ID_AutoBot_to_trigger}: <br/><br/></td><td><input type="text" name="idAutoBot" maxlength="40" value="$views->[$i][8]" style="width: 400px;"> &nbsp; <br/><br/>
-            </td></tr>
+            <tr><td align="right">$MSG{ID_AutoBot_to_trigger}: </td><td><input type="text" name="idAutoBot" maxlength="40" value="$views->[$i][8]" style="width: 400px;"> &nbsp; <a href="index.cgi?mod=design&submod=edit_autobot&autoBotId=$views->[$i][8]" target="_blank"><img src="themes/$theme/images/AutoBot32px.png" style="width: 16px"></a></td></tr>
             
-            <tr><td align="right" valign="top">$MSG{JSON_to_send_to_the_Autobot}: </td><td><textarea id="w3review" name="Json" rows="20" style="width: 600px; font-family: monospace; resize: both; color: #00007D;">$views->[$i][9]</textarea>
+            <tr><td align="right">$MSG{Execute_AutoBot_in_Background}?: <br/><br/></td><td>$exABbg &nbsp; 
+            <img src="../images/help_blue.png" width="16" onMouseOver="showToolTip('$MSG{If_Yes_Trigger_will_not_generate_a_ticket}', '#111165', '#E8FCE8', '300px');" onMouseout="hideToolTip();" />
+            <br/><br/></td></tr>
+            
+            
+            <tr><td align="right" valign="top">$MSG{JSON_to_send_to_the_Autobot}: </td><td><textarea id="w3review" name="Json" rows="20" style="width: 600px; font-family: monospace; resize: both; color: #00007D;">$views->[$i][10]</textarea>
             </td></tr>
             
             <tr><td align="right"> &nbsp; </td><td align="right"><br /><br /><input class="blueLightButton" type="submit" value="$MSG{Update}"></td></tr>
@@ -399,8 +414,12 @@ if ( $input{submod} eq 'NewTrigger' ) {
     
     <tr><td align="right">$MSG{Distribution_List_of_Third_Escalation}: </td><td><input type="text" name="dlThirdEscalation" maxlength="255" style="width: 400px;"></td></tr>
     
-    <tr><td align="right">I$MSG{ID_AutoBot_to_trigger}: <br/><br/></td><td><input type="text" name="idAutoBot" maxlength="40" style="width: 400px;"> &nbsp; <br/><br/>
-    </td></tr>
+    <tr><td align="right">I$MSG{ID_AutoBot_to_trigger}: </td><td><input type="text" name="idAutoBot" maxlength="40" style="width: 400px;"></td></tr>
+    
+    <tr><td align="right">$MSG{Execute_AutoBot_in_Background}?: <br/><br/></td><td><select name="yaomiquiExTicketBg"><option value="1" Selected>Yes</option><option value="0">No</option></select> &nbsp; 
+    <img src="../images/help_blue.png" width="16" onMouseOver="showToolTip('$MSG{If_Yes_Trigger_will_not_generate_a_ticket}', '#111165', '#E8FCE8', '300px');" onMouseout="hideToolTip();" />
+    <br/><br/></td></tr>
+    
     
     <tr><td align="right" valign="top">$MSG{JSON_to_send_to_the_Autobot}: </td><td><textarea id="w3review" name="Json" rows="20" style="width: 600px; font-family: monospace; resize: both; color: #00007D;" readonly>{
   "ticket": {

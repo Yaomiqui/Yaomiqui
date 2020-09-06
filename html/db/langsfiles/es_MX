@@ -370,6 +370,8 @@ Trigger_Scalations = Escalaciones & Triggers
 Please_fill_some_data_you_want_to_filter_to_create_a_new_Alert_View = Introduzca algunos datos que desee para crear una nueva vista de Alertas
 Trigger_Name = Nombre del Trigger
 includes_the_following_Json_variables = incluye las siguientes variables
+Execute_AutoBot_in_Background = Ejecutar el AutoBot en segundo plano
+If_Yes_Trigger_will_not_generate_a_ticket = Si es Sí, el Trigger no generará un ticket para este AutoBot.<br><br>Configure a No, solo para desarrollo, para ver logs y corregir cualquier código incorrecto
 
 
 [end]

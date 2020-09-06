@@ -370,6 +370,8 @@ Trigger_Scalations = Triggers & Scalations
 Please_fill_some_data_you_want_to_filter_to_create_a_new_Alert_View = Please fill some data you want to filter to create a new Alerts View
 Trigger_Name = Trigger Name
 includes_the_following_Json_variables = includes the following Json variables
+Execute_AutoBot_in_Background = Execute AutoBot in Background
+If_Yes_Trigger_will_not_generate_a_ticket = If Yes, Trigger will not generate a ticket for this AutoBot.<br><br>Set to No for developing only, to view logs and fix any wrong code
 
 
 [end]

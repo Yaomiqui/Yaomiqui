@@ -35,7 +35,7 @@ our ($dbh, %VAR);
 
 connected();
 my $sth = $dbh->prepare("SELECT A.idAlert, A.alertCounter, A.insertDate, A.lastDate, A.severity, A.impact, A.urgency, A.title, A.definition, A.description, 
-A.silenced, T.countToStatusUp, T.minutesToStatusDown, T.minutesToHidden, T.dlFirstEscalation, T.dlSecondEscalation, T.dlThirdEscalation, T.idAutoBot, T.Json 
+A.silenced, T.countToStatusUp, T.minutesToStatusDown, T.minutesToHidden, T.dlFirstEscalation, T.dlSecondEscalation, T.dlThirdEscalation, T.idAutoBot, T.yaomiquiExTicketBg, T.Json 
 FROM alerts AS A, alertTriggerToAutoBot AS T 
 WHERE T.idTrigger = A.idTrigger");
 $sth->execute();
@@ -48,7 +48,7 @@ my ($year, $month, $day, $hour, $min, $seg) = parseDataDate($sysdate);
 
 ALERT: for my $i ( 0 .. $#{$alert} ) {
     my ($idAlert, $alertCounter, $insertDate, $lastDate, $severity, $impact, $urgency, $title, $definition, $description, $silenced, $countToStatusUp, 
-    $minutesToStatusDown, $minutesToHidden, $dlFirstEscalation, $dlSecondEscalation, $dlThirdEscalation, $idAutoBot, $Json) = @{$alert->[$i]};
+    $minutesToStatusDown, $minutesToHidden, $dlFirstEscalation, $dlSecondEscalation, $dlThirdEscalation, $idAutoBot, $yaomiquiExTicketBg, $Json) = @{$alert->[$i]};
     
     my $totalMinutes;
     my ($lyear, $lmonth, $lday, $lhour, $lmin, $lseg) = parseDataDate($lastDate);
@@ -96,7 +96,7 @@ ALERT: for my $i ( 0 .. $#{$alert} ) {
             
             
             if ( $alertCounter >= $countToStatusUp ) {
-                        print "Este sí está alertado: $alertCounter >= $countToStatusUp\n";
+                        # print "Este sí está alertado: $alertCounter >= $countToStatusUp\n";
 
                 if ( $idAutoBot ) {
                     my $jsonData = qq~"idAlert": "$idAlert",
@@ -126,12 +126,20 @@ ALERT: for my $i ( 0 .. $#{$alert} ) {
                         $JsonToSend =~ s/\$\{randomNumber\}/$TT/;
                         
                         print "Trying: $TT\n";
-                        my $results = `curl -k -H "Content-Type: application/json" -X PUT -d '$JsonToSend' --url "https://127.0.0.1/yaomiqui/generic-api.cgi/insertTicket/"`;
-                        print $results . "\n";
-                        my $jsonDecoded = eval { JSON->new->decode($results) };
                         
-                        unless ( $jsonDecoded->{Error} =~ /already exists/ ) {
+                        if ( $yaomiquiExTicketBg ) {
+                            # print "JSON:\n" . $JsonToSend . "\n";
+                            system(qq~/var/www/yaomiqui/yaomiqui.pl 'NDF00000001' '$idAutoBot' '$JsonToSend'~);
                             last;
+                        }
+                        else {
+                            my $results = `curl -k -H "Content-Type: application/json" -X PUT -d '$JsonToSend' --url "https://127.0.0.1/yaomiqui/generic-api.cgi/insertTicket/"`;
+                            print $results . "\n";
+                            my $jsonDecoded = eval { JSON->new->decode($results) };
+                            
+                            unless ( $jsonDecoded->{Error} =~ /already exists/ ) {
+                                last;
+                            }
                         }
                         
                         next ALERT if $subIdx == 4;
