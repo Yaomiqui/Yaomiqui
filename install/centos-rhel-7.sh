@@ -39,6 +39,8 @@ rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 
 yum --enablerepo=epel install -y sshpass perl-Math-Random-ISAAC perl-Parallel-ForkManager perl-Net-OpenSSH perl-MIME-Lite perl-Date-Calc
 
+cpanm -i Mail::IMAPClient
+
 chown apache:apache /usr/share/httpd
 
 # service NetworkManager stop

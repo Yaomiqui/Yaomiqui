@@ -32,7 +32,7 @@ source ./keys_auto.conf
 
 apt-get update
 
-apt install -y curl apache2 mariadb-server sshpass libnet-openssh-perl libdbi-perl libdbd-mysql-perl libjson-perl libtest-json-perl libxml-simple-perl libxml-validate-perl libparallel-forkmanager-perl libnet-openssh-perl sendmail libmime-lite-perl libmath-random-isaac-perl libdate-calc-perl realmd krb5-kdc krb5-pkinit krb5-sync-tools krb5-user
+apt install -y curl apache2 mariadb-server sshpass libnet-openssh-perl libdbi-perl libdbd-mysql-perl libjson-perl libtest-json-perl libxml-simple-perl libxml-validate-perl libparallel-forkmanager-perl libnet-openssh-perl sendmail libmime-lite-perl libmath-random-isaac-perl libdate-calc-perl realmd krb5-kdc krb5-pkinit krb5-sync-tools krb5-user libmail-imapclient-perl
 
 /usr/bin/perl -pi -e 's/Timeout 300/Timeout 1200\nLimitRequestLine 100000\nLimitRequestFieldSize 100000/' /etc/apache2/apache2.conf
 

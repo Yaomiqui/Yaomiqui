@@ -38,8 +38,17 @@ yum --enablerepo=epel install -y sshpass perl-Math-Random-ISAAC perl-Date-Calc
 
 # cpanm -i Date::Calc
 cpanm -i Parallel::ForkManager
-cpanm -i Net::OpenSSH
 cpanm -i MIME::Lite
+cpanm -i Mail::IMAPClient
+
+cpanm -i Net::OpenSSH
+cpanm -i IO::Pty
+# cpanm -i Carp
+# cpanm -i Socket
+# cpanm -i Errno
+# cpanm -i File::Spec
+# cpanm -i Scalar::Util
+# cpanm -i Digest::MD5
 # cpanm -i Math::Random::ISAAC
 #### Temporary until we have all libreries on epel repos
 
@@ -112,6 +121,10 @@ openssl req -new -x509 -nodes -days 3650 -newkey rsa:2048 -keyout yaomiqui-priva
 chown -R apache:apache /var/www/yaomiqui
 
 service httpd restart
+
+echo -e "net.ipv6.conf.all.disable_ipv6 = 1\nnet.ipv6.conf.default.disable_ipv6 = 1" > /etc/sysctl.d/70-ipv6.conf
+
+sysctl --load /etc/sysctl.d/70-ipv6.conf
 
 /usr/bin/find /var/www/yaomiqui -name *.cgi -exec chmod 755 {} \;
 

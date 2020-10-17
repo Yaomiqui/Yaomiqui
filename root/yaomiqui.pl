@@ -27,6 +27,7 @@ use JSON;
 use strict;
 use Net::OpenSSH;
 use Data::Dumper;
+use MIME::Base64;
 use FindBin qw($RealBin);
 use lib $RealBin;
 
@@ -309,6 +310,7 @@ sub runRETURN {
 
 sub replaceSpecChar {
     my $line = shift;
+    # $line =~ s/\!/\\!/g;
     
     # $line =~ s!\$\{([^\$\}]+)\}!$VAR{$1}!g;
     $line =~ s!\$\{([a-zA-Z\_]+)\}!$VAR{$1}!g;
@@ -365,167 +367,145 @@ sub runDO {
     			$VAR{Error} = '';
     			
     			my $linuxCommand = replaceSpecChar($DO->{execLinuxCommand}->{command});
-    			$linuxCommand =~ s/\r?\n//g;
-    			
-    			my $linerrfile = '/tmp/' . $TT . '.err';
-    			
-    			# ## debug
-    			# print "COMMAND:\n" . $linuxCommand . "\n\n" if $debug;
                 
-                ####    Added on Aug 15 2020
-                $linuxCommand =~ s/^\s*//;
-                $linuxCommand =~ s/\s*$//;
-                if ( $linuxCommand =~ /^perl\s*-e/ ) {
-                    $linuxCommand =~ /^perl\s*-e\s*\'(.+)\'$/;
-                    my $perlScript = $1;
-                    $perlScript =~ s/'/'\\''/g;
-                    $linuxCommand = qq~perl -e '$perlScript'~;
+                #### ADDED OR CHANGED FOR NETCROSSOVER
+                $linuxCommand = encode_base64( $linuxCommand, '' );
+                
+                my $Json2Send = '{
+  "Exec": {
+    "serverType": "Local",
+    "timeout": "' . $VAR{SSH_TIMEOUT} . '",
+    "command": "'. $linuxCommand . '"
+  }
+}';
+                $Json2Send =~ s/\n//g;
+                my $endPoint = $VENV{remote_acc};
+                my $access_key = $VENV{access_key};
+                my $secret_acc = $VENV{secret_acc};
+                
+                my $curl = qq~curl -k -H 'Content-Type: application/json; charset=UTF-8' -d '$Json2Send' -X POST --url 'https://$endPoint/yaomiqui/net-crossover-api.cgi/ExecuteCommand/?access_key=$access_key&secret_acc=$secret_acc' 2>/dev/null~;
+                
+                # ## debug
+                # print "\n\ncURL:\n" . $curl . "\n\n";
+                
+                my $response = `$curl`;
+                
+                # ## debug
+                # print "RESPONSE:\n$response\n\n";
+                
+                $VAR{Error} = 'Endpoint is unreachable' unless $response;
+                
+                my $json = eval { decode_json $response };
+                    ## { "Result": "Success|Error", "Response": "Base64-Successful-Encoded-Response", "Error": "Base64-Encoded-Error-Response" }
+                if ( $json ) {
+                    $response = decode_base64( $json->{ Response } );
+                    $VAR{Error} = decode_base64( $json->{ Error } );
                 }
-                ####
-    			
-    			$VAR{ $DO->{execLinuxCommand}->{catchVarName} } = `$linuxCommand 2>$linerrfile`;
+                else {
+                    $response = undef;
+                    $VAR{Error} = 'Json returned is not understandable';
+                }
+                
+                $VAR{ $DO->{execLinuxCommand}->{catchVarName} } = $response;
     			$VAR{ $DO->{execLinuxCommand}->{catchVarName} } =~ s/^\n//g;
     			$VAR{ $DO->{execLinuxCommand}->{catchVarName} } =~ s/\n$//g;
-    			
-    			$VAR{Error} = `cat $linerrfile 2>/dev/null`;
-    			$VAR{Error} =~ s/^\n//g;
+                
+                $VAR{Error} =~ s/^\n//g;
     			$VAR{Error} =~ s/\n$//g;
-    			
+                
     			# ## debug
-    			# print "RESULTS:\n" . $VAR{ $DO->{execLinuxCommand}->{catchVarName} } . "\n\n" if $debug;
+    			# print "RESPONSE: " . $VAR{ $DO->{execLinuxCommand}->{catchVarName} } . "\n";
     			
     			unless ( $VAR{Error} ) {
     				mlog($TT, qq~Linux Command [$DO->{execLinuxCommand}->{command}] Executed on Local Server [localhost]. Results: [$VAR{ $DO->{execLinuxCommand}->{catchVarName} }]~ . "\nError: []");
-    			} else {
+    			}
+                else {
     				mlog($TT, qq~Linux Command [$DO->{execLinuxCommand}->{command}] Executed on Local Server [localhost]. Results: [$VAR{ $DO->{execLinuxCommand}->{catchVarName} }]~ . "\nError: [$VAR{Error}]");
     			}
     			
-    			unlink "$linerrfile";
     		}
     		
-    		
+            
     		if ( $DO->{execRemoteLinuxCommand} ) {
     			$VAR{Error} = '';
-    			my $remoteLinuxCommand;
                 
-    			if ( $DO->{execRemoteLinuxCommand}->{publicKey} ) {
-    				$DO->{execRemoteLinuxCommand}->{remoteUser} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{remoteUser});
-    				$DO->{execRemoteLinuxCommand}->{remoteHost} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{remoteHost});
-    				$DO->{execRemoteLinuxCommand}->{publicKey} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{publicKey});
+                $DO->{execRemoteLinuxCommand}->{remoteUser} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{remoteUser});
+                $DO->{execRemoteLinuxCommand}->{remoteHost} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{remoteHost});
+                $DO->{execRemoteLinuxCommand}->{publicKey} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{publicKey});
+                
+                my $linuxpasswd = replaceSpecChar($DO->{execRemoteLinuxCommand}->{passwd});
     				
-    				my $SACM = $VAR{TIMEOUT} / 60;
-    				$DO->{execRemoteLinuxCommand}->{port} = 22 unless $DO->{execRemoteLinuxCommand}->{port};
-    				
-    				$Net::OpenSSH::debug = -1;
-    				my $ssh = Net::OpenSSH->new($DO->{execRemoteLinuxCommand}->{remoteHost},
-    					user				=> $DO->{execRemoteLinuxCommand}->{remoteUser},
-    					key_path			=> $DO->{execRemoteLinuxCommand}->{publicKey},
-    					port				=> $DO->{execRemoteLinuxCommand}->{port},
-    					strict_mode			=> 0,
-    					timeout				=> $VAR{SSH_TIMEOUT},
-    					kill_ssh_on_timeout	=> 1,
-    					master_opts 		=> [-o => 'StrictHostKeyChecking=no',
-    											-o => 'LogLevel=QUIET',
-    											-o => "ConnectTimeout=$VENV{CONNECTTIMEOUT}",
-    											-o => 'ServerAliveInterval=60',
-    											-o => "ServerAliveCountMax=$SACM",
-    											-o => 'TCPKeepAlive=yes']
-    				);
-    				
-    				$VAR{Error} = $ssh->error;
-    				$VAR{Error} =~ s/^\n//g;
-    				$VAR{Error} =~ s/\n$//g;
-    				
-    				$remoteLinuxCommand = replaceSpecChar($DO->{execRemoteLinuxCommand}->{command});
-    				$remoteLinuxCommand =~ s/\r?\n//g;
-                    
-                    ####    Added on Aug 15 2020
-                    $remoteLinuxCommand =~ s/^\s*//;
-                    $remoteLinuxCommand =~ s/\s*$//;
-                    if ( $remoteLinuxCommand =~ /^perl\s*-e/ ) {
-                        $remoteLinuxCommand =~ /^perl\s*-e\s*\'(.+)\'$/;
-                        my $perlScript = $1;
-                        $perlScript =~ s/'/'\\''/g;
-                        $remoteLinuxCommand = qq~perl -e '$perlScript'~;
-                    }
-                    ####
-    				
-    				unless ( $ssh->error ) {
-    					$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } = $ssh->capture2("$remoteLinuxCommand 2>&1");
-    					$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } =~ s/^\n//g;
-    					$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } =~ s/\n$//g;
-    					mlog($TT, qq~Remote Linux Command [$DO->{execRemoteLinuxCommand}->{command}] Executed on Remote Server [$DO->{execRemoteLinuxCommand}->{remoteHost}]. Results: [$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} }]~ . "\nError: []");
-    				}
-    				else {
-    					mlog($TT, qq~Remote Linux Command [$DO->{execRemoteLinuxCommand}->{command}] Executed on Remote Server [$DO->{execRemoteLinuxCommand}->{remoteHost}]. Results: [$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} }]~ . "\nError: [$VAR{Error}]");
-    				}
-    				## END OF execRemoteLinuxCommand WITH PUBLIC KEY
-    			}
-    			else {
-    				$DO->{execRemoteLinuxCommand}->{remoteUser} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{remoteUser});
-    				$DO->{execRemoteLinuxCommand}->{remoteHost} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{remoteHost});
-    				my $linuxpasswd = replaceSpecChar($DO->{execRemoteLinuxCommand}->{passwd});
-    				
-    				if ( $DO->{execRemoteLinuxCommand}->{EncKey} and $DO->{execRemoteLinuxCommand}->{EncPasswd} ) {
-    					$DO->{execRemoteLinuxCommand}->{EncKey} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{EncKey});
-    					$DO->{execRemoteLinuxCommand}->{EncPasswd} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{EncPasswd});
+                if ( $DO->{execRemoteLinuxCommand}->{EncKey} and $DO->{execRemoteLinuxCommand}->{EncPasswd} ) {
+                    $DO->{execRemoteLinuxCommand}->{EncKey} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{EncKey});
+                    $DO->{execRemoteLinuxCommand}->{EncPasswd} = replaceSpecChar($DO->{execRemoteLinuxCommand}->{EncPasswd});
 
-    					use Babel;
-    					my $crypt = new Babel;
-    					$linuxpasswd = $crypt->decode($DO->{execRemoteLinuxCommand}->{EncPasswd}, $DO->{execRemoteLinuxCommand}->{EncKey});
-    				}
-    				
-    				## print "PASSWORD: " . $DO->{execRemoteLinuxCommand}->{passwd} . "\n" if $debug;
-    				my $SACM = $VAR{TIMEOUT} / 60;
-    				$DO->{execRemoteLinuxCommand}->{port} = 22 unless $DO->{execRemoteLinuxCommand}->{port};
-    				
-    				$Net::OpenSSH::debug = -1;
-    				my $ssh = Net::OpenSSH->new($DO->{execRemoteLinuxCommand}->{remoteHost},
-    					user				=> $DO->{execRemoteLinuxCommand}->{remoteUser},
-    					password			=> $linuxpasswd,
-    					port				=> $DO->{execRemoteLinuxCommand}->{port},
-    					strict_mode			=> 0,
-    					timeout				=> $VAR{SSH_TIMEOUT},
-    					kill_ssh_on_timeout	=> 1,
-    					master_opts 		=> [-o => 'StrictHostKeyChecking=no',
-    											-o => 'LogLevel=QUIET',
-    											-o => "ConnectTimeout=$VENV{CONNECTTIMEOUT}",
-    											-o => 'ServerAliveInterval=60',
-    											-o => "ServerAliveCountMax=$SACM",
-    											-o => 'TCPKeepAlive=yes']
-    					## master_opts => [-o => 'StrictHostKeyChecking=no', -o => 'LogLevel=QUIET']
-    				);
-    				
-    				$VAR{Error} = $ssh->error;
-    				$VAR{Error} =~ s/^\n//g;
-    				$VAR{Error} =~ s/\n$//g;
-    				
-    				$remoteLinuxCommand = replaceSpecChar($DO->{execRemoteLinuxCommand}->{command});
-    				# $remoteLinuxCommand =~ s/'/'\\''/g;
-    				$remoteLinuxCommand =~ s/\r?\n//g;
-                    
-                    ####    Added on Aug 15 2020
-                    $remoteLinuxCommand =~ s/^\s*//;
-                    $remoteLinuxCommand =~ s/\s*$//;
-                    if ( $remoteLinuxCommand =~ /^perl\s*-e/ ) {
-                        $remoteLinuxCommand =~ /^perl\s*-e\s*\'(.+)\'$/;
-                        my $perlScript = $1;
-                        $perlScript =~ s/'/'\\''/g;
-                        $remoteLinuxCommand = qq~perl -e '$perlScript'~;
-                    }
-                    ####
-    				
-    				unless ( $VAR{Error} ) {
-    					$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } = $ssh->capture2("$remoteLinuxCommand 2>&1");
-    					$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } =~ s/^\n//g;
-    					$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } =~ s/\n$//g;
-    					mlog($TT, qq~Remote Linux Command [$DO->{execRemoteLinuxCommand}->{command}] Executed on Remote Server [$DO->{execRemoteLinuxCommand}->{remoteHost}]. Results: [$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} }]~ . "\nError: []");
-    				}
-    				else {
-    					mlog($TT, qq~Remote Linux Command [$DO->{execRemoteLinuxCommand}->{command}] Executed on Remote Server [$DO->{execRemoteLinuxCommand}->{remoteHost}]. Results: [$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} }]~ . "\nError: [$VAR{Error}]");
-    				}
-    				## END OF execRemoteLinuxCommand WITH USER AND PASSWORD
-    			}
+                    use Babel;
+                    my $crypt = new Babel;
+                    $linuxpasswd = $crypt->decode($DO->{execRemoteLinuxCommand}->{EncPasswd}, $DO->{execRemoteLinuxCommand}->{EncKey});
+                }
+                
+                $DO->{execRemoteLinuxCommand}->{port} = 22 unless $DO->{execRemoteLinuxCommand}->{port};
+                
+                
+                
+                #### ADDED OR CHANGED FOR NETCROSSOVER
+                my $remoteLinuxCommand = replaceSpecChar($DO->{execRemoteLinuxCommand}->{command});
+                $remoteLinuxCommand = encode_base64( $remoteLinuxCommand, '' );
+                
+                my $Json2Send = '{
+  "Exec": {
+    "host": "' . $DO->{execRemoteLinuxCommand}->{remoteHost} . '",
+    "timeout": "' . $VAR{SSH_TIMEOUT} . '",
+    "username": "' . $DO->{execRemoteLinuxCommand}->{remoteUser} . '",
+    "password": "' . $linuxpasswd . '",
+    "serverType": "Linux",
+    "Linux": {
+      "key_path": "' . $DO->{execRemoteLinuxCommand}->{publicKey} . '",
+      "port": "' . $DO->{execRemoteLinuxCommand}->{port} . '",
+      "TempDir": "/tmp"
+    },
+    "command": "' . $remoteLinuxCommand . '"
+  }
+}';
+                $Json2Send =~ s/\n//g;
+                my $endPoint = $VENV{remote_acc};
+                my $access_key = $VENV{access_key};
+                my $secret_acc = $VENV{secret_acc};
+                
+                my $curl = qq~curl -k -H 'Content-Type: application/json; charset=UTF-8' -d '$Json2Send' -X POST --url 'https://$endPoint/yaomiqui/net-crossover-api.cgi/ExecuteCommand/?access_key=$access_key&secret_acc=$secret_acc' 2>/dev/null~;
+                
+                ## debug
+                # print "\n\ncURL:\n" . $curl . "\n\n";
+                
+                my $response = `$curl`;
+                
+                $VAR{Error} = 'Endpoint is unreachable' unless $response;
+                
+                my $json = eval { decode_json $response };
+                
+                if ( $json ) {
+                    $response = decode_base64( $json->{ Response } );
+                    $VAR{Error} = decode_base64( $json->{ Error } );
+                }
+                else {
+                    $response = undef;
+                    $VAR{Error} = 'Json returned is not understandable';
+                }
+                
+                $VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } = $response;
+                $VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } =~ s/^\n//g;
+    			$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} } =~ s/\n$//g;
+                
+                $VAR{Error} =~ s/^\n//g;
+    			$VAR{Error} =~ s/\n$//g;
+                
+                unless ( $VAR{Error} ) {
+                    mlog($TT, qq~Remote Linux Command [$DO->{execRemoteLinuxCommand}->{command}] Executed on Remote Server [$DO->{execRemoteLinuxCommand}->{remoteHost}]. Results: [$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} }]~ . "\nError: []");
+                }
+                else {
+                    mlog($TT, qq~Remote Linux Command [$DO->{execRemoteLinuxCommand}->{command}] Executed on Remote Server [$DO->{execRemoteLinuxCommand}->{remoteHost}]. Results: [$VAR{ $DO->{execRemoteLinuxCommand}->{catchVarName} }]~ . "\nError: [$VAR{Error}]");
+                }
+                
     		}
     		
     		
@@ -533,11 +513,8 @@ sub runDO {
     			$VAR{Error} = '';
                 
     			my $remoteWindowsCommand = replaceSpecChar($DO->{execRemoteWindowsCommand}->{command});
-    			# $remoteWindowsCommand =~ s/'/'\\''/g;
     			$remoteWindowsCommand =~ s/\r//g;
     			$remoteWindowsCommand =~ s/\n//g;
-                # $remoteWindowsCommand =~ s/\\"/"/g;
-    			# $remoteWindowsCommand =~ s/"/\\"/g;
     			
     			$DO->{execRemoteWindowsCommand}->{remoteUser} = replaceSpecChar($DO->{execRemoteWindowsCommand}->{remoteUser});
     			$DO->{execRemoteWindowsCommand}->{remoteHost} = replaceSpecChar($DO->{execRemoteWindowsCommand}->{remoteHost});
@@ -579,36 +556,62 @@ sub runDO {
                 # print $remoteWindowsCommand . "\n";
                 # print $DO->{execRemoteWindowsCommand}->{remoteDomain} . $DO->{execRemoteWindowsCommand}->{remoteUser} . "\n";
                 
-                use WinRM::WinRSExec;
-                my $winrm = WinRM::WinRSExec->new({
-                    host            => $DO->{execRemoteWindowsCommand}->{remoteHost},
-                    protocol		=> $DO->{execRemoteWindowsCommand}->{protocol},
-                    timeout			=> $VAR{WINRM_TIMEOUT},
-                    domain          => $DO->{execRemoteWindowsCommand}->{remoteDomain},
-                    username        => $DO->{execRemoteWindowsCommand}->{remoteUser},
-                    password        => $winpasswd,
-                    kerberos        => $DO->{execRemoteWindowsCommand}->{useKerberos}
-                });
+                #### ADDED OR CHANGED FOR NETCROSSOVER
+                $remoteWindowsCommand = encode_base64( $remoteWindowsCommand, '' );
                 
-                unless ( $winrm ) {
-                    $VAR{Error} = 'Cannot create a "new" WinRM::WinRSExec object. ' . "$? : $!";
+                # $winpasswd =~ s/\!/\\\!/g;
+                # $winpasswd =~ s/\$/\\\$/g;
+                # $winpasswd =~ s/\%/\\\%/g;
+                # $winpasswd =~ s/\&/\\\&/g;
+                $winpasswd = encode_base64( $winpasswd, '' );
+                
+                my $Json2Send = '{
+  "Exec": {
+    "host": "' . $DO->{execRemoteWindowsCommand}->{remoteHost} . '",
+    "timeout": "' . $VAR{WINRM_TIMEOUT} . '",
+    "username": "' . $DO->{execRemoteWindowsCommand}->{remoteUser} . '",
+    "password": "' . $winpasswd . '",
+    "serverType": "Windows",
+    "Windows": {
+      "protocol": "' . $DO->{execRemoteWindowsCommand}->{protocol} . '",
+      "domain": "' . $DO->{execRemoteWindowsCommand}->{remoteDomain} . '",
+      "path": "/wsman",
+      "kerberos": "' . $DO->{execRemoteWindowsCommand}->{useKerberos} . '"
+    },
+    "command": "' . $remoteWindowsCommand . '"
+  }
+}';
+                $Json2Send =~ s/\n//g;
+                my $endPoint = $VENV{remote_acc};
+                my $access_key = $VENV{access_key};
+                my $secret_acc = $VENV{secret_acc};
+                
+                my $curl = qq~curl -k -H 'Content-Type: application/json; charset=UTF-8' -d '$Json2Send' -X POST --url 'https://$endPoint/yaomiqui/net-crossover-api.cgi/ExecuteCommand/?access_key=$access_key&secret_acc=$secret_acc' 2>/dev/null~;
+                
+                ## debug
+                # print "\n\ncURL:\n" . $curl . "\n\n";
+                
+                my $response = `$curl`;
+                
+                $VAR{Error} = 'Endpoint is unreachable' unless $response;
+                
+                my $json = eval { decode_json $response };
+                
+                if ( $json ) {
+                    $response = decode_base64( $json->{ Response } );
+                    $VAR{Error} = decode_base64( $json->{ Error } );
                 }
                 else {
-                    $winrm->execute({ command => $remoteWindowsCommand });
-                    
-                    # ## Debug
-                    # print "WinRM Logger:\n" . $winrm->logger . "\n" if $debug;
-                    
-                    if ( $winrm->response ) {
-                        $VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} } = $winrm->response;
-                    }
-                    elsif ( $winrm->error ) {
-                        $VAR{Error} = $winrm->error;
-                    }
-                    else {
-                        $VAR{Error} = 'Unknown error';
-                    }
+                    $response = undef;
+                    $VAR{Error} = 'Json returned is not understandable';
                 }
+                
+                $VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} } = $response;
+                $VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} } =~ s/^\n//g;
+    			$VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} } =~ s/\n$//g;
+                
+                $VAR{Error} =~ s/^\n//g;
+    			$VAR{Error} =~ s/\n$//g;
                 
     			unless ( $VAR{Error} ) {
     				mlog($TT, qq~Remote Windows Command [$DO->{execRemoteWindowsCommand}->{command}] Executed on Remote Server [$DO->{execRemoteWindowsCommand}->{remoteHost}].\nResults: [$VAR{ $DO->{execRemoteWindowsCommand}->{catchVarName} }]~ . "\nError: []");
