@@ -86,6 +86,8 @@ mkdir /var/www/yaomiqui/certs
 
 mkdir /var/www/yaomiqui/logs
 
+mkdir -p /var/lib/yaomiqui/tmp
+
 perl -pi -e "s/SERVER_NAME/${COMMON_NAME}/g" yaomiqui_apache.conf
 
 cat ./yaomiqui_apache.conf > /etc/httpd/conf.d/yaomiqui.conf
@@ -97,6 +99,8 @@ cp -r ../html/* /var/www/yaomiqui/html/
 cp -r ../root/* /var/www/yaomiqui/
 
 chown -R apache:apache /var/www/yaomiqui
+
+chown -R apache:apache /var/lib/yaomiqui
 
 mysqlPasswdAdmin=`./generateEncKey.pl 12`
 

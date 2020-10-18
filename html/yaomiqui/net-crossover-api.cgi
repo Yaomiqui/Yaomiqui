@@ -62,20 +62,20 @@ if ( $debug ) {
     exit;	##
 }
 
-# if ( $ENV{REMOTE_ADDR} ne $ENV{SERVER_ADDR} ) {     ## When we don't need authentication from localhost
-if ( $input{remote_acc} =~ /^127.0.0.1|localhost/ ) {     ## When we don't need authentication from localhost
+if ( $ENV{REMOTE_ADDR} ne $ENV{SERVER_ADDR} ) {     ## When we don't need authentication from localhost
+# unless ( $input{remote_acc} =~ /^127.0.0.1|localhost$/ ) {     ## When we don't need authentication from localhost
 	if ( $input{access_key} and $input{secret_acc} ) {
         $input{access_key} = cleanField($input{access_key});
         $input{secret_acc} = cleanField($input{secret_acc});
         
-        unless ( ($VAR{access_key} eq $input{access_key}) and ($VAR{secret_acc} eq $input{secret_acc}) and ($VAR{remote_acc} eq $ENV{REMOTE_ADDR}) ) {
-            print $q->header('application/json');
-            print qq~{"Error":"Authentication failed"}~;
+        if ( ($VAR{access_key} ne $input{access_key}) or ($VAR{secret_acc} ne $input{secret_acc}) or ($VAR{remote_acc} ne $ENV{REMOTE_ADDR}) ) {
+            print $q->header('application/json; charset=UTF-8');
+            print qq~{"Result": "Error", "Response": "", "Error": "Authentication failed"}~;
             exit;
         }
 	} else {
-		print $q->header('application/json');
-		print qq~{"Error":"Parameters missing"}~;
+		print $q->header('application/json; charset=UTF-8');
+        print qq~{"Result": "Error", "Response": "", "Error": "Parameters missing"}~;
 		exit;
 	}
 }
